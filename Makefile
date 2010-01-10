@@ -7,32 +7,30 @@ sysinit := hostname keymap
 # This is the array that simulates the DAEMONS array in the rc.conf 
 daemons := alsa network samba
 
-files := core/core.c \
-         $(foreach init_item, $(sysinit), sysinit/$(init_item).c) \
-         $(foreach daemon, $(daemons), daemons/$(daemon).c)
+export CFLAGS
+export sysinit
+export daemons
 
-.DEFAULT: test
+# The project is now built inside a build directory. 
+# This has mostly beenn changed to make it possible to override
+# the C implementations of daemons in case we still need to run 
+# the bash implementations. 
+build := build
 
-# Rule to transform .c files into .o files
-%.o : %.c
-	$(CC) -c $(CFLAGS) $< -o $@
+.DEFAULT: all
 	
-test : Makefile init $(files:.c) gen_config.sh $(files:.c=.o)
-	cc -o test $(files:.c=.o)
+all : $(build)
+	cp core/Makefile $(build)
+	cp core $(build) -r -u
+	cp sysinit $(build) -r -u
+	cp daemons $(build) -r -u
+	$(MAKE) -j4 -C $(build)
 
-init :
-	rm -f core/core.o
-
-# Rule to generate the config.h file
-gen_config.sh:
-	core/gen_config.sh core/config_sysinit.h sysinit $(sysinit)
-	core/gen_config.sh core/config_daemons.h daemons $(daemons)
+$(build) :
+	mkdir $(build)
 	
 clean : 
-	rm -f core/*.o
-	rm -f sysinit/*.o
-	rm -f daemons/*.o	
-	rm -f test
+	rm -rf $(build)
 	
-.PHONY: clean all gen_config.sh init
-.NOTPARALLEL: init
+.PHONY: clean all
+.NOTPARALLEL: $(build)
