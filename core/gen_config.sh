@@ -44,11 +44,11 @@ add_daemons()
 echo "/* This is a generated file. */" > $config_file
 echo  >> $config_file
 
-add_header "type.h"
+add_header "core_type.h"
 
 for daemon in $daemons
 do
-    add_header $path"/"$daemon".h"
+    add_header "../"$path"/"$daemon".h"
 done
 
 echo >> $config_file

@@ -3,7 +3,7 @@ CFLAGS := -Wall
 # This is the array that simulates the DAEMONS array in the rc.conf 
 daemons := alsa network samba
 
-files := test.c $(foreach daemon, $(daemons), daemons/$(daemon).c)
+files := core/core.c $(foreach daemon, $(daemons), daemons/$(daemon).c)
 
 .DEFAULT: test
 
@@ -15,14 +15,14 @@ test : Makefile init $(files:.c) gen_config.sh $(files:.c=.o)
 	cc -o test $(files:.c=.o)
 
 init :
-	rm -f test.o
+	rm -f core/core.o
 
 # Rule to generate the config.h file
 gen_config.sh:
-	./gen_config.sh config.h daemons $(daemons)
+	core/gen_config.sh core/config_daemons.h daemons $(daemons)
 	
 clean : 
-	rm -f *.o
+	rm -f core/*.o
 	rm -f daemons/*.o	
 	rm -f test
 	

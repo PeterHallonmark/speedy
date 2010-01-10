@@ -1,4 +1,4 @@
-#include "config.h"
+#include "config_daemons.h"
 #include <stdio.h>
 
 int main(void)
