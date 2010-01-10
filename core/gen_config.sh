@@ -32,7 +32,7 @@ add_daemons()
         echo "            .shutdown = &"$daemon_name"_shutdown" >> $config_file
     }
      
-    echo "daemon_t "$path"[] = {" >> $config_file
+    echo "service_t "$path"[] = {" >> $config_file
     for daemon in $daemons
     do
         add_daemon_struct $daemon
@@ -43,8 +43,6 @@ add_daemons()
 
 echo "/* This is a generated file. */" > $config_file
 echo  >> $config_file
-
-add_header "core_type.h"
 
 for daemon in $daemons
 do
