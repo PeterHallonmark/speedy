@@ -22,12 +22,6 @@ init :
 gen_config.sh:
 	core/gen_config.sh core/config_sysinit.h sysinit $(sysinit)
 	core/gen_config.sh core/config_daemons.h daemons $(daemons)
-	
-clean : 
-	rm -f core/*.o
-	rm -f sysinit/*.o
-	rm -f daemons/*.o	
-	rm -f test
-	
-.PHONY: clean all gen_config.sh init
+		
+.PHONY: gen_config.sh init debug release
 .NOTPARALLEL: init
