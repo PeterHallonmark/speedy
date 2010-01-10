@@ -17,20 +17,27 @@ export daemons
 # the bash implementations. 
 build := build
 
-.DEFAULT: all
+.DEFAULT: release
+
+all: release
 	
-all : $(build)
+release : $(build) copy
+	$(MAKE) -j4 -C $(build) release
+
+debug: $(build) copy
+	$(MAKE) -j4 -C $(build) debug
+
+copy:
 	cp core/Makefile $(build)
 	cp core $(build) -r -u
 	cp sysinit $(build) -r -u
 	cp daemons $(build) -r -u
-	$(MAKE) -j4 -C $(build)
-
+	
 $(build) :
 	mkdir $(build)
 	
 clean : 
 	rm -rf $(build)
 	
-.PHONY: clean all
+.PHONY: clean all release debug copy
 .NOTPARALLEL: $(build)

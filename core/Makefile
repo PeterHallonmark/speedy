@@ -7,6 +7,10 @@ files := core/core.c \
 # Rule to transform .c files into .o files
 %.o : %.c
 	$(CC) -c $(CFLAGS) $< -o $@
+
+debug : test
+
+release : test
 	
 test : Makefile init $(files:.c) gen_config.sh $(files:.c=.o)
 	cc -o test $(files:.c=.o)
