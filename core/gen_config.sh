@@ -31,7 +31,6 @@ add_header()
 add_daemons()
 {
     first=1
-
     add_daemon_struct()
     {
         daemon_name=$1
@@ -51,7 +50,10 @@ add_daemons()
     do
         add_daemon_struct $daemon
     done
-    echo "        }" >> $config_file
+    if [ $first -eq 0 ] 
+    then
+        echo "        }" >> $config_file
+    fi
     echo "    };" >> $config_file
 }
 
