@@ -2,6 +2,10 @@ files := core/core.c \
          $(foreach init_item, $(sysinit), sysinit/$(init_item).c) \
          $(foreach daemon, $(daemons), daemons/$(daemon).c)
 
+dependencies := $(foreach init_item, $(sysinit), sysinit/config/$(init_item).h) \
+                $(foreach init_item, $(sysinit), sysinit/$(init_item).h) \
+                $(foreach daemon, $(daemons), daemons/$(daemon).h)
+
 .DEFAULT: test
 
 # Rule to transform .c files into .o files
@@ -12,7 +16,7 @@ debug : test
 
 release : test
 	
-test : Makefile init $(files:.c) gen_config.sh $(files:.c=.o)
+test : Makefile init $(files:.c) $(dependencies) gen_config.sh $(files:.c=.o)
 	cc -o test $(files:.c=.o)
 
 init :
