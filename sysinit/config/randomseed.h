@@ -1,0 +1,1 @@
+#define RANDOMSEED "/var/lib/misc/random-seed"
