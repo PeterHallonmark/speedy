@@ -2,7 +2,7 @@ CFLAGS := -Wall
 
 # This is the array that simulates the rest of the rc.conf
 # So far it doesn't contain that much.
-sysinit := hostname keymap
+sysinit :=
 
 # This is the array that simulates the DAEMONS array in the rc.conf 
 daemons := alsa network samba
