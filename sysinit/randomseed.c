@@ -1,6 +1,6 @@
 #include "randomseed.h"
 #include "config/randomseed.h"
-#include "../lib/run.h"
+#include "lib/run.h"
 #include <stdio.h>
 
 
