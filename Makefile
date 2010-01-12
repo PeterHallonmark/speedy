@@ -2,10 +2,11 @@ CFLAGS := -Wall
 
 # This is the array that simulates the rest of the rc.conf
 # So far it doesn't contain that much.
-sysinit :=
+sysinit := randomseed
 
 # This is the array that simulates the DAEMONS array in the rc.conf 
-daemons := alsa network samba
+daemons := 
+#alsa network samba
 
 export CFLAGS
 export sysinit
@@ -32,6 +33,7 @@ copy:
 	cp core $(build) -r -u
 	cp sysinit $(build) -r -u
 	cp daemons $(build) -r -u
+	cp lib $(build) -r -u
 	
 $(build) :
 	mkdir $(build)
