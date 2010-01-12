@@ -1,4 +1,4 @@
-override CFLAGS += -Wall
+override CFLAGS += -Wall -ansi
 
 # This is the array that simulates the rest of the rc.conf
 # So far it doesn't contain that much.
@@ -24,7 +24,7 @@ all: release
 release : $(build) copy
 	$(MAKE) -j4 -C $(build) release
 
-debug: CFLAGS += -rdynamic
+debug: CFLAGS += -rdynamic -g
 debug: $(build) copy  
 	$(MAKE) -j4 -C $(build) debug
 
