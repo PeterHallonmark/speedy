@@ -1,31 +1,34 @@
 files := core/core.c \
+         lib/run.c \
          $(foreach init_item, $(sysinit), sysinit/$(init_item).c) \
          $(foreach daemon, $(daemons), daemons/$(daemon).c)
 
-dependencies := $(foreach init_item, $(sysinit), sysinit/config/$(init_item).h) \
-                $(foreach init_item, $(sysinit), sysinit/$(init_item).h) \
+header_files := $(foreach init_item, $(sysinit), sysinit/$(init_item).h) \
                 $(foreach daemon, $(daemons), daemons/$(daemon).h)
 
-.DEFAULT: test
-
-# Rule to transform .c files into .o files
-%.o : %.c
+         
+lib/%.o : lib/%.c lib/%.h
 	$(CC) -c $(CFLAGS) $< -o $@
+    
+sysinit/%.o : sysinit/%.c sysinit/%.h sysinit/config/%.h lib/*.h
+	$(CC) -c $(CFLAGS) $< -o $@
+
+daemons/%.o : daemons/%.c daemons/%.h lib/*.h
+	$(CC) -c $(CFLAGS) $< -o $@    
+    
+%.o : %.c *.h
+	$(CC) -c $(CFLAGS) $< -o $@
+
+# Rule to generate the config.h file
+gen_config.sh: Makefile
+	core/gen_config.sh core/config_sysinit.h sysinit $(sysinit)
+	core/gen_config.sh core/config_daemons.h daemons $(daemons)
+    
+test : Makefile gen_config.sh $(header_files) $(files) $(files:.c=.o)
+	cc -o test $(files:.c=.o)
 
 debug : test
 
 release : test
-	
-test : Makefile init $(files:.c) $(dependencies) gen_config.sh $(files:.c=.o)
-	cc -o test $(files:.c=.o)
-
-init :
-	rm -f core/core.o
-
-# Rule to generate the config.h file
-gen_config.sh:
-	core/gen_config.sh core/config_sysinit.h sysinit $(sysinit)
-	core/gen_config.sh core/config_daemons.h daemons $(daemons)
 		
-.PHONY: gen_config.sh init debug release
-.NOTPARALLEL: init
+.PHONY: debug release
