@@ -2,7 +2,7 @@ override CFLAGS += -Wall -ansi
 
 # This is the array that simulates the rest of the rc.conf
 # So far it doesn't contain that much.
-sysinit := randomseed
+sysinit := randomseed hostname
 
 # This is the array that simulates the DAEMONS array in the rc.conf 
 daemons := alsa network samba
@@ -28,6 +28,10 @@ debug: CFLAGS += -rdynamic -g
 debug: $(build) copy  
 	$(MAKE) -j4 -C $(build) debug
 
+simulate : CFLAGS += -DSIMULATE
+simulate : $(build) copy
+	$(MAKE) -j4 -C $(build) simulate
+
 copy:
 	cp core/Makefile $(build) -u
 	cp core $(build) -r -u
@@ -41,5 +45,5 @@ $(build) :
 clean : 
 	rm -rf $(build)
 	
-.PHONY: clean all release debug copy
+.PHONY: clean all release debug copy simulate
 .NOTPARALLEL: $(build)

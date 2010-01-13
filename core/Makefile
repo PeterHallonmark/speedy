@@ -5,11 +5,10 @@ files := $(foreach init_item, $(sysinit), sysinit/$(init_item).c) \
 header_files := $(foreach init_item, $(sysinit), sysinit/$(init_item).h) \
                 $(foreach daemon, $(daemons), daemons/$(daemon).h)
 
-         
 lib/%.o : lib/%.c lib/%.h
 	$(CC) -c $(CFLAGS) $< -o $@
     
-sysinit/%.o : sysinit/%.c sysinit/%.h sysinit/config/%.h lib/*.h
+sysinit/%.o : sysinit/%.c sysinit/%.h lib/*.h
 	$(CC) -I. -c $(CFLAGS) $< -o $@
 
 daemons/%.o : daemons/%.c daemons/%.h lib/*.h
@@ -29,5 +28,8 @@ test : ../Makefile gen_config.sh $(header_files) $(files) $(files:.c=.o)
 debug : test
 
 release : test
-		
+  
+simulate : lib/simulate.o ../Makefile gen_config.sh $(header_files) $(files) $(files:.c=.o)
+	cc -o simulate $(files:.c=.o) lib/simulate.o
+
 .PHONY: debug release
