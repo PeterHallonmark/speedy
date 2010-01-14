@@ -6,11 +6,7 @@
 
 void randomseed_init(void)
 {
-/** \todo This needs a shell interpreter to work. (problem with pipes). */
-#ifdef TEMPORARY_REMOVED
-    char* const argv[] = {RANDOMSEED, ">", "/dev/urandom", NULL};
-    run("/bin/cat", argv);
-#endif
+    system("cat " RANDOMSEED " /dev/urandom");
 }
 
 void randomseed_shutdown(void)
