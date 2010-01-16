@@ -34,8 +34,8 @@ void run(const char *filename, char *const argv[])
     
     /* Check if it is the child. */
     if (pid == 0) {
-        exec_return = execv(filename, argv);
-        /* If execve fails. */
+        exec_return = execvp(filename, argv);
+        /* If execvp fails. */
         printf("Failure! execv error code = %d\n", exec_return);
         _exit(0); 
     } else if (pid < 0) {
