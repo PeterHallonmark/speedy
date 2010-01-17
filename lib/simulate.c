@@ -27,10 +27,17 @@ void system(const char *command)
     printf("Command = %s\n", command);
 }
 
-int execv(const char *path, char *const argv[])
+int execvp(const char *filename, char *const argv[])
 {
-    printf("execv = %s",path);
-    return 0;
+    int i = 0;
+    
+    printf("execvp = %s\n",filename);
+    while (argv[i] != 0) {
+        printf("  arg[%d] = %s\n",i,argv[i]);  
+        i++;
+    }
+
+    return 1;
 }
 
 int fork(void)
