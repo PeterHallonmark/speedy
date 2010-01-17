@@ -3,18 +3,23 @@ files := $(foreach init_item, $(sysinit), sysinit/$(init_item).c) \
          lib/run.c core/core.c
 
 header_files := $(foreach init_item, $(sysinit), sysinit/$(init_item).h) \
+                $(foreach init_item, $(sysinit), sysinit/config/$(init_item).h) \
                 $(foreach daemon, $(daemons), daemons/$(daemon).h)
 
+sysinit/config/%.h :
+	touch $@
+
+                
 lib/%.o : lib/%.c lib/%.h
 	$(CC) -c $(CFLAGS) $< -o $@
     
-sysinit/%.o : sysinit/%.c sysinit/%.h lib/*.h
-	$(CC) -I. -c $(CFLAGS) $< -o $@
+sysinit/%.o : sysinit/%.c lib/*.h sysinit/%.h
+	$(CC) -c $(CFLAGS) -I. $< -o $@
 
-daemons/%.o : daemons/%.c daemons/%.h lib/*.h
-	$(CC) -I. -c $(CFLAGS) $< -o $@    
+daemons/%.o : daemons/%.c lib/*.h daemons/%.h
+	$(CC) -c $(CFLAGS) -I. $< -o $@    
     
-core/%.o : core/%.c core/*.h ../Makefile
+core/%.o : core/*.c core/%.h ../Makefile
 	$(CC) -c $(CFLAGS) $< -o $@
 
 # Rule to generate the config.h file

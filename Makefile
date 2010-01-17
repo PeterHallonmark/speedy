@@ -1,11 +1,11 @@
-override CFLAGS += -Wall -ansi
+override CFLAGS += -Wall
 
 # This is the array that simulates the rest of the rc.conf
 # So far it doesn't contain that much.
-sysinit := randomseed hostname
+sysinit := randomseed hostname depmod
 
 # This is the array that simulates the DAEMONS array in the rc.conf 
-daemons := alsa network samba
+daemons := 
 
 export CFLAGS
 export sysinit
