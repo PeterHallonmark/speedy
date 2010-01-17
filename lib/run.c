@@ -35,14 +35,16 @@ void run(const char *filename, char *const argv[])
     /* Check if it is the child. */
     if (pid == 0) {
         exec_return = execvp(filename, argv);
+#ifndef SIMULATE
         /* If execvp fails. */
         printf("Failure! execv error code = %d\n", exec_return);
-        _exit(0); 
+        exit(0); 
     } else if (pid < 0) {
         printf("Failed to fork\n");
     } else {
         /* Since it successfully ws able to fork, wait until the child
            process has run completly. */
         wait(&status);
+#endif
     }
 }
