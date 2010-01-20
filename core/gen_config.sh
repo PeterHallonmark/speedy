@@ -24,9 +24,21 @@ daemons=$*
 
 add_header()
 {
-    echo "#include \""$1"\"" >> $config_file
+    header_name=$1
+    printf "#include \""%s"\"\n" $header_name >> $config_file
 }
 
+add_function()
+{
+    function_type=$1
+    daemon_name=$2
+    function_name=$daemon_name"_"$function_type
+    if grep -q $function_name $path"/"$daemon_name".h" ; then
+        printf "%13s%s%s%s" "." $function_type " = &" $function_name >> $config_file
+    else
+        printf "%13s%s%s" "." $function_type " = NULL" >> $config_file
+    fi
+}
 
 add_daemons()
 {
@@ -37,33 +49,38 @@ add_daemons()
         if [ $first -eq 1 ] 
         then
             first=0
-            echo "        {" >> $config_file	
+            printf "%10s\n" "{" >> $config_file	
         else
-            echo "        }, {" >> $config_file	
+            printf "%13s\n" "}, {" >> $config_file	
         fi
-        echo "            .init = &"$daemon_name"_init," >> $config_file
-        echo "            .shutdown = &"$daemon_name"_shutdown" >> $config_file
+        add_function "init" $daemon_name
+        printf ",\n" >> $config_file
+        add_function "shutdown" $daemon_name
+        printf "\n" >> $config_file
     }
      
-    echo "service_t "$path"[] = {" >> $config_file
+    printf "service_t %s[] = {" $path >> $config_file
     for daemon in $daemons
     do
         add_daemon_struct $daemon
     done
     if [ $first -eq 0 ] 
     then
-        echo "        }" >> $config_file
+        echo "         }" >> $config_file
     fi
-    echo "    };" >> $config_file
+    echo "      };" >> $config_file
 }
 
 echo "/* This is a generated file. */" > $config_file
 echo  >> $config_file
 
+add_header "<stdlib.h>"
+echo  >> $config_file
+
 for daemon in $daemons
 do
-    add_header "../"$path"/"$daemon".h"
-done
+    add_header $path"/"$daemon".h"
+done    
 
 echo >> $config_file
 echo >> $config_file
