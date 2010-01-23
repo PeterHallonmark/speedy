@@ -28,7 +28,3 @@ void hostname_init(void)
 {
     sethostname(hostname, strlen(hostname)); 
 }
-
-void hostname_shutdown(void)
-{
-}

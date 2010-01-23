@@ -27,7 +27,3 @@ void randomseed_init(void)
 {
     system("cat " RANDOMSEED " > /dev/urandom");
 }
-
-void randomseed_shutdown(void)
-{
-}

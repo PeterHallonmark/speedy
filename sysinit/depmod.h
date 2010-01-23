@@ -15,5 +15,3 @@
 */
 
 void depmod_init(void);
-
-void depmod_shutdown(void);

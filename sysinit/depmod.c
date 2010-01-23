@@ -24,7 +24,3 @@ void depmod_init(void)
     char *const arg[] = {"-a", NULL};
     run("/sbin/depmod", arg);
 }
-
-void depmod_shutdown(void)
-{
-}
