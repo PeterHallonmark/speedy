@@ -14,18 +14,35 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-#define MS_NOSUID 0
+#include "start.h"
+#include "config/start.h"
+#include <string.h>
 
-void sethostname(const char* hostname, int size);
+#ifdef SIMULATE
+#include "lib/simulate.h"
+#else
+#include <sys/mount.h> 
+#endif
 
-void system(const char *command);
+const char *start_get_name(void)
+{
+    static const char priv_start_name[] = "start";
+    
+    return priv_start_name;
+}
 
-int execv(const char *path, char *const argv[]);
+void start_init(void)
+{    
+    char *const cp_arg[] = {"-a", "/lib/udev/devices/*", "/dev/", NULL};
+    char *const no_arg[] = {NULL};
 
-int fork(void);
+    mount("udev", "/dev", "tmpfs", MS_NOSUID, "mode=0755,size=10M");
+    mount("none", "/proc", "proc", 0, NULL);
+    mount("none", "/sys", "sysfs", 0, NULL);
+    /* Copy static device nodes to /dev */
+    run("/bin/cp", cp_arg);
+    /* start up mini logger until syslog takes over */
+    run("/sbin/minilogd", no_arg);
+    
+}
 
-void wait(int *status);
-
-int mount(const char *source, const char *target,
-          const char *filesystemtype, unsigned long mountflags,
-          const void *data);

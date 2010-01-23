@@ -14,18 +14,6 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-#define MS_NOSUID 0
+const char *start_get_name(void);
 
-void sethostname(const char* hostname, int size);
-
-void system(const char *command);
-
-int execv(const char *path, char *const argv[]);
-
-int fork(void);
-
-void wait(int *status);
-
-int mount(const char *source, const char *target,
-          const char *filesystemtype, unsigned long mountflags,
-          const void *data);
+void start_init(void);

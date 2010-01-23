@@ -48,3 +48,12 @@ int fork(void)
 void wait(int *status)
 {
 }
+
+int mount(const char *source, const char *target,
+          const char *filesystemtype, unsigned long mountflags,
+          const void *data)
+{
+    printf("mount: %s\n", target);
+    return 0;
+}
+
