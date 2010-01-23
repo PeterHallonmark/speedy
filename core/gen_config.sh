@@ -99,7 +99,7 @@ create_file()
 get_md5sum()
 {
     file=$1
-    md5sum=$(md5sum $file)
+    md5sum=$(md5sum $file 2> /dev/null)
     set -- $md5sum
     echo $1
 }
