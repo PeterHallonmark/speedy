@@ -22,7 +22,7 @@ daemons/%.o: daemons/%.c lib/*.h daemons/%.h
 core/%.o: core/%.c core/*.h ../Makefile
 	$(CC) $(CFLAGS) -I. -c $< -o $@
 
-test : ../Makefile gen_config.sh $(header_files) $(files) $(files:.c=.o)
+test : $(header_files) $(files) $(files:.c=.o)
 	cc -o test $(files:.c=.o)
 
 debug : test
