@@ -29,12 +29,13 @@ add_function()
     daemon_name=$2
     file_name=$3
     path=$4
+    end_char=$5
     
     function_name=$daemon_name"_"$function_type
     if grep -q $function_name $path"/"$daemon_name".h" ; then
-        printf "%13s%s%s%s" "." $function_type " = &" $function_name >> $file_name
+        printf "%13s%s%s%s%s\n" "." $function_type " = &" $function_name $end_char >> $file_name
     else
-        printf "%13s%s%s" "." $function_type " = NULL" >> $file_name
+        printf "%13s%s%s%s\n" "." $function_type " = NULL" $end_char >> $file_name
     fi
 }
 
@@ -57,10 +58,9 @@ add_daemons()
         else
             printf "%13s\n" "}, {" >> $file_name
         fi
-        add_function "init" $daemon_name $file_name $path
-        printf ",\n" >> $file_name
-        add_function "shutdown" $daemon_name $file_name $path
-        printf "\n" >> $file_name
+        add_function "get_name" $daemon_name $file_name $path ","
+        add_function "init" $daemon_name $file_name $path ","
+        add_function "shutdown" $daemon_name $file_name $path ""
     }
      
     printf "service_t %s[] = {\n" $path >> $file_name

@@ -14,4 +14,6 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
+const char *hostname_get_name(void);
+
 void hostname_init(void);

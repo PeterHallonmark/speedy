@@ -17,6 +17,14 @@
 #include <stdio.h>
 #include "keymap.h"
 
+
+const char *keymap_get_name(void)
+{
+    static const char priv_keymap_name[] = "keymap";
+    
+    return priv_keymap_name;
+}
+
 void keymap_init(void)
 {
     printf("keymap init\n");

@@ -24,7 +24,15 @@
 #include <unistd.h>
 #endif
 
+const char *hostname_get_name(void)
+{
+    static const char priv_hostname_name[] = "hostname";
+    
+    return priv_hostname_name;
+}
+
 void hostname_init(void)
 {
     sethostname(hostname, strlen(hostname)); 
 }
+

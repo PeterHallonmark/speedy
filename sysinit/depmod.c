@@ -19,6 +19,13 @@
 #include "lib/run.h"
 #include <stdlib.h>
 
+const char *depmod_get_name(void)
+{
+    static const char priv_depmod_name[] = "depmod";
+    
+    return priv_depmod_name;
+}
+
 void depmod_init(void)
 {
     char *const arg[] = {"-a", NULL};

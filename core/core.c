@@ -18,6 +18,7 @@
 #include "config_sysinit.h"
 #include "config_daemons.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 int main(void)
 {
@@ -26,15 +27,12 @@ int main(void)
 	int i;
 	
 	for (i = 0; i < sysinit_size; i++) {
-		sysinit[i].init();
-	}
-	for (i = 0; i < daemon_size; i++) {
-		daemons[i].init();
-	}
-	printf("\n");
-	
-	for (i = daemon_size - 1; i >= 0; i--) {
-		daemons[i].shutdown();
+		if (sysinit[i].get_name != NULL) {
+            printf("%s : ",sysinit[i].get_name());
+        }
+        if (sysinit[i].init != NULL) {
+            sysinit[i].init();
+        }
 	}
 	
 	return 0;

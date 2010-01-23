@@ -23,6 +23,13 @@
 #include <stdio.h>
 #endif
 
+const char *randomseed_get_name(void)
+{
+    static const char priv_randomseed_name[] = "randomseed";
+    
+    return priv_randomseed_name;
+}
+
 void randomseed_init(void)
 {
     system("cat " RANDOMSEED " > /dev/urandom");
