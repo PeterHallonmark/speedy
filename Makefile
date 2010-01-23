@@ -5,7 +5,7 @@ override CFLAGS += -Wall
 sysinit := randomseed hostname depmod
 
 # This is the array that simulates the DAEMONS array in the rc.conf 
-daemons := 
+daemons := alsa
 
 export CFLAGS
 export sysinit
@@ -21,15 +21,15 @@ build := build
 
 all: release
 	
-release : $(build) copy
+release : $(build) copy init
 	$(MAKE) -j4 -C $(build) release
 
 debug: CFLAGS += -rdynamic -g
-debug: $(build) copy  
+debug: $(build) copy  init
 	$(MAKE) -j4 -C $(build) debug
 
 simulate : CFLAGS += -DSIMULATE
-simulate : $(build) copy
+simulate : $(build) copy init
 	$(MAKE) -j4 -C $(build) simulate
 
 copy:
@@ -44,6 +44,9 @@ $(build) :
 	
 clean : 
 	rm -rf $(build)
-	
-.PHONY: clean all release debug copy simulate
-.NOTPARALLEL: $(build)
+
+init :
+	$(MAKE) -C $(build) init
+    
+.PHONY: clean all release debug copy simulate init
+.NOTPARALLEL: $(build) init
