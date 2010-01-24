@@ -36,7 +36,6 @@ int run(const char *filename, char *const argv[])
     /* Check if it is the child. */
     if (pid == 0) {
         exec_return = execve(filename, argv, env);
-#ifndef SIMULATE
         /* If execvp fails. */
         printf("Failure! execv error code = %d for %s\n", exec_return, filename);
 
@@ -47,10 +46,20 @@ int run(const char *filename, char *const argv[])
         /* Since it successfully ws able to fork, wait until the child
            process has run completly. */
         wait(&status);
-#endif
     }
     if (status != 0) {
         printf("FAIL: %s\n",filename);
     }
     return status;
+}
+
+bool file_exists(const char *filename)
+{
+    FILE* file = fopen(filename, "rb");
+    
+    if (file != 0) {
+        fclose(file);
+        return true;
+    }
+    return false;
 }

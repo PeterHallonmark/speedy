@@ -14,4 +14,8 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
+#include <stdbool.h>
+
 int run(const char *filename, char *const argv[]);
+
+bool file_exists(const char *filename);
