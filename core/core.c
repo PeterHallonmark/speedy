@@ -28,7 +28,7 @@ int main(void)
 	
 	for (i = 0; i < sysinit_size; i++) {
 		if (sysinit[i].get_name != NULL) {
-            printf("%s : ",sysinit[i].get_name());
+            printf("%s\n",sysinit[i].get_name());
         }
         if (sysinit[i].init != NULL) {
             sysinit[i].init();
