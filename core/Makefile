@@ -22,12 +22,12 @@ daemons/%.o: daemons/%.c lib/*.h daemons/%.h
 core/%.o: core/%.c core/*.h ../Makefile
 	$(CC) $(CFLAGS) -I. -c $< -o $@
 
-test : $(header_files) $(files) $(files:.c=.o)
-	cc -o test $(files:.c=.o)
+speedy : $(header_files) $(files) $(files:.c=.o)
+	cc -o speedy $(files:.c=.o)
 
-debug : test
+debug : speedy
 
-release : test
+release : speedy
   
 simulate : lib/simulate.o $(header_files) $(files) $(files:.c=.o)
 	cc -o simulate $(files:.c=.o) lib/simulate.o
