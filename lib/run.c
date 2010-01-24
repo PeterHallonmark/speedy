@@ -26,18 +26,20 @@
 #include <unistd.h>
 #endif
 
-void run(const char *filename, char *const argv[])
+int run(const char *filename, char *const argv[])
 {
+    char * const env[] = {NULL};
     pid_t pid = fork();
     int exec_return;
-    int status;
+    int status = 0;
     
     /* Check if it is the child. */
     if (pid == 0) {
-        exec_return = execvp(filename, argv);
+        exec_return = execve(filename, argv, env);
 #ifndef SIMULATE
         /* If execvp fails. */
-        printf("Failure! execv error code = %d\n", exec_return);
+        printf("Failure! execv error code = %d for %s\n", exec_return, filename);
+
         exit(0); 
     } else if (pid < 0) {
         printf("Failed to fork\n");
@@ -47,4 +49,8 @@ void run(const char *filename, char *const argv[])
         wait(&status);
 #endif
     }
+    if (status != 0) {
+        printf("FAIL: %s\n",filename);
+    }
+    return status;
 }
