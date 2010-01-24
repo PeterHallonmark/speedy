@@ -17,10 +17,12 @@
 #include "start.h"
 #include "config/start.h"
 #include <string.h>
+#include <stdlib.h>
 
 #ifdef SIMULATE
 #include "lib/simulate.h"
 #else
+#include "lib/run.h"
 #include <sys/mount.h> 
 #endif
 
@@ -33,16 +35,24 @@ const char *start_get_name(void)
 
 void start_init(void)
 {    
-    char *const cp_arg[] = {"-a", "/lib/udev/devices/*", "/dev/", NULL};
-    char *const no_arg[] = {NULL};
-
+    char *const minilogd_arg[] = {"/sbin/minilogd", NULL};
+    char *const dmesg_arg[] = {"/bin/dmesg", "-n", "3", NULL};
+    char *const mknod_arg[] = {"/bin/mknod", "/dev/rtc0", "c", RTC_MAJOR, "0", NULL};
+    char *const ln_arg[] = {"/bin/ln", "-s", "/dev/rtc0", "/dev/rtc", NULL};
+    
     mount("udev", "/dev", "tmpfs", MS_NOSUID, "mode=0755,size=10M");
     mount("none", "/proc", "proc", 0, NULL);
     mount("none", "/sys", "sysfs", 0, NULL);
-    /* Copy static device nodes to /dev */
-    run("/bin/cp", cp_arg);
-    /* start up mini logger until syslog takes over */
-    run("/sbin/minilogd", no_arg);
-    
-}
 
+    /* Copy static device nodes to /dev */
+    system("/bin/cp -a /lib/udev/devices/* /dev/");
+
+    /* start up mini logger until syslog takes over */
+    run("/sbin/minilogd", minilogd_arg);
+
+    run("/bin/dmesg", dmesg_arg);
+
+    system("/sbin/modprobe rtc-cmos >/dev/null 2>&1");
+    run("/bin/mknod", mknod_arg);
+    run("/bin/ln", ln_arg);
+}
