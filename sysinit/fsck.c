@@ -14,6 +14,7 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
+#include "config/fsck.h"
 #include "fsck.h"
 #include <string.h>
 #include <stdlib.h>
@@ -24,8 +25,6 @@
 #include "lib/run.h"
 #include <sys/mount.h> 
 #endif
-
-#define NETFS "nonfs,nonfs4,nosmbfs,nocifs,nocodafs,noncpfs,nosysfs,noshfs,nofuse,nofuseblk,noglusterfs"
 
 void fsck_reboot(void)
 {
