@@ -21,6 +21,7 @@
 #include <sys/mount.h> 
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 void fsck_reboot(void)
 {
