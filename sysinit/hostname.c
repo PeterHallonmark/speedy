@@ -17,7 +17,7 @@
 #include "hostname.h"
 #include "config/hostname.h"
 
-#include <unistd.h
+#include <unistd.h>
 #include <string.h>
 
 const char *hostname_get_name(void)

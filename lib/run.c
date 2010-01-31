@@ -17,14 +17,10 @@
 #include "run.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/types.h>
-
-#ifdef SIMULATE
-#include "simulate.h"
-#else
 #include <sys/wait.h>
 #include <unistd.h>
-#endif
 
 int run(const char *filename, char *const argv[])
 {
