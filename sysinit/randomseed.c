@@ -18,6 +18,7 @@
 #include "config/randomseed.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 
 const char *randomseed_get_name(void)
 {
