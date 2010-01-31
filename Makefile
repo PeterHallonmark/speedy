@@ -2,7 +2,7 @@ override CFLAGS += -Wall
 
 # This is the array that simulates the rest of the rc.conf
 # So far it doesn't contain that much.
-sysinit := start udev loopback fsck mount swap hwclock randomseed
+sysinit := start udev loopback fsck mount swap hwclock randomseed files hostname
 
 # This is the array that simulates the DAEMONS array in the rc.conf 
 daemons :=
