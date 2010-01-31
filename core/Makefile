@@ -8,7 +8,7 @@ header_files := $(foreach init_item, $(sysinit), sysinit/$(init_item).h) \
                 core/config_sysinit.h core/config_daemons.h
                 
 sysinit/config/%.h:
-	touch $@
+	@touch $@
 
 lib/%.o: lib/%.c lib/%.h
 	$(CC) $(CFLAGS) -I. -c $< -o $@
@@ -25,13 +25,30 @@ core/%.o: core/%.c core/*.h ../Makefile
 speedy : $(header_files) $(files) $(files:.c=.o)
 	cc -o speedy $(files:.c=.o)
 
-debug : speedy
+debug : .status/debug speedy
 
-release : speedy
+release : .status/release speedy .status/strip
 
-init : 
+init : .status/init
+
+.status :
+	mkdir $@
+
+.status/debug : .status
+	@touch $@
+
+.status/release : .status
+	@touch $@
+    
+.status/strip : .status speedy
+	strip speedy
+	@touch $@
+        
+.status/init : .status ../Makefile
 	core/gen_config.sh core/config_sysinit.h sysinit $(sysinit)
 	core/gen_config.sh core/config_daemons.h daemons $(daemons)
-
+	@touch $@
+    
 .PHONY: debug release init
-.NOTPARALLEL: init
+.NOTPARALLEL: .status .status/init .status/strip
+.SILENT: .status .status
