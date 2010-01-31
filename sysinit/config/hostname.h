@@ -1,2 +1,2 @@
 /* To be generated. */
-const char hostname[] = "hostname";
+const char hostname[] = "twilight";
