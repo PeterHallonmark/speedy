@@ -16,15 +16,11 @@
 
 #include "config/mount.h"
 #include "mount.h"
+#include "lib/run.h"
+
+#include <sys/mount.h> 
 #include <string.h>
 #include <stdlib.h>
-
-#ifdef SIMULATE
-#include "lib/simulate.h"
-#else
-#include "lib/run.h"
-#include <sys/mount.h> 
-#endif
 
 const char *mount_get_name(void)
 {

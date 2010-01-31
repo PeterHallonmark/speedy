@@ -28,10 +28,6 @@ debug: CFLAGS += -rdynamic -g
 debug: $(build) copy  init
 	$(MAKE) -j4 -C $(build) debug
 
-simulate : CFLAGS += -DSIMULATE
-simulate : $(build) copy init
-	$(MAKE) -j4 -C $(build) simulate
-
 copy:
 	cp core/Makefile $(build) -u
 	cp core $(build) -r -u

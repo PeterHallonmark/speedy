@@ -16,13 +16,10 @@
 
 #include "udev.h"
 #include "config/udev.h"
-#include <string.h>
-#include <stdlib.h>
 #include "lib/run.h"
 
-#ifdef SIMULATE
-#include "lib/simulate.h"
-#endif
+#include <string.h>
+#include <stdlib.h>
 
 const char *udev_get_name(void)
 {

@@ -16,13 +16,9 @@
 
 #include "hostname.h"
 #include "config/hostname.h"
-#include <string.h>
 
-#ifdef SIMULATE
-#include "lib/simulate.h"
-#else
-#include <unistd.h>
-#endif
+#include <unistd.h
+#include <string.h>
 
 const char *hostname_get_name(void)
 {

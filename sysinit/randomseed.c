@@ -17,11 +17,7 @@
 #include "randomseed.h"
 #include "config/randomseed.h"
 
-#ifdef SIMULATE
-#include "lib/simulate.h"
-#else
 #include <stdio.h>
-#endif
 
 const char *randomseed_get_name(void)
 {

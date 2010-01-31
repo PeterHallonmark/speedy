@@ -16,14 +16,10 @@
 
 #include "swap.h"
 #include "config/swap.h"
+#include "lib/run.h"
+
 #include <string.h>
 #include <stdlib.h>
-
-#ifdef SIMULATE
-#include "lib/simulate.h"
-#else
-#include "lib/run.h"
-#endif
 
 const char *swap_get_name(void)
 {

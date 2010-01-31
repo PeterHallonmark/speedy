@@ -28,14 +28,10 @@ speedy : $(header_files) $(files) $(files:.c=.o)
 debug : speedy
 
 release : speedy
-  
-simulate : lib/simulate.o $(header_files) $(files) $(files:.c=.o)
-	cc -o simulate $(files:.c=.o) lib/simulate.o
 
 init : 
 	core/gen_config.sh core/config_sysinit.h sysinit $(sysinit)
 	core/gen_config.sh core/config_daemons.h daemons $(daemons)
-	
 
 .PHONY: debug release init
 .NOTPARALLEL: init

@@ -16,15 +16,11 @@
 
 #include "start.h"
 #include "config/start.h"
+#include "lib/run.h"
+
+#include <sys/mount.h> 
 #include <string.h>
 #include <stdlib.h>
-
-#ifdef SIMULATE
-#include "lib/simulate.h"
-#else
-#include "lib/run.h"
-#include <sys/mount.h> 
-#endif
 
 const char *start_get_name(void)
 {
