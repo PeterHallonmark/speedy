@@ -21,12 +21,12 @@ build := build
 
 all: release
 	
-release : $(build) copy init
-	$(MAKE) -j4 -C $(build) release
+release : $(build) copy
+	$(MAKE) -C $(build) release
 
 debug: CFLAGS += -rdynamic -g
-debug: $(build) copy  init
-	$(MAKE) -j4 -C $(build) debug
+debug: $(build) copy
+	$(MAKE) -C $(build) debug
 
 copy:
 	cp core/Makefile $(build) -u
@@ -41,8 +41,5 @@ $(build) :
 clean : 
 	rm -rf $(build)
 
-init :
-	$(MAKE) -C $(build) init
-    
-.PHONY: clean all release debug copy simulate init
-.NOTPARALLEL: $(build) init
+.PHONY: clean all release debug copy
+.NOTPARALLEL: $(build)

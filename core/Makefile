@@ -31,16 +31,30 @@ release : .status/release speedy .status/strip
 
 init : .status/init
 
+reinit : clean init
+
+clean :
+	rm -rf .status
+	rm -f $(files:.c=.o)
+
 .status :
 	mkdir $@
 
-.status/debug : .status
-	@touch $@
-
-.status/release : .status
+.status/debug :
+	if file .status/release; \
+	then make -j 1 reinit; \
+	else make -j 1 init; \
+	fi
 	@touch $@
     
-.status/strip : .status speedy
+.status/release :
+	if file .status/debug; \
+	then make -j 1 reinit; \
+	else make -j 1 init; \
+	fi
+	@touch $@   
+    
+.status/strip : 
 	strip speedy
 	@touch $@
         
@@ -49,6 +63,7 @@ init : .status/init
 	core/gen_config.sh core/config_daemons.h daemons $(daemons)
 	@touch $@
     
-.PHONY: debug release init
-.NOTPARALLEL: .status .status/init .status/strip
-.SILENT: .status .status
+.PHONY: debug release init reinit clean
+.NOTPARALLEL: .status .status/init .status/release .status/debug .status/strip clean
+.SILENT: .status .status/release .status/debug clean
+.PRECIOUS: .status/release .status/debug
