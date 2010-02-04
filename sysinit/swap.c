@@ -16,7 +16,7 @@
 
 #include "swap.h"
 #include "config/swap.h"
-#include "lib/run.h"
+#include "lib/functions.h"
 
 #include <string.h>
 #include <stdlib.h>

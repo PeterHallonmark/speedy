@@ -16,7 +16,7 @@
 
 #include "files.h"
 #include "config/files.h"
-#include "lib/run.h"
+#include "lib/functions.h"
 
 #include <stdlib.h>
 
@@ -35,7 +35,7 @@ void files_init(void)
     system("/bin/rm -rf /tmp/* /tmp/.* &>/dev/null");
     system("/bin/rm -f /forcefsck &>/dev/null");
     system("(cd /var/run && /usr/bin/find . ! -type d -exec /bin/rm -f -- {} \\; )"); 
-    system("echo > /var/run/utmp");
+    file_empty("/var/run/utmp");
     system("/bin/chmod 0664 /var/run/utmp");
     system("/bin/mkdir /tmp/.ICE-unix && /bin/chmod 1777 /tmp/.ICE-unix");
     system("/bin/mkdir /tmp/.X11-unix && /bin/chmod 1777 /tmp/.X11-unix");

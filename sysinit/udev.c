@@ -16,7 +16,7 @@
 
 #include "udev.h"
 #include "config/udev.h"
-#include "lib/run.h"
+#include "lib/functions.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -36,7 +36,7 @@ void udev_init(void)
     char *const udevadm_ctrl0_arg[] = {"/sbin/udevadm", "control", "--property=STARTUP=", NULL};
     char *const modprobe_arg[] = {"/sbin/modprobe", "ath5k", NULL};
 
-    system("echo > /proc/sys/kernel/hotplug");
+    file_empty("/proc/sys/kernel/hotplug");
     system("/sbin/udevd --daemon");
 
     run("/sbin/udevadm", udevadm_ctrl1_arg);

@@ -16,7 +16,7 @@
 
 #include "hwclock.h"
 #include "config/hwclock.h"
-#include "lib/run.h"
+#include "lib/functions.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -32,7 +32,6 @@ void hwclock_init(void)
 {
 #ifdef TIMEZONE    
     char *const rm_arg[] = {"/bin/rm", "-f", "/etc/localtime", NULL};
-    char *const cp_arg[] = {"/bin/cp", "/usr/share/zoneinfo/"TIMEZONE, "/etc/localtime", NULL};    
 #endif
 #ifdef HWCLOCK_PARAMS    
     char *const hwclock1_arg[] = {"/sbin/hwclock", "--adjust", NULL};    
@@ -44,7 +43,7 @@ void hwclock_init(void)
     }
 #ifdef TIMEZONE    
     run("/bin/rm", rm_arg);
-    run("/bin/cp", cp_arg);
+    file_copy("/usr/share/zoneinfo/"TIMEZONE, "/etc/localtime");
 #endif
 #ifdef HWCLOCK_PARAMS    
     run("/sbin/hwclock", hwclock1_arg);

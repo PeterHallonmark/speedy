@@ -15,7 +15,7 @@
 */
 
 #include "loopback.h"
-#include "lib/run.h"
+#include "lib/functions.h"
 
 #include <string.h>
 #include <stdlib.h>

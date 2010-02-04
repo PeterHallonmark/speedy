@@ -16,7 +16,7 @@
 
 #include "depmod.h"
 #include "config/depmod.h"
-#include "lib/run.h"
+#include "lib/functions.h"
 #include <stdlib.h>
 
 const char *depmod_get_name(void)
