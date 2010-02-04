@@ -21,3 +21,5 @@ int run(const char *filename, char *const argv[]);
 bool file_exists(const char *filename);
 
 bool file_copy(const char *source, const char *destination);
+
+bool file_empty(const char *destination);

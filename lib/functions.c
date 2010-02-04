@@ -106,3 +106,21 @@ bool file_copy(const char *source, const char *destination)
     }    
     return true;
 }
+
+
+bool file_empty(const char *destination)
+{
+    FILE *destination_file;
+    
+    /* open destination file */
+    destination_file = fopen(destination, "wb");
+    if (destination_file == NULL) {
+        printf("Cannot open destination file.\n");
+        return false;
+    }
+    if (fclose(destination_file) == EOF) {
+        printf("Error closing destination file.\n");
+        return false;
+    }    
+    return true;
+}
