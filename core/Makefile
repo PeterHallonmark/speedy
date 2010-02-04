@@ -1,6 +1,6 @@
 files := $(foreach init_item, $(sysinit), sysinit/$(init_item).c) \
          $(foreach daemon, $(daemons), daemons/$(daemon).c) \
-         lib/run.c core/core.c
+         lib/functions.c core/core.c
 
 header_files := $(foreach init_item, $(sysinit), sysinit/$(init_item).h) \
                 $(foreach init_item, $(sysinit), sysinit/config/$(init_item).h) \
@@ -66,4 +66,3 @@ clean :
 .PHONY: debug release init reinit clean
 .NOTPARALLEL: .status .status/init .status/release .status/debug .status/strip clean
 .SILENT: .status .status/release .status/debug clean
-.PRECIOUS: .status/release .status/debug
