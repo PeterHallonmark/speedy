@@ -14,7 +14,7 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-#include "run.h"
+#include "functions.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -58,4 +58,51 @@ bool file_exists(const char *filename)
         return true;
     }
     return false;
+}
+
+bool file_copy(const char *source, const char *destination)
+{
+    FILE *source_file;
+    FILE *destination_file;
+    char temp;
+    
+    /* open source file */
+    source_file = fopen(source, "rb");
+    if(source_file == NULL) {
+        printf("Cannot open source file.\n");
+        return false;
+    }
+    /* open destination file */
+    destination_file = fopen(destination, "wb");
+    if (destination_file == NULL) {
+        printf("Cannot open destination file.\n");
+        return false;
+    }
+
+    /* copy the file */
+    while(!feof(source_file)) {
+        temp = fgetc(source_file);
+        
+        if (ferror(source_file)) {
+            printf("Error reading source file.\n");
+            return false;
+        }
+        if (!feof(source_file)) {
+            fputc(temp, destination_file);
+        }
+        if (ferror(destination_file)) {
+            printf("Error writing destination file.\n");
+            return false;
+        }
+    }
+
+    if (fclose(source_file) == EOF) {
+        printf("Error closing source file.\n");
+        return false;
+    }
+    if (fclose(destination_file) == EOF) {
+        printf("Error closing destination file.\n");
+        return false;
+    }    
+    return true;
 }
