@@ -31,9 +31,6 @@ const char *hwclock_get_name(void)
 
 void hwclock_init(void)
 {
-#ifdef TIMEZONE    
-    char *const rm_arg[] = {"/bin/rm", "-f", "/etc/localtime", NULL};
-#endif
 #ifdef HWCLOCK_PARAMS    
     char *const hwclock1_arg[] = {"/sbin/hwclock", "--adjust", NULL};    
     char *const hwclock2_arg[] = {"/sbin/hwclock", HWCLOCK_PARAMS, NULL};    
@@ -43,7 +40,7 @@ void hwclock_init(void)
         system("echo \"0.0 0 0.0\" > /var/lib/hwclock/adjtime");
     }
 #ifdef TIMEZONE    
-    run("/bin/rm", rm_arg);
+    file_remove("/etc/localtime");
     file_copy("/usr/share/zoneinfo/"TIMEZONE, "/etc/localtime");
 #endif
 #ifdef HWCLOCK_PARAMS    

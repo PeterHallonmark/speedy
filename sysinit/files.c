@@ -29,11 +29,11 @@ const char *files_get_name(void)
 
 void files_init(void)
 {    
-    system("/bin/rm -f /etc/nologin &>/dev/null");
-    system("/bin/rm -f /etc/shutdownpid &>/dev/null");
+    file_remove("/etc/nologin");
+    file_remove("/etc/shutdownpid");
     system("/bin/rm -f /var/lock/* &>/dev/null");
     system("/bin/rm -rf /tmp/* /tmp/.* &>/dev/null");
-    system("/bin/rm -f /forcefsck &>/dev/null");
+    file_remove("/forcefsck");
     system("(cd /var/run && /usr/bin/find . ! -type d -exec /bin/rm -f -- {} \\; )"); 
     file_empty("/var/run/utmp");
     system("/bin/chmod 0664 /var/run/utmp");
