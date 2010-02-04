@@ -16,7 +16,6 @@
 
 #include "config/mount.h"
 #include "mount.h"
-#include "lib/functions.h"
 
 #include <sys/mount.h> 
 #include <string.h>

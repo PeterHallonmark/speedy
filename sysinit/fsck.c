@@ -16,7 +16,7 @@
 
 #include "config/fsck.h"
 #include "fsck.h"
-#include "lib/functions.h"
+#include "lib/file.h"
 
 #include <sys/mount.h> 
 #include <string.h>

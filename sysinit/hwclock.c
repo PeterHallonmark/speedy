@@ -16,7 +16,8 @@
 
 #include "hwclock.h"
 #include "config/hwclock.h"
-#include "lib/functions.h"
+#include "lib/run.h"
+#include "lib/file.h"
 
 #include <string.h>
 #include <stdlib.h>

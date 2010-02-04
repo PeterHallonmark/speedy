@@ -14,20 +14,12 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-#include "depmod.h"
-#include "config/depmod.h"
-#include "lib/run.h"
-#include <stdlib.h>
+#include <stdbool.h>
 
-const char *depmod_get_name(void)
-{
-    static const char priv_depmod_name[] = "depmod";
-    
-    return priv_depmod_name;
-}
+bool file_exists(const char *filename);
 
-void depmod_init(void)
-{
-    char *const arg[] = {"-a", NULL};
-    run("/sbin/depmod", arg);
-}
+bool file_copy(const char *source, const char *destination);
+
+bool file_empty(const char *destination);
+
+bool file_remove(const char *destination);

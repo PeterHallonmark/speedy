@@ -14,40 +14,10 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-#include "functions.h"
+#include "file.h"
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <unistd.h>
-
-int run(const char *filename, char *const argv[])
-{
-    char * const env[] = {NULL};
-    pid_t pid = fork();
-    int exec_return;
-    int status = 0;
-    
-    /* Check if it is the child. */
-    if (pid == 0) {
-        exec_return = execve(filename, argv, env);
-        /* If execvp fails. */
-        printf("Failure! execv error code = %d for %s\n", exec_return, filename);
-
-        exit(0); 
-    } else if (pid < 0) {
-        printf("Failed to fork\n");
-    } else {
-        /* Since it successfully ws able to fork, wait until the child
-           process has run completly. */
-        wait(&status);
-    }
-    if (status != 0) {
-        printf("FAIL: %s\n",filename);
-    }
-    return status;
-}
 
 bool file_exists(const char *filename)
 {
@@ -122,5 +92,13 @@ bool file_empty(const char *destination)
         printf("Error closing destination file.\n");
         return false;
     }    
+    return true;
+}
+
+
+bool file_remove(const char *destination)
+{
+    remove(destination);
+    
     return true;
 }

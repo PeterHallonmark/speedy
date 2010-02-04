@@ -16,7 +16,7 @@
 
 #include "start.h"
 #include "config/start.h"
-#include "lib/functions.h"
+#include "lib/run.h"
 
 #include <sys/mount.h> 
 #include <string.h>

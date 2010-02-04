@@ -1,10 +1,10 @@
 /*
     Copyright (c) 2010, Peter Johansson <zeronightfall@gmx.com>
-
+     
     Permission to use, copy, modify, and/or distribute this software for any
     purpose with or without fee is hereby granted, provided that the above
     copyright notice and this permission notice appear in all copies.
-
+     
     THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
     WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
     MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
@@ -13,30 +13,38 @@
     ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
-
-#include "files.h"
-#include "config/files.h"
-#include "lib/file.h"
-
+ 
+#include "run.h"
+ 
+#include <stdio.h>
 #include <stdlib.h>
-
-const char *files_get_name(void)
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
+ 
+int run(const char *filename, char *const argv[])
 {
-    static const char priv_files_name[] = "files";
+    char * const env[] = {NULL};
+    pid_t pid = fork();
+    int exec_return;
+    int status = 0;
     
-    return priv_files_name;
-}
-
-void files_init(void)
-{    
-    system("/bin/rm -f /etc/nologin &>/dev/null");
-    system("/bin/rm -f /etc/shutdownpid &>/dev/null");
-    system("/bin/rm -f /var/lock/* &>/dev/null");
-    system("/bin/rm -rf /tmp/* /tmp/.* &>/dev/null");
-    system("/bin/rm -f /forcefsck &>/dev/null");
-    system("(cd /var/run && /usr/bin/find . ! -type d -exec /bin/rm -f -- {} \\; )"); 
-    file_empty("/var/run/utmp");
-    system("/bin/chmod 0664 /var/run/utmp");
-    system("/bin/mkdir /tmp/.ICE-unix && /bin/chmod 1777 /tmp/.ICE-unix");
-    system("/bin/mkdir /tmp/.X11-unix && /bin/chmod 1777 /tmp/.X11-unix");
+    /* Check if it is the child. */
+    if (pid == 0) {
+        exec_return = execve(filename, argv, env);
+        /* If execvp fails. */
+        printf("Failure! execv error code = %d for %s\n", exec_return, filename);
+ 
+        exit(0);
+    } else if (pid < 0) {
+        printf("Failed to fork\n");
+    } else {
+        /* Since it successfully ws able to fork, wait until the child
+        process has run completly. */
+        wait(&status);
+    }
+    if (status != 0) {
+        printf("FAIL: %s\n",filename);
+    }
+    return status;
 }
