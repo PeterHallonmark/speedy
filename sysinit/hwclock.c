@@ -37,7 +37,7 @@ void hwclock_init(void)
 #endif
     
     if (!file_exists("/var/lib/hwclock/adjtime")) {
-        system("echo \"0.0 0 0.0\" > /var/lib/hwclock/adjtime");
+        file_write("/var/lib/hwclock/adjtime", "0.0 0 0.0\n");
     }
 #ifdef TIMEZONE    
     file_remove("/etc/localtime");
