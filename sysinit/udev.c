@@ -36,9 +36,10 @@ void udev_init(void)
     char *const udevadm_settle_arg[] = {"/sbin/udevadm", "settle", NULL};
     char *const udevadm_ctrl0_arg[] = {"/sbin/udevadm", "control", "--property=STARTUP=", NULL};
     char *const modprobe_arg[] = {"/sbin/modprobe", "ath5k", NULL};
-
+    char *const udevd_arg[] = {"/sbin/udevd", "--daemon", NULL};
+    
     file_empty("/proc/sys/kernel/hotplug");
-    system("/sbin/udevd --daemon");
+    run("/sbin/udevd", udevd_arg);
 
     run("/sbin/udevadm", udevadm_ctrl1_arg);
     run("/sbin/udevadm", udevadm_trigger_arg);
