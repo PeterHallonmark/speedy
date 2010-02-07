@@ -19,7 +19,6 @@
 #include "lib/run.h"
 
 #include <sys/mount.h> 
-#include <string.h>
 #include <stdlib.h>
 
 const char *start_get_name(void)

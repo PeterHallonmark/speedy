@@ -18,7 +18,6 @@
 #include "config/swap.h"
 #include "lib/run.h"
 
-#include <string.h>
 #include <stdlib.h>
 
 const char *swap_get_name(void)

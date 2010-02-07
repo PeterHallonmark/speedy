@@ -19,7 +19,6 @@
 #include "lib/run.h"
 #include "lib/file.h"
 
-#include <string.h>
 #include <stdlib.h>
 
 const char *udev_get_name(void)

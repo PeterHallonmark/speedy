@@ -17,7 +17,6 @@
 #include "loopback.h"
 #include "lib/run.h"
 
-#include <string.h>
 #include <stdlib.h>
 
 const char *loopback_get_name(void)

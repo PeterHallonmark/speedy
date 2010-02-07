@@ -18,7 +18,6 @@
 #include "config/locale.h"
 #include "lib/file.h"
 
-#include <string.h>
 #include <stdlib.h>
 
 #ifndef LOCALE
