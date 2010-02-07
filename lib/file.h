@@ -26,4 +26,5 @@ bool file_empty(const char *destination);
 
 bool file_remove(const char *destination);
 
-bool file_remove_all(const char *dest_dir, bool recursive);
+
+bool file_remove_all(const char *dest_path, bool recursive, bool remove_dir);

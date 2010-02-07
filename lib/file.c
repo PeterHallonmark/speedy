@@ -158,7 +158,7 @@ bool file_remove(const char *destination)
 }
 
 
-bool file_remove_all(const char *dest_path, bool recursive)
+bool file_remove_all(const char *dest_path, bool recursive, bool remove_dir)
 {
     DIR *dir;
     struct dirent *content;
@@ -178,7 +178,10 @@ bool file_remove_all(const char *dest_path, bool recursive)
                         (strcmp(content->d_name, "..")  != 0)) { 
                     
                         if (recursive) {
-                            file_remove_all(next, true);
+                            file_remove_all(next, true, remove_dir);
+                            if (remove_dir) {
+                                rmdir(next);
+                            }
                         }
                     }    
                 } else {
@@ -191,10 +194,6 @@ bool file_remove_all(const char *dest_path, bool recursive)
             }
         }
         closedir(dir);
-        
-        if (recursive) {
-            rmdir(dest_path);
-        }
     }
     
     return true;
