@@ -28,7 +28,7 @@ bool dir_mkdir(const char *pathname, int mode)
     return true;
 }
 
-dir_rmdir(const char *pathname)
+bool dir_rmdir(const char *pathname)
 {
     rmdir(pathname);
     
