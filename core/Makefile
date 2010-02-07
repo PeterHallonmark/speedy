@@ -1,6 +1,6 @@
 files := $(foreach init_item, $(sysinit), sysinit/$(init_item).c) \
          $(foreach daemon, $(daemons), daemons/$(daemon).c) \
-         lib/run.c lib/file.c lib/dir.c core/core.c
+         lib/run.c lib/file.c lib/dir.c lib/network.c core/core.c
 
 header_files := $(foreach init_item, $(sysinit), sysinit/$(init_item).h) \
                 $(foreach init_item, $(sysinit), sysinit/config/$(init_item).h) \
