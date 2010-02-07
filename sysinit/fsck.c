@@ -17,11 +17,12 @@
 #include "config/fsck.h"
 #include "fsck.h"
 #include "lib/file.h"
+#include "lib/run.h"
 
-#include <sys/mount.h> 
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
 
 void fsck_reboot(void)
 {
@@ -36,13 +37,15 @@ const char *fsck_get_name(void)
 }
 
 void fsck_init(void)
-{    
+{   
+    char *const remount_ro_arg[] = {"/bin/mount", "-n", "-o", "remount,ro", "/", NULL};    
+    char *const sulogin_arg[] = {"/sbin/sulogin", "-p", NULL};    
+
     int fsck_ret;
-    
+       
     /* Mount root file system as read only. */
-    system("/bin/mount -n -o remount,ro /");
-    
-    
+    run("/bin/mount", remount_ro_arg);
+
     if (file_exists("/forcefsck")) {
         fsck_ret = system("/sbin/fsck -A -T -C -a -t "NETFS" -- -f >/dev/stdout 2>/dev/null");
     } else {
@@ -56,7 +59,7 @@ void fsck_init(void)
 		printf("*                                                          *\n");
 		printf("************************************************************\n\n");
 		
-        system("/bin/sleep 15");
+        sleep(15);
         fsck_reboot();
         
     } else if ((fsck_ret > 1) && (fsck_ret == 32)) {
@@ -70,7 +73,7 @@ void fsck_init(void)
 		printf("*                                                          *\n");
 		printf("************************************************************\n\n");
 
-        system("/sbin/sulogin -p");
+        run("/sbin/sulogin", sulogin_arg);
         fsck_reboot();
     }
 }
