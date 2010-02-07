@@ -21,3 +21,5 @@
 #define CMD_SULOGIN "/sbin/sulogin"
 
 #define CMD_FSCK "/sbin/fsck"
+
+#define CMD_SWAPON "/sbin/swapon"

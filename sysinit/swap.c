@@ -17,12 +17,9 @@
 #include "swap.h"
 #include "config/swap.h"
 #include "lib/run.h"
+#include "lib/command.h"
 
 #include <stdlib.h>
-
-#ifndef SWAPON
-#define SWAPON "/sbin/swapon"
-#endif
 
 const char *swap_get_name(void)
 {
@@ -33,7 +30,7 @@ const char *swap_get_name(void)
 
 void swap_init(void)
 {    
-    char *const swapon_arg[] = {SWAPON, "-a", NULL};
+    char *const swapon_arg[] = {CMD_SWAPON, "-a", NULL};
 
-    run(SWAPON, swapon_arg);
+    run(CMD_SWAPON, swapon_arg);
 }
