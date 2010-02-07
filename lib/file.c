@@ -15,6 +15,8 @@
 */
 
 #include "file.h"
+#include "dir.h"
+
 
 #include <dirent.h> 
 #include <stdio.h> 
@@ -98,7 +100,7 @@ bool file_copy_all(const char *source_path, const char *dest_path, bool recursiv
     if (dir)  
     {
         if (recursive) {
-            mkdir(dest_path, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+            dir_mkdir(dest_path, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
         }
         
         while ((content = readdir(dir)) != NULL)
@@ -180,7 +182,7 @@ bool file_remove_all(const char *dest_path, bool recursive, bool remove_dir)
                         if (recursive) {
                             file_remove_all(next, true, remove_dir);
                             if (remove_dir) {
-                                rmdir(next);
+                                dir_rmdir(next);
                             }
                         }
                     }    
@@ -195,6 +197,13 @@ bool file_remove_all(const char *dest_path, bool recursive, bool remove_dir)
         }
         closedir(dir);
     }
+    
+    return true;
+}
+
+bool file_chmod(const char *pathname, int mode)
+{
+    chmod(pathname, mode);
     
     return true;
 }
