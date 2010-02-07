@@ -31,10 +31,10 @@ void files_init(void)
 {    
     file_remove("/etc/nologin");
     file_remove("/etc/shutdownpid");
-    system("/bin/rm -f /var/lock/* &>/dev/null");
-    system("/bin/rm -rf /tmp/* /tmp/.* &>/dev/null");
+    file_remove_all("/var/lock", false, false);
+    file_remove_all("/tmp", true, true);    
     file_remove("/forcefsck");
-    system("(cd /var/run && /usr/bin/find . ! -type d -exec /bin/rm -f -- {} \\; )"); 
+    file_remove_all("/var/run", true, false); 
     file_empty("/var/run/utmp");
     system("/bin/chmod 0664 /var/run/utmp");
     system("/bin/mkdir /tmp/.ICE-unix && /bin/chmod 1777 /tmp/.ICE-unix");
