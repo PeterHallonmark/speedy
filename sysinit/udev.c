@@ -18,8 +18,13 @@
 #include "config/udev.h"
 #include "lib/run.h"
 #include "lib/file.h"
+#include "lib/command.h"
 
 #include <stdlib.h>
+
+#ifndef KERNEL_HOTPLUG
+#define KERNEL_HOTPLUG "/proc/sys/kernel/hotplug"
+#endif
 
 const char *udev_get_name(void)
 {
@@ -30,21 +35,21 @@ const char *udev_get_name(void)
 
 void udev_init(void)
 {    
-    char *const udevadm_ctrl1_arg[] = {"/sbin/udevadm", "control", "--property=STARTUP=1", NULL};
-    char *const udevadm_trigger_arg[] = {"/sbin/udevadm", "trigger", NULL};
-    char *const udevadm_settle_arg[] = {"/sbin/udevadm", "settle", NULL};
-    char *const udevadm_ctrl0_arg[] = {"/sbin/udevadm", "control", "--property=STARTUP=", NULL};
-    char *const modprobe_arg[] = {"/sbin/modprobe", "ath5k", NULL};
-    char *const udevd_arg[] = {"/sbin/udevd", "--daemon", NULL};
+    char *const udevadm_ctrl1_arg[] = {CMD_UDEVADM, "control", "--property=STARTUP=1", NULL};
+    char *const udevadm_trigger_arg[] = {CMD_UDEVADM, "trigger", NULL};
+    char *const udevadm_settle_arg[] = {CMD_UDEVADM, "settle", NULL};
+    char *const udevadm_ctrl0_arg[] = {CMD_UDEVADM, "control", "--property=STARTUP=", NULL};
+    char *const modprobe_arg[] = {CMD_MODPROBE, "ath5k", NULL};
+    char *const udevd_arg[] = {CMD_UDEVD, "--daemon", NULL};
     
-    file_empty("/proc/sys/kernel/hotplug");
-    run("/sbin/udevd", udevd_arg);
+    file_empty(KERNEL_HOTPLUG);
+    run(CMD_UDEVD, udevd_arg);
 
-    run("/sbin/udevadm", udevadm_ctrl1_arg);
-    run("/sbin/udevadm", udevadm_trigger_arg);
+    run(CMD_UDEVADM, udevadm_ctrl1_arg);
+    run(CMD_UDEVADM, udevadm_trigger_arg);
     
-	run("/sbin/modprobe", modprobe_arg);
+	run(CMD_MODPROBE, modprobe_arg);
     
-    run("/sbin/udevadm", udevadm_settle_arg);
-	run("/sbin/udevadm", udevadm_ctrl0_arg);
+    run(CMD_UDEVADM, udevadm_settle_arg);
+	run(CMD_UDEVADM, udevadm_ctrl0_arg);
 }

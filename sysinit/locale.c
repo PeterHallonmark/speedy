@@ -17,11 +17,16 @@
 #include "locale.h"
 #include "config/locale.h"
 #include "lib/file.h"
+#include "lib/command.h"
 
 #include <stdlib.h>
 
 #ifndef LOCALE
 #define LOCALE "en_US"
+#endif
+
+#ifndef PROFILE_LOCALE
+#define PROFILE_LOCALE "/etc/profile.d/locale.sh"
 #endif
 
 const char *locale_get_name(void)
@@ -33,7 +38,7 @@ const char *locale_get_name(void)
 
 void locale_init(void)
 {    
-    file_empty("/etc/profile.d/locale.sh");
-    file_chmod("/etc/profile.d/locale.sh", 0755);
-    file_write("/etc/profile.d/locale.sh", "export LANG=" LOCALE "\n");
+    file_empty(PROFILE_LOCALE);
+    file_chmod(PROFILE_LOCALE, 0755);
+    file_write(PROFILE_LOCALE, "export LANG=" LOCALE "\n");
 }

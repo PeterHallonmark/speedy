@@ -20,6 +20,10 @@
 
 #include <stdlib.h>
 
+#ifndef SWAPON
+#define SWAPON "/sbin/swapon"
+#endif
+
 const char *swap_get_name(void)
 {
     static const char priv_swap_name[] = "swap";
@@ -29,7 +33,7 @@ const char *swap_get_name(void)
 
 void swap_init(void)
 {    
-    char *const swapon_arg[] = {"/sbin/swapon","-a", NULL};
+    char *const swapon_arg[] = {SWAPON, "-a", NULL};
 
-    run("/sbin/swapon", swapon_arg);
+    run(SWAPON, swapon_arg);
 }

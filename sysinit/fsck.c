@@ -18,6 +18,7 @@
 #include "fsck.h"
 #include "lib/file.h"
 #include "lib/run.h"
+#include "lib/command.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -38,18 +39,18 @@ const char *fsck_get_name(void)
 
 void fsck_init(void)
 {   
-    char *const remount_ro_arg[] = {"/bin/mount", "-n", "-o", "remount,ro", "/", NULL};    
-    char *const sulogin_arg[] = {"/sbin/sulogin", "-p", NULL};    
+    char *const remount_ro_arg[] = {CMD_MOUNT, "-n", "-o", "remount,ro", "/", NULL};    
+    char *const sulogin_arg[] = {CMD_SULOGIN, "-p", NULL};    
 
     int fsck_ret;
        
     /* Mount root file system as read only. */
-    run("/bin/mount", remount_ro_arg);
+    run(CMD_MOUNT, remount_ro_arg);
 
     if (file_exists("/forcefsck")) {
-        fsck_ret = system("/sbin/fsck -A -T -C -a -t "NETFS" -- -f >/dev/stdout 2>/dev/null");
+        fsck_ret = system(CMD_FSCK " -A -T -C -a -t "NETFS" -- -f >/dev/stdout 2>/dev/null");
     } else {
-        fsck_ret = system("/sbin/fsck -A -T -C -a -t "NETFS" >/dev/stdout 2>/dev/null");
+        fsck_ret = system(CMD_FSCK " -A -T -C -a -t "NETFS" >/dev/stdout 2>/dev/null");
     }
 
     if (fsck_ret == 2) {
@@ -73,7 +74,7 @@ void fsck_init(void)
 		printf("*                                                          *\n");
 		printf("************************************************************\n\n");
 
-        run("/sbin/sulogin", sulogin_arg);
+        run(CMD_SULOGIN, sulogin_arg);
         fsck_reboot();
     }
 }

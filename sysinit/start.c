@@ -17,6 +17,7 @@
 #include "start.h"
 #include "config/start.h"
 #include "lib/run.h"
+#include "lib/command.h"
 
 #include <sys/mount.h> 
 #include <stdlib.h>
@@ -30,10 +31,10 @@ const char *start_get_name(void)
 
 void start_init(void)
 {    
-    char *const minilogd_arg[] = {"/sbin/minilogd", NULL};
-    char *const dmesg_arg[] = {"/bin/dmesg", "-n", "3", NULL};
-    char *const mknod_arg[] = {"/bin/mknod", "/dev/rtc0", "c", RTC_MAJOR, "0", NULL};
-    char *const ln_arg[] = {"/bin/ln", "-s", "/dev/rtc0", "/dev/rtc", NULL};
+    char *const minilogd_arg[] = {CMD_MINILOGD, NULL};
+    char *const dmesg_arg[] = {CMD_DMESG, "-n", "3", NULL};
+    char *const mknod_arg[] = {CMD_MKNOD, "/dev/rtc0", "c", RTC_MAJOR, "0", NULL};
+    char *const ln_arg[] = {CMD_LN, "-s", "/dev/rtc0", "/dev/rtc", NULL};
     
     mount("udev", "/dev", "tmpfs", MS_NOSUID, "mode=0755,size=10M");
     mount("none", "/proc", "proc", 0, NULL);
@@ -43,11 +44,11 @@ void start_init(void)
     system("/bin/cp -a /lib/udev/devices/* /dev/");
 
     /* start up mini logger until syslog takes over */
-    run("/sbin/minilogd", minilogd_arg);
+    run(CMD_MINILOGD, minilogd_arg);
 
-    run("/bin/dmesg", dmesg_arg);
+    run(CMD_DMESG, dmesg_arg);
 
-    system("/sbin/modprobe rtc-cmos >/dev/null 2>&1");
-    run("/bin/mknod", mknod_arg);
-    run("/bin/ln", ln_arg);
+    system(CMD_MODPROBE " rtc-cmos >/dev/null 2>&1");
+    run(CMD_MKNOD, mknod_arg);
+    run(CMD_LN, ln_arg);
 }

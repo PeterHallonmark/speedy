@@ -16,6 +16,7 @@
 
 #include "loopback.h"
 #include "lib/run.h"
+#include "lib/command.h"
 
 #include <stdlib.h>
 
@@ -28,8 +29,8 @@ const char *loopback_get_name(void)
 
 void loopback_init(void)
 {    
-    char *const loopback_arg[] = {"/sbin/ifconfig" "lo" "127.0.0.1" "up", NULL};
+    char *const loopback_arg[] = {CMD_IFCONFIG, "lo", "127.0.0.1", "up", NULL};
     
     /* bring up the loopback interface */
-    run("/sbin/ifconfig", loopback_arg);
+    run(CMD_IFCONFIG, loopback_arg);
 }

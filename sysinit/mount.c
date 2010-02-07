@@ -17,6 +17,7 @@
 #include "config/mount.h"
 #include "mount.h"
 #include "lib/run.h"
+#include "lib/command.h"
 
 #include <stdlib.h>
 
@@ -29,11 +30,11 @@ const char *mount_get_name(void)
 
 void mount_init(void)
 {        
-    char *const remount1_arg[] = {"/bin/mount", "-n", "-o", "remount,rw", "/", NULL};    
-    char *const remount2_arg[] = {"/bin/mount", "-o", "remount,rw", "/", NULL};    
-    char *const mount_arg[] = {"/bin/mount", "-a", "-t", NETFS, "-O", "no_netdev", NULL};
+    char *const remount1_arg[] = {CMD_MOUNT, "-n", "-o", "remount,rw", "/", NULL};    
+    char *const remount2_arg[] = {CMD_MOUNT, "-o", "remount,rw", "/", NULL};    
+    char *const mount_arg[] = {CMD_MOUNT, "-a", "-t", NETFS, "-O", "no_netdev", NULL};
     
-    run("/bin/mount", remount1_arg);
-    run("/bin/mount", remount2_arg);
-    run("/bin/mount", mount_arg);
+    run(CMD_MOUNT, remount1_arg);
+    run(CMD_MOUNT, remount2_arg);
+    run(CMD_MOUNT, mount_arg);
 }
