@@ -16,9 +16,8 @@
 
 #include "config/mount.h"
 #include "mount.h"
+#include "lib/run.h"
 
-#include <sys/mount.h> 
-#include <string.h>
 #include <stdlib.h>
 
 const char *mount_get_name(void)
@@ -30,7 +29,11 @@ const char *mount_get_name(void)
 
 void mount_init(void)
 {        
-    system("/bin/mount -n -o remount,rw /");
-    system("/bin/mount -o remount,rw /");
-    system("/bin/mount -a -t "NETFS" -O no_netdev");
+    char *const remount1_arg[] = {"/bin/mount", "-n", "-o", "remount,rw", "/", NULL};    
+    char *const remount2_arg[] = {"/bin/mount", "-o", "remount,rw", "/", NULL};    
+    char *const mount_arg[] = {"/bin/mount", "-a", "-t", NETFS, "-O", "no_netdev", NULL};
+    
+    run("/bin/mount", remount1_arg);
+    run("/bin/mount", remount2_arg);
+    run("/bin/mount", mount_arg);
 }
