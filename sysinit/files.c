@@ -17,8 +17,7 @@
 #include "files.h"
 #include "config/files.h"
 #include "lib/file.h"
-
-#include <stdlib.h>
+#include "lib/dir.h"
 
 const char *files_get_name(void)
 {
@@ -36,7 +35,7 @@ void files_init(void)
     file_remove("/forcefsck");
     file_remove_all("/var/run", true, false); 
     file_empty("/var/run/utmp");
-    system("/bin/chmod 0664 /var/run/utmp");
-    system("/bin/mkdir /tmp/.ICE-unix && /bin/chmod 1777 /tmp/.ICE-unix");
-    system("/bin/mkdir /tmp/.X11-unix && /bin/chmod 1777 /tmp/.X11-unix");
+    file_chmod("/var/run/utmp", 0664);
+    dir_mkdir("/tmp/.ICE-unix", 1777);
+    dir_mkdir("/tmp/.X11-unix", 1777);
 }
