@@ -17,7 +17,6 @@
 #include "file.h"
 #include "dir.h"
 
-
 #include <dirent.h> 
 #include <stdio.h> 
 #include <stdlib.h>
@@ -204,6 +203,19 @@ bool file_remove_all(const char *dest_path, bool recursive, bool remove_dir)
 bool file_chmod(const char *pathname, int mode)
 {
     chmod(pathname, mode);
+    
+    return true;
+}
+
+bool file_write(const char *filename, const char *text)
+{
+    FILE* file = fopen(filename, "w");
+    
+    if (file == NULL) {
+        return false;
+    }
+    fwrite(text, 1, strlen(text), file);
+    fclose(file);
     
     return true;
 }
