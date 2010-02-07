@@ -14,19 +14,8 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-#include "hostname.h"
-#include "config/hostname.h"
-#include "lib/network.h"
+#include <stdbool.h>
 
-const char *hostname_get_name(void)
-{
-    static const char priv_hostname_name[] = "hostname";
-    
-    return priv_hostname_name;
-}
+bool network_sethostname(const char *hostname);
 
-void hostname_init(void)
-{
-    network_sethostname(hostname); 
-}
-
+bool network_setdomainname(const char *nisdomainname);

@@ -16,9 +16,7 @@
 
 #include "nisdomainname.h"
 #include "config/nisdomainname.h"
-
-#include <unistd.h>
-#include <string.h>
+#include "lib/network.h"
 
 const char *nisdomainname_get_name(void)
 {
@@ -29,7 +27,5 @@ const char *nisdomainname_get_name(void)
 
 void nisdomainname_init(void)
 {
-    if (strlen(nisdomainname) > 0) {
-        setdomainname(nisdomainname, strlen(nisdomainname)); 
-    }
+    network_setdomainname(nisdomainname); 
 }
