@@ -20,6 +20,10 @@ bool file_exists(const char *filename);
 
 bool file_copy(const char *source, const char *destination);
 
+bool file_copy_all(const char *source_dir, const char *dest_dir, bool recursive);
+
 bool file_empty(const char *destination);
 
 bool file_remove(const char *destination);
+
+bool file_remove_all(const char *dest_dir, bool recursive);

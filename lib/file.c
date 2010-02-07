@@ -16,8 +16,16 @@
 
 #include "file.h"
 
-#include <stdio.h>
+#include <dirent.h> 
+#include <stdio.h> 
 #include <stdlib.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <string.h>
+#include <stdbool.h>
+#include <unistd.h>
+
+#define BUF_SIZE 512
 
 bool file_exists(const char *filename)
 {
@@ -77,6 +85,52 @@ bool file_copy(const char *source, const char *destination)
     return true;
 }
 
+bool file_copy_all(const char *source_path, const char *dest_path, bool recursive)
+{
+    DIR *dir;
+    struct dirent *content;
+    struct stat stbuf;    
+    char next_source[BUF_SIZE];
+    char next_dest[BUF_SIZE];
+
+    
+    dir = opendir(source_path);
+    if (dir)  
+    {
+        if (recursive) {
+            mkdir(dest_path, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+        }
+        
+        while ((content = readdir(dir)) != NULL)
+        {            
+
+            if ((snprintf(next_source, BUF_SIZE, "%s/%s", source_path, content->d_name) < BUF_SIZE) &&
+                (snprintf(next_dest, BUF_SIZE, "%s/%s", dest_path, content->d_name) < BUF_SIZE)) {
+    
+                stat(next_source, &stbuf);
+                
+                if (S_ISDIR(stbuf.st_mode)) {
+
+                    if ((strcmp(content->d_name, ".")  != 0) &&
+                        (strcmp(content->d_name, "..")  != 0)) { 
+                    
+                        if (recursive) {
+                            file_copy_all(next_source, next_dest, true);
+                        }
+                    }    
+                } else {
+                    if (!file_copy(next_source, next_dest)) {
+                        return false;
+                    }
+                }
+            } else {
+                return false;
+            }
+        }
+        closedir(dir);
+    }
+    return true;
+}
 
 bool file_empty(const char *destination)
 {
@@ -99,6 +153,49 @@ bool file_empty(const char *destination)
 bool file_remove(const char *destination)
 {
     remove(destination);
+    
+    return true;
+}
+
+
+bool file_remove_all(const char *dest_path, bool recursive)
+{
+    DIR *dir;
+    struct dirent *content;
+    struct stat stbuf;    
+    char next[BUF_SIZE];
+        
+    dir = opendir(dest_path);
+    if (dir) {
+        while ((content = readdir(dir)) != NULL) {            
+
+            if (snprintf(next, BUF_SIZE, "%s/%s", dest_path, content->d_name) < BUF_SIZE) {
+                stat(next, &stbuf);
+                
+                if (S_ISDIR(stbuf.st_mode)) {
+
+                    if ((strcmp(content->d_name, ".")  != 0) &&
+                        (strcmp(content->d_name, "..")  != 0)) { 
+                    
+                        if (recursive) {
+                            file_remove_all(next, true);
+                        }
+                    }    
+                } else {
+                    if (!file_remove(next)) {
+                        return false;
+                    }
+                }
+            } else {
+                return false;
+            }
+        }
+        closedir(dir);
+        
+        if (recursive) {
+            rmdir(dest_path);
+        }
+    }
     
     return true;
 }
