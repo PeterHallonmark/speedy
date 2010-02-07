@@ -52,7 +52,7 @@ void hwclock_init(void)
     file_copy("/usr/share/zoneinfo/"TIMEZONE, LOCALTIME);
 #endif
 #ifdef HWCLOCK_PARAMS    
-    run(CMD_HWCLOCK, hwclock1_arg);
-    run(CMD_HWCLOCK, hwclock2_arg);    
+    run(hwclock1_arg);
+    run(hwclock2_arg);    
 #endif
 }

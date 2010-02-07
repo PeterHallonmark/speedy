@@ -34,7 +34,7 @@ void mount_init(void)
     char *const remount2_arg[] = {CMD_MOUNT, "-o", "remount,rw", "/", NULL};    
     char *const mount_arg[] = {CMD_MOUNT, "-a", "-t", NETFS, "-O", "no_netdev", NULL};
     
-    run(CMD_MOUNT, remount1_arg);
-    run(CMD_MOUNT, remount2_arg);
-    run(CMD_MOUNT, mount_arg);
+    run(remount1_arg);
+    run(remount2_arg);
+    run(mount_arg);
 }

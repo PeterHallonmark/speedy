@@ -14,5 +14,5 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
  
-int run(const char *filename, char *const argv[]);
+int run(char *const argv[]);
  

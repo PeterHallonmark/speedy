@@ -32,5 +32,5 @@ void loopback_init(void)
     char *const loopback_arg[] = {CMD_IFCONFIG, "lo", "127.0.0.1", "up", NULL};
     
     /* bring up the loopback interface */
-    run(CMD_IFCONFIG, loopback_arg);
+    run(loopback_arg);
 }

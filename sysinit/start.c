@@ -44,11 +44,11 @@ void start_init(void)
     system("/bin/cp -a /lib/udev/devices/* /dev/");
 
     /* start up mini logger until syslog takes over */
-    run(CMD_MINILOGD, minilogd_arg);
+    run(minilogd_arg);
 
-    run(CMD_DMESG, dmesg_arg);
+    run(dmesg_arg);
 
     system(CMD_MODPROBE " rtc-cmos >/dev/null 2>&1");
-    run(CMD_MKNOD, mknod_arg);
-    run(CMD_LN, ln_arg);
+    run(mknod_arg);
+    run(ln_arg);
 }

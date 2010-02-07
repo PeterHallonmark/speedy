@@ -45,7 +45,7 @@ void fsck_init(void)
     int fsck_ret;
        
     /* Mount root file system as read only. */
-    run(CMD_MOUNT, remount_ro_arg);
+    run(remount_ro_arg);
 
     if (file_exists("/forcefsck")) {
         fsck_ret = system(CMD_FSCK " -A -T -C -a -t "NETFS" -- -f >/dev/stdout 2>/dev/null");
@@ -74,7 +74,7 @@ void fsck_init(void)
 		printf("*                                                          *\n");
 		printf("************************************************************\n\n");
 
-        run(CMD_SULOGIN, sulogin_arg);
+        run(sulogin_arg);
         fsck_reboot();
     }
 }

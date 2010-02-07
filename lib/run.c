@@ -22,7 +22,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
  
-int run(const char *filename, char *const argv[])
+int run(char *const argv[])
 {
     char * const env[] = {NULL};
     pid_t pid = fork();
@@ -31,9 +31,9 @@ int run(const char *filename, char *const argv[])
     
     /* Check if it is the child. */
     if (pid == 0) {
-        exec_return = execve(filename, argv, env);
+        exec_return = execve(argv[0], argv, env);
         /* If execvp fails. */
-        printf("Failure! execv error code = %d for %s\n", exec_return, filename);
+        printf("Failure! execv error code = %d for %s\n", exec_return, argv[0]);
  
         exit(0);
     } else if (pid < 0) {
@@ -44,7 +44,7 @@ int run(const char *filename, char *const argv[])
         wait(&status);
     }
     if (status != 0) {
-        printf("FAIL: %s\n",filename);
+        printf("FAIL: %s\n",argv[0]);
     }
     return status;
 }

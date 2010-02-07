@@ -43,13 +43,13 @@ void udev_init(void)
     char *const udevd_arg[] = {CMD_UDEVD, "--daemon", NULL};
     
     file_empty(KERNEL_HOTPLUG);
-    run(CMD_UDEVD, udevd_arg);
+    run(udevd_arg);
 
-    run(CMD_UDEVADM, udevadm_ctrl1_arg);
-    run(CMD_UDEVADM, udevadm_trigger_arg);
+    run(udevadm_ctrl1_arg);
+    run(udevadm_trigger_arg);
     
-	run(CMD_MODPROBE, modprobe_arg);
+	run(modprobe_arg);
     
-    run(CMD_UDEVADM, udevadm_settle_arg);
-	run(CMD_UDEVADM, udevadm_ctrl0_arg);
+    run(udevadm_settle_arg);
+	run(udevadm_ctrl0_arg);
 }
