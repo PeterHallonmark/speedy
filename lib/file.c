@@ -210,7 +210,7 @@ bool file_chmod(const char *pathname, int mode)
 
 bool file_write(const char *filename, const char *text)
 {
-    FILE* file = fopen(filename, "w");
+    FILE* file = fopen(filename, "w+");
     
     if (file == NULL) {
         return false;
