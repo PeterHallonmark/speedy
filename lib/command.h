@@ -23,3 +23,9 @@
 #define CMD_FSCK "/sbin/fsck"
 
 #define CMD_SWAPON "/sbin/swapon"
+
+#define CMD_KBDMODE "/usr/bin/kbd_mode"
+
+#define CMD_LOADKEYS "/bin/loadkeys"
+
+#define PATH_DEV "/dev"
