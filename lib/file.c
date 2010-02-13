@@ -15,6 +15,7 @@
 */
 
 #include "file.h"
+#include "command.h"
 #include "dir.h"
 
 #include <dirent.h> 
@@ -217,5 +218,28 @@ bool file_write(const char *filename, const char *text)
     fwrite(text, 1, strlen(text), file);
     fclose(file);
     
+    return true;
+}
+
+bool file_tty_action(bool (*callback)(const char *filename))
+{
+    DIR *dir;
+    struct dirent *content;
+
+    dir = opendir(PATH_DEV);
+    if (dir) {
+        while ((content = readdir(dir)) != NULL) {
+
+            if ((strcmp(content->d_name, "tty0") >= 0) &&
+                (strcmp(content->d_name, "tty9999") <=  0)) {
+
+                if (!callback(content->d_name)) {
+                    return false;
+                }
+            }
+        }
+        closedir(dir);
+    }
+
     return true;
 }

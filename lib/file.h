@@ -31,3 +31,5 @@ bool file_remove_all(const char *dest_path, bool recursive, bool remove_dir);
 bool file_chmod(const char *pathname, int mode);
 
 bool file_write(const char *filename, const char *text);
+
+bool file_tty_action(bool (*callback)(const char *filename));
