@@ -47,8 +47,14 @@ const char *locale_get_name(void)
 
 void locale_init(void)
 {
+
 #ifdef KEYMAP
+#ifdef UTF8
     char * const loadkeys_arg[] = {CMD_LOADKEYS, "-q", "-u", KEYMAP, NULL};
+#endif
+#ifdef LEGACY
+    char * const loadkeys_arg[] = {CMD_LOADKEYS, "-q", "", KEYMAP, NULL};
+#endif
 #endif
 
     file_empty(PROFILE_LOCALE);
@@ -60,13 +66,14 @@ void locale_init(void)
 #ifdef UTF8
     file_write(PROFILE_LOCALE, "if [ \"$CONSOLE\" = \"\" -a \"$TERM\" = "
                "\"linux\" -a -t 1 ]; then printf \"\\033%%G\"; fi");
+#endif /* UTF8 */
+#ifdef LEGACY
+    file_write(PROFILE_LOCALE, "if [ \"$CONSOLE\" = \"\" -a \"$TERM\" = "
+               "\"linux\" -a -t 1 ]; then printf \"\\033%%@\"; fi");
+#endif /* LEGACY */
 #ifdef KEYMAP
     run(loadkeys_arg);
 #endif /* KEYMAP */
-#endif
-
-#ifdef LEGACY
-#endif
 }
 
 #ifdef UTF8
@@ -85,7 +92,12 @@ bool loacle_callback(const char *filename)
 #ifdef LEGACY
 bool loacle_callback(const char *filename)
 {
+    char * kbdmode_arg[] = {CMD_KBDMODE, "-a", NULL, NULL};
+
+    kbdmode_arg[2] = (char*) filename;
+    run(kbdmode_arg);
+    file_write(filename, "\033%%@");
+
     return true;
 }
-
 #endif
