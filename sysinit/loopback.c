@@ -16,7 +16,7 @@
 
 #include "loopback.h"
 #include "lib/run.h"
-#include "lib/command.h"
+#include "lib/config.h"
 
 #include <stdlib.h>
 

@@ -18,13 +18,9 @@
 #include "config/udev.h"
 #include "lib/run.h"
 #include "lib/file.h"
-#include "lib/command.h"
+#include "lib/config.h"
 
 #include <stdlib.h>
-
-#ifndef KERNEL_HOTPLUG
-#define KERNEL_HOTPLUG "/proc/sys/kernel/hotplug"
-#endif
 
 const char *udev_get_name(void)
 {

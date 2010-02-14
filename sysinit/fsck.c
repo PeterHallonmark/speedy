@@ -18,16 +18,15 @@
 #include "fsck.h"
 #include "lib/file.h"
 #include "lib/run.h"
-#include "lib/command.h"
+#include "lib/config.h"
 
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <unistd.h>
 
 void fsck_reboot(void)
 {
-	exit(1);
+	run_exit(1);
 }
 
 const char *fsck_get_name(void)
@@ -47,10 +46,10 @@ void fsck_init(void)
     /* Mount root file system as read only. */
     run(remount_ro_arg);
 
-    if (file_exists("/forcefsck")) {
-        fsck_ret = system(CMD_FSCK " -A -T -C -a -t "NETFS" -- -f >/dev/stdout 2>/dev/null");
+    if (file_exists(FILE_FORCECHK)) {
+        fsck_ret = run_system(CMD_FSCK " -A -T -C -a -t "NETFS" -- -f >/dev/stdout 2>/dev/null");
     } else {
-        fsck_ret = system(CMD_FSCK " -A -T -C -a -t "NETFS" >/dev/stdout 2>/dev/null");
+        fsck_ret = run_system(CMD_FSCK " -A -T -C -a -t "NETFS" >/dev/stdout 2>/dev/null");
     }
 
     if (fsck_ret == 2) {
@@ -60,7 +59,7 @@ void fsck_init(void)
 		printf("*                                                          *\n");
 		printf("************************************************************\n\n");
 		
-        sleep(15);
+        run_sleep(15);
         fsck_reboot();
         
     } else if ((fsck_ret > 1) && (fsck_ret == 32)) {

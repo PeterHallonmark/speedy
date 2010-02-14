@@ -15,8 +15,9 @@
 */
 
 #include "depmod.h"
-#include "config/depmod.h"
 #include "lib/run.h"
+#include "lib/config.h"
+
 #include <stdlib.h>
 
 const char *depmod_get_name(void)
@@ -28,6 +29,6 @@ const char *depmod_get_name(void)
 
 void depmod_init(void)
 {
-    char *const arg[] = {"-a", NULL};
-    run("/sbin/depmod", arg);
+    char *const depmod_arg[] = {CMD_DEPMOD, "-a", NULL};
+    run(depmod_arg);
 }

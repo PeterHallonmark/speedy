@@ -18,7 +18,7 @@
 #include "config/locale.h"
 #include "lib/run.h"
 #include "lib/file.h"
-#include "lib/command.h"
+#include "lib/config.h"
 
 #include <stdlib.h>
 
@@ -29,10 +29,6 @@
 #ifndef LOCALE
 #define LOCALE "en_US"
 #define LEGACY
-#endif
-
-#ifndef PROFILE_LOCALE
-#define PROFILE_LOCALE "/etc/profile.d/locale.sh"
 #endif
 
 bool loacle_callback(const char *filename);
@@ -57,18 +53,18 @@ void locale_init(void)
 #endif
 #endif
 
-    file_empty(PROFILE_LOCALE);
-    file_chmod(PROFILE_LOCALE, 0755);
-    file_write(PROFILE_LOCALE, "export LANG=" LOCALE "\n");
+    file_empty(FILE_PROFILE_LOCALE);
+    file_chmod(FILE_PROFILE_LOCALE, 0755);
+    file_write(FILE_PROFILE_LOCALE, "export LANG=" LOCALE "\n");
 
     file_tty_action(loacle_callback);
 
 #ifdef UTF8
-    file_write(PROFILE_LOCALE, "if [ \"$CONSOLE\" = \"\" -a \"$TERM\" = "
+    file_write(FILE_PROFILE_LOCALE, "if [ \"$CONSOLE\" = \"\" -a \"$TERM\" = "
                "\"linux\" -a -t 1 ]; then printf \"\\033%%G\"; fi");
 #endif /* UTF8 */
 #ifdef LEGACY
-    file_write(PROFILE_LOCALE, "if [ \"$CONSOLE\" = \"\" -a \"$TERM\" = "
+    file_write(FILE_PROFILE_LOCALE, "if [ \"$CONSOLE\" = \"\" -a \"$TERM\" = "
                "\"linux\" -a -t 1 ]; then printf \"\\033%%@\"; fi");
 #endif /* LEGACY */
 #ifdef KEYMAP

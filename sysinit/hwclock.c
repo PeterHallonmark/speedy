@@ -18,17 +18,9 @@
 #include "config/hwclock.h"
 #include "lib/run.h"
 #include "lib/file.h"
-#include "lib/command.h"
+#include "lib/config.h"
 
 #include <stdlib.h>
-
-#ifndef HWCLOCK_ADJTIME
-#define HWCLOCK_ADJTIME "/var/lib/hwclock/adjtime"
-#endif
-
-#ifndef LOCALTIME
-#define LOCALTIME "/etc/localtime"
-#endif
 
 const char *hwclock_get_name(void)
 {
@@ -40,19 +32,19 @@ const char *hwclock_get_name(void)
 void hwclock_init(void)
 {
 #ifdef HWCLOCK_PARAMS    
-    char *const hwclock1_arg[] = {CMD_HWCLOCK, "--adjust", NULL};    
-    char *const hwclock2_arg[] = {CMD_HWCLOCK, HWCLOCK_PARAMS, NULL};    
+    char *const hwclock1_arg[] = {CMD_HWCLOCK, "--adjust", NULL};
+    char *const hwclock2_arg[] = {CMD_HWCLOCK, HWCLOCK_PARAMS, NULL};
 #endif
     
-    if (!file_exists(HWCLOCK_ADJTIME)) {
-        file_write(HWCLOCK_ADJTIME, "0.0 0 0.0\n");
+    if (!file_exists(FILE_HWCLOCK_ADJTIME)) {
+        file_write(FILE_HWCLOCK_ADJTIME, "0.0 0 0.0\n");
     }
 #ifdef TIMEZONE    
-    file_remove(LOCALTIME);
-    file_copy("/usr/share/zoneinfo/"TIMEZONE, LOCALTIME);
+    file_remove(FILE_LOCALTIME);
+    file_copy(PATH_ZONEINFO"/"TIMEZONE, FILE_LOCALTIME);
 #endif
-#ifdef HWCLOCK_PARAMS    
+#ifdef HWCLOCK_PARAMS
     run(hwclock1_arg);
-    run(hwclock2_arg);    
+    run(hwclock2_arg);
 #endif
 }

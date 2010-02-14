@@ -17,7 +17,7 @@
 #include "swap.h"
 #include "config/swap.h"
 #include "lib/run.h"
-#include "lib/command.h"
+#include "lib/config.h"
 
 #include <stdlib.h>
 

@@ -17,7 +17,7 @@
 #include "start.h"
 #include "config/start.h"
 #include "lib/run.h"
-#include "lib/command.h"
+#include "lib/config.h"
 
 #include <sys/mount.h> 
 #include <stdlib.h>
@@ -33,22 +33,22 @@ void start_init(void)
 {    
     char *const minilogd_arg[] = {CMD_MINILOGD, NULL};
     char *const dmesg_arg[] = {CMD_DMESG, "-n", "3", NULL};
-    char *const mknod_arg[] = {CMD_MKNOD, "/dev/rtc0", "c", RTC_MAJOR, "0", NULL};
-    char *const ln_arg[] = {CMD_LN, "-s", "/dev/rtc0", "/dev/rtc", NULL};
+    char *const mknod_arg[] = {CMD_MKNOD, DEV_RTC_0, "c", RTC_MAJOR, "0", NULL};
+    char *const ln_arg[] = {CMD_LN, "-s", DEV_RTC_0, DEV_RTC, NULL};
     
     mount("udev", "/dev", "tmpfs", MS_NOSUID, "mode=0755,size=10M");
     mount("none", "/proc", "proc", 0, NULL);
     mount("none", "/sys", "sysfs", 0, NULL);
 
     /* Copy static device nodes to /dev */
-    system("/bin/cp -a /lib/udev/devices/* /dev/");
+    run_system("/bin/cp -a /lib/udev/devices/* /dev/");
 
     /* start up mini logger until syslog takes over */
     run(minilogd_arg);
 
     run(dmesg_arg);
 
-    system(CMD_MODPROBE " rtc-cmos >/dev/null 2>&1");
+    run_system(CMD_MODPROBE " rtc-cmos >/dev/null 2>&1");
     run(mknod_arg);
     run(ln_arg);
 }

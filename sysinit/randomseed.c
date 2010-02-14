@@ -15,7 +15,7 @@
 */
 
 #include "randomseed.h"
-#include "config/randomseed.h"
+#include "lib/config.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -29,7 +29,5 @@ const char *randomseed_get_name(void)
 
 void randomseed_init(void)
 {
-#ifdef RANDOMSEED
-    system("cat " RANDOMSEED " > /dev/urandom");
-#endif
+    system("cat " FILE_RANDOMSEED " > /dev/urandom");
 }

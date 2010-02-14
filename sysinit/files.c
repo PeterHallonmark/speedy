@@ -15,9 +15,9 @@
 */
 
 #include "files.h"
-#include "config/files.h"
 #include "lib/file.h"
 #include "lib/dir.h"
+#include "lib/config.h"
 
 const char *files_get_name(void)
 {
@@ -28,14 +28,14 @@ const char *files_get_name(void)
 
 void files_init(void)
 {    
-    file_remove("/etc/nologin");
-    file_remove("/etc/shutdownpid");
-    file_remove_all("/var/lock", false, false);
-    file_remove_all("/tmp", true, true);    
-    file_remove("/forcefsck");
-    file_remove_all("/var/run", true, false); 
-    file_empty("/var/run/utmp");
-    file_chmod("/var/run/utmp", 0664);
-    dir_mkdir("/tmp/.ICE-unix", 1777);
-    dir_mkdir("/tmp/.X11-unix", 1777);
+    file_remove(FILE_NOLOGIN);
+    file_remove(FILE_SHUTDOWNPID);
+    file_remove_all(PATH_LOCK, false, false);
+    file_remove_all(PATH_TMP, true, true);
+    file_remove(FILE_FORCECHK);
+    file_remove_all(PATH_RUN, true, false);
+    file_empty(FILE_UTMP);
+    file_chmod(FILE_UTMP, 0664);
+    dir_mkdir(DIR_TMP_ICE, 1777);
+    dir_mkdir(DIR_TMP_X11, 1777);
 }

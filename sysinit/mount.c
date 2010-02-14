@@ -17,7 +17,7 @@
 #include "config/mount.h"
 #include "mount.h"
 #include "lib/run.h"
-#include "lib/command.h"
+#include "lib/config.h"
 
 #include <stdlib.h>
 
