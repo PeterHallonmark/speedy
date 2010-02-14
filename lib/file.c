@@ -15,7 +15,7 @@
 */
 
 #include "file.h"
-#include "command.h"
+#include "config.h"
 #include "dir.h"
 
 #include <dirent.h> 
