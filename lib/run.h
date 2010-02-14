@@ -16,3 +16,9 @@
  
 int run(char *const argv[]);
  
+int run_system(const char *command);
+
+void run_exit(int code);
+
+void run_sleep(int time);
+

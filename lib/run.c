@@ -48,3 +48,18 @@ int run(char *const argv[])
     }
     return status;
 }
+
+int run_system(const char *command)
+{
+    return system(command);
+}
+
+void run_exit(int code)
+{
+    exit(code);
+}
+
+void run_sleep(int time)
+{
+    sleep(time);
+}
