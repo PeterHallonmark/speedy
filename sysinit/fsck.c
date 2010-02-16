@@ -12,7 +12,7 @@
     WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
     ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-*/
+ */
 
 #include "config/fsck.h"
 #include "fsck.h"
@@ -26,13 +26,13 @@
 
 void fsck_reboot(void)
 {
-	run_exit(1);
+    run_exit(1);
 }
 
 const char *fsck_get_name(void)
 {
     static const char priv_fsck_name[] = "fsck";
-    
+
     return priv_fsck_name;
 }
 
@@ -42,7 +42,7 @@ void fsck_init(void)
     char *const sulogin_arg[] = {CMD_SULOGIN, "-p", NULL};    
 
     int fsck_ret;
-       
+
     /* Mount root file system as read only. */
     run(remount_ro_arg);
 
@@ -54,24 +54,24 @@ void fsck_init(void)
 
     if (fsck_ret == 2) {
         printf("\n********************** REBOOT REQUIRED *********************\n");
-		printf("*                                                          *\n");
-		printf("* The system will be rebooted automatically in 15 seconds. *\n");
-		printf("*                                                          *\n");
-		printf("************************************************************\n\n");
-		
+        printf("*                                                          *\n");
+        printf("* The system will be rebooted automatically in 15 seconds. *\n");
+        printf("*                                                          *\n");
+        printf("************************************************************\n\n");
+
         run_sleep(15);
         fsck_reboot();
-        
+
     } else if ((fsck_ret > 1) && (fsck_ret == 32)) {
         printf("\n*****************  FILESYSTEM CHECK FAILED  ****************\n");
-		printf("*                                                          *\n");
-		printf("*  Please repair manually and reboot. Note that the root   *\n");
-		printf("*  file system is currently mounted read-only. To remount  *\n");
-		printf("*  it read-write type: mount -n -o remount,rw /            *\n");
-		printf("*  When you exit the maintenance shell the system will     *\n");
-		printf("*  reboot automatically.                                   *\n");
-		printf("*                                                          *\n");
-		printf("************************************************************\n\n");
+        printf("*                                                          *\n");
+        printf("*  Please repair manually and reboot. Note that the root   *\n");
+        printf("*  file system is currently mounted read-only. To remount  *\n");
+        printf("*  it read-write type: mount -n -o remount,rw /            *\n");
+        printf("*  When you exit the maintenance shell the system will     *\n");
+        printf("*  reboot automatically.                                   *\n");
+        printf("*                                                          *\n");
+        printf("************************************************************\n\n");
 
         run(sulogin_arg);
         fsck_reboot();
