@@ -30,11 +30,15 @@
 
 #define CMD_MOUNT "/bin/mount"
 
+#define CMD_UMOUNT "/bin/umount"
+
 #define CMD_IFCONFIG "/sbin/ifconfig"
 
 #define CMD_HWCLOCK "/sbin/hwclock"
 
 #define CMD_SULOGIN "/sbin/sulogin"
+
+#define CMD_REBOOT "/sbin/reboot"
 
 #define CMD_FSCK "/sbin/fsck"
 
@@ -61,6 +65,8 @@
 #define FILE_UTMP "/var/run/utmp"
 
 #define FILE_PROFILE_LOCALE "/etc/profile.d/locale.sh"
+
+#define FILE_DMESG_LOG "/var/log/dmesg.log"
 
 #define PATH_DEV "/dev"
 
