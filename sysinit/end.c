@@ -18,8 +18,6 @@
 #include "lib/run.h"
 #include "lib/config.h"
 
-#include <stdlib.h>
-
 const char *end_get_name(void)
 {
     static const char priv_end_name[] = "end";
