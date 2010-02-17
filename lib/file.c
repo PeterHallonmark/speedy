@@ -225,6 +225,7 @@ bool file_tty_action(bool (*callback)(const char *filename))
 {
     DIR *dir;
     struct dirent *content;
+    char buffer[BUF_SIZE];
 
     dir = opendir(PATH_DEV);
     if (dir) {
@@ -233,8 +234,10 @@ bool file_tty_action(bool (*callback)(const char *filename))
             if ((strcmp(content->d_name, "tty0") >= 0) &&
                 (strcmp(content->d_name, "tty9999") <=  0)) {
 
-                if (!callback(content->d_name)) {
-                    return false;
+                if (snprintf(buffer, BUF_SIZE, "%s/%s", PATH_DEV, content->d_name) < BUF_SIZE) {
+                    if (!callback(buffer)) {
+                        return false;
+                    }
                 }
             }
         }
