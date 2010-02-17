@@ -26,6 +26,14 @@
 
 void fsck_reboot(void)
 {
+    char *const umount_arg[] = {CMD_UMOUNT, "-a", NULL};
+    char *const remount_ro_arg[] = {CMD_MOUNT, "-n", "-o", "remount,ro", "/", NULL};
+    char *const reboot_arg[] = {CMD_REBOOT, "-f", NULL};
+
+    printf("Automatic reboot in progress...\n");
+    run(umount_arg);
+    run(remount_ro_arg);
+    run(reboot_arg);
     run_exit(1);
 }
 
