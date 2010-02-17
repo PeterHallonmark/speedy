@@ -16,6 +16,7 @@
 
 #include "end.h"
 #include "lib/run.h"
+#include "lib/config.h"
 
 #include <stdlib.h>
 
