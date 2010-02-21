@@ -79,7 +79,7 @@ bool loacle_callback(const char *filename)
 
     kbdmode_arg[2] = (char*) filename;
     run(kbdmode_arg);
-    file_write(filename, "\033%%G");
+    file_write(filename, "\033%G");
 
     return true;
 }
@@ -92,7 +92,7 @@ bool loacle_callback(const char *filename)
 
     kbdmode_arg[2] = (char*) filename;
     run(kbdmode_arg);
-    file_write(filename, "\033%%@");
+    file_write(filename, "\033%@");
 
     return true;
 }
