@@ -17,21 +17,25 @@ override CFLAGS += -Wall
 
 # This is the array that simulates the rest of the rc.conf
 # So far it doesn't contain that much.
-sysinit := start udev loopback fsck mount swap hwclock randomseed files hostname locale end
+sysinit := start udev loopback fsck mount swap hwclock randomseed files \
+           hostname locale end
 
 # This is the array that simulates the DAEMONS array in the rc.conf 
 daemons :=
 
+# Specifies the system and which predefined scripts and configs that are
+# going to be used. 
+system := archlinux
+
+# The project is built inside a build directory. 
 build := build
 
+# Variables that are going to be exported.
 export CFLAGS
 export sysinit
 export daemons
+export system
 
-# The project is now built inside a build directory. 
-# This has mostly beenn changed to make it possible to override
-# the C implementations of daemons in case we still need to run 
-# the bash implementations. 
 .DEFAULT: release
 
 all: release

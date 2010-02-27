@@ -37,7 +37,7 @@ clean :
 
 .status :
 	@mkdir $@
-
+    
 .status/debug: target := debug
 .status/debug: .status
 	scripts/if_file_exist.sh .status/release $(MAKE) -r reinit
@@ -49,6 +49,7 @@ clean :
 	@touch $@
 	
 .status/init: ../Makefile .status/$(target)
+	scripts/$(system)/init.sh
 	scripts/gen_config.sh core/core.o core/config_sysinit.h sysinit $(sysinit)
 	scripts/gen_config.sh core/core.o core/config_daemons.h daemons $(daemons)
 	@touch $@
