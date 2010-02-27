@@ -27,8 +27,10 @@ if_file_exist()
 
 exec_cmd()
 {
+    cmd=$@
+    
     if [ $# > 0 ]; then
-        $@
+        $cmd
     else
         return 1
     fi
@@ -36,8 +38,8 @@ exec_cmd()
 
 get_md5sum()
 {
-    file=$1
-    md5sum=$(md5sum $file 2> /dev/null)
+    filename=$1
+    md5sum=$(md5sum $filename 2> /dev/null)
     set -- $md5sum
     echo $1
 }
