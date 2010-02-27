@@ -14,12 +14,45 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-function_path=`echo "$0" | sed 's/if_file_exist.sh/functions/g'`
-. $function_path
-
-main()
+if_file_exist()
 {
-    if_file_exist $@
+    file_exist=$1
+    shift
+    action_true=$@
+    
+    if [ -f $file_exist ]; then
+        exec_cmd $action_true
+    fi
 }
 
-main $*
+exec_cmd()
+{
+    if [ $# > 0 ]; then
+        $@
+    else
+        return 1
+    fi
+}
+
+get_md5sum()
+{
+    file=$1
+    md5sum=$(md5sum $file 2> /dev/null)
+    set -- $md5sum
+    echo $1
+}
+
+update_file()
+{
+    old_file=$1
+    new_file=$2
+    remove_file=$3
+
+    md5sum_new=$(get_md5sum $new_file)
+    md5sum_old=$(get_md5sum $old_file)
+
+    if [ "$md5sum_new" != "$md5sum_old" ]; then
+        mv -f $new_file $old_file
+        rm -f $remove_file
+    fi
+}
