@@ -29,7 +29,7 @@ exec_cmd()
 {
     cmd=$@
     
-    if [ $# > 0 ]; then
+    if [ $# -gt 0 ]; then
         $cmd
     else
         return 1
