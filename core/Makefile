@@ -20,10 +20,10 @@ files := $(foreach init_item, $(sysinit), sysinit/$(init_item).c) \
 header_files := $(foreach init_item, $(sysinit), sysinit/$(init_item).h) \
                 $(foreach init_item, $(sysinit), sysinit/config/$(init_item).h) \
                 $(foreach daemon, $(daemons), daemons/$(daemon).h)
-				
-init:
 
-reinit: clean init
+init: .status
+				
+reinit: clean .status
 
 debug: .status/debug speedy
 
@@ -38,15 +38,17 @@ clean :
 
 .status/debug: target := debug
 .status/debug: .status
+	core/if_file_exist.sh .status/release "$(MAKE) -r reinit"
 	@touch $@
 	
 .status/release: target := release
 .status/release: .status
+	core/if_file_exist.sh .status/debug "$(MAKE) -r reinit"
 	@touch $@
 	
 .status/init: ../Makefile .status/$(target)
-	core/gen_config.sh core/config_sysinit.h sysinit $(sysinit)
-	core/gen_config.sh core/config_daemons.h daemons $(daemons)
+	core/gen_config.sh core/core.o core/config_sysinit.h sysinit $(sysinit)
+	core/gen_config.sh core/core.o core/config_daemons.h daemons $(daemons)
 	@touch $@
 	
 .status/strip: .status speedy
