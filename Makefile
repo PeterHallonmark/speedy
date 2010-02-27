@@ -53,10 +53,13 @@ release: copy
 debug: CFLAGS += -rdynamic -g
 debug: copy
 	$(MAKE) -r -C $(build) debug
+
+build_objects: copy
+	$(MAKE) -r -C $(build) build_objects
 	
 clean : 
 	rm -rf $(build)
 
 .NOTPARALLEL: $(build) copy
 
-.PHONY: clean all release debug copy
+.PHONY: clean all release debug copy build_objects

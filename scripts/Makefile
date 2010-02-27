@@ -29,6 +29,8 @@ debug: .status/debug speedy
 
 release: .status/release speedy .status/strip 
 
+build_objects: .status/release object_test
+
 clean :
 	rm -rf .status
 	rm -f $(files:.c=.o)
@@ -74,11 +76,15 @@ lib/%.o: lib/*.h
 
 speedy : .status/init $(header_files) $(files:.c=.o) 
 	$(CC) -o speedy $(files:.c=.o)
+
+object_test : .status/init core/*.o lib/*.o sysinit/*.o \
+              core/*.h lib/*.h sysinit/*.h
+	$(CC) -o speedy_test core/*.o lib/*.o sysinit/*.o
 	
 %.o: %.c
 	$(CC) $(CFLAGS) -I. -c $< -o $@
 	
-.PHONY: debug release init reinit clean
+.PHONY: debug release init reinit clean build_objects
 
 .NOTPARALLEL: .status .status/release .status/debug .status/strip reinit clean
 
