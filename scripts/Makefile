@@ -50,6 +50,7 @@ clean :
 	
 .status/init: ../Makefile .status/$(target)
 	scripts/$(system)/init.sh
+	cp lib/$(system)/config.h lib/config.h -u
 	scripts/gen_config.sh core/core.o core/config_sysinit.h sysinit $(sysinit)
 	scripts/gen_config.sh core/core.o core/config_daemons.h daemons $(daemons)
 	@touch $@

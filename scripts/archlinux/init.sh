@@ -20,7 +20,6 @@ function_path=`echo "$0" | sed 's/init.sh/..\/functions/g'`
 main()
 {
     printf "\nBuilding speedy for Arch Linux...\n\n"
-    mv lib/archlinux/config.h lib/config.h
 }
 
 main $*
