@@ -38,17 +38,17 @@ clean :
 
 .status/debug: target := debug
 .status/debug: .status
-	core/if_file_exist.sh .status/release $(MAKE) -r reinit
+	scripts/if_file_exist.sh .status/release $(MAKE) -r reinit
 	@touch $@
 	
 .status/release: target := release
 .status/release: .status
-	core/if_file_exist.sh .status/debug $(MAKE) -r reinit
+	scripts/if_file_exist.sh .status/debug $(MAKE) -r reinit
 	@touch $@
 	
 .status/init: ../Makefile .status/$(target)
-	core/gen_config.sh core/core.o core/config_sysinit.h sysinit $(sysinit)
-	core/gen_config.sh core/core.o core/config_daemons.h daemons $(daemons)
+	scripts/gen_config.sh core/core.o core/config_sysinit.h sysinit $(sysinit)
+	scripts/gen_config.sh core/core.o core/config_daemons.h daemons $(daemons)
 	@touch $@
 	
 .status/strip: .status speedy

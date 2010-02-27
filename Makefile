@@ -37,7 +37,8 @@ export daemons
 all: release
 		
 copy: $(build)
-	cp core/Makefile $(build) -u
+	cp scripts $(build) -r -u
+	cp scripts/Makefile $(build) -u
 	cp core $(build) -r -u
 	cp sysinit $(build) -r -u
 	cp daemons $(build) -r -u
