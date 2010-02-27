@@ -108,17 +108,21 @@ update_file()
 {
     old_file=$1
     new_file=$2
-    
+    remove_file=$3
+	
     md5sum_new=$(get_md5sum $new_file)
     md5sum_old=$(get_md5sum $old_file)
     
     if [ "$md5sum_new" != "$md5sum_old" ]; then
         mv -f $new_file $old_file
+		rm -f $remove_file
     fi
 }    
     
 main()
 {
+	remove_file=$1
+    shift
     config_file=$1
     config_file_tmp=$config_file".tmp"
     shift
@@ -127,7 +131,7 @@ main()
     daemons=$*
     
     create_file $config_file_tmp $path $daemons
-    update_file $config_file $config_file_tmp
+    update_file $config_file $config_file_tmp $remove_file
 }
 
 main $*
