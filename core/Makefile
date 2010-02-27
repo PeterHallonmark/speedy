@@ -21,9 +21,9 @@ header_files := $(foreach init_item, $(sysinit), sysinit/$(init_item).h) \
                 $(foreach init_item, $(sysinit), sysinit/config/$(init_item).h) \
                 $(foreach daemon, $(daemons), daemons/$(daemon).h)
 
-init: .status
-				
 reinit: clean .status
+
+init: .status
 
 debug: .status/debug speedy
 
@@ -80,6 +80,6 @@ speedy : .status/init $(header_files) $(files:.c=.o)
 	
 .PHONY: debug release init reinit clean
 
-.NOTPARALLEL: .status .status/release .status/debug .status/strip
+.NOTPARALLEL: .status .status/release .status/debug .status/strip reinit clean
 
 .SILENT: .status .status/release .status/debug clean
