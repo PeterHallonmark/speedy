@@ -15,15 +15,10 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 function_path=`echo "$0" | sed 's/gen_config.sh/functions/g'`
-. $function_path
+c_function_path=`echo "$0" | sed 's/gen_config.sh/c_functions/g'`
 
-add_header()
-{
-    header_name=$1
-    file_name=$2
-    
-    printf "#include %s\n" $header_name >> $file_name
-}
+. $function_path
+. $c_function_path
 
 add_function()
 {
@@ -85,13 +80,13 @@ create_file()
     shift
     daemons=$*
     
-    printf "/* This is a generated file. */\n\n" > $file_name
-    add_header "<stdlib.h>" $file_name
+    add_c_comment_header $file_name
+    add_c_header_file "<stdlib.h>" $file_name
     printf "\n"  >> $file_name
 
     for daemon in $daemons
     do
-        add_header "\"../"$path"/"$daemon".h\"" $file_name
+        add_c_header_file "\"../"$path"/"$daemon".h\"" $file_name
     done    
 
     printf "\n\n" >> $file_name
