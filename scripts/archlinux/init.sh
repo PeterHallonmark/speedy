@@ -26,7 +26,6 @@ add_define()
     fi
 }
 
-
 create_locale()
 {
     filename=$1    
@@ -65,7 +64,7 @@ create_hwclock()
     fi
 }
 
-create_fsck()
+create_netfs()
 {
     filename=$1
     tmpfile=$2
@@ -76,6 +75,10 @@ create_fsck()
     . $tmpfile
     
     add_define $filename "NETFS" $NETFS    
+}
+
+create_netfs()
+{
 }
 
 main()
@@ -89,8 +92,11 @@ main()
     create_hwclock "sysinit/config/hwclock.h.tmp"
     update_file "sysinit/config/hwclock.h" "sysinit/config/hwclock.h.tmp"
     
-    create_fsck "sysinit/config/fsck.h.tmp" $tmpfile
+    create_netfs "sysinit/config/fsck.h.tmp" $tmpfile
     update_file "sysinit/config/fsck.h" "sysinit/config/fsck.h.tmp"
+
+    create_netfs "sysinit/config/mount.h.tmp" $tmpfile
+    update_file "sysinit/config/mount.h" "sysinit/config/mount.h.tmp"
 }
 
 main $*
