@@ -110,7 +110,7 @@ main()
     daemons=$*
     
     create_file $config_file_tmp $path $daemons
-    update_file $config_file $config_file_tmp $remove_file
+    update_file $config_file_tmp $config_file $remove_file
 }
 
 main $*
