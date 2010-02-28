@@ -18,6 +18,15 @@ function_path=`echo "$0" | sed 's/init.sh/..\/functions/g'`
 . $function_path
 . /etc/rc.conf
 
+add_define()
+{
+    filename=$1
+    if [ -n "$3" ]; then 
+        printf "#define %s \"%s\"\n\n" $2 $3 >> $filename
+    fi
+}
+
+
 create_locale()
 {
     filename=$1    
@@ -26,11 +35,8 @@ create_locale()
     if [ -z "$LOCALE" ]; then
         LOCALE="en_US"
     fi
-    printf "#define LOCALE \"%s\"\n\n" $LOCALE >> $filename
-    
-    if [ -n "$KEYMAP" ]; then 
-        printf "#define KEYMAP \"%s\"\n\n" $KEYMAP >> $filename
-    fi
+    add_define $filename "LOCALE" $LOCALE
+    add_define $filename "KEYMAP" $KEYMAP
     
     if echo "$LOCALE" | /bin/grep -qi utf ; then
         printf "#define UTF8\n" >> $filename
@@ -52,25 +58,39 @@ create_hwclock()
         HWCLOCK_PARAMS=""
     fi
 
-    if [ -n "$HWCLOCK_PARAMS" ]; then
-        printf "#define HWCLOCK_PARAMS \"%s\"\n\n" $HWCLOCK_PARAMS >> $filename            
-    fi
+    add_define $filename "HWCLOCK_PARAMS" $HWCLOCK_PARAMS
     
     if [ "$TIMEZONE" != "" -a -e "/usr/share/zoneinfo/$TIMEZONE" ]; then
         printf "#define TIMEZONE \"%s\"\n\n" $TIMEZONE >> $filename
     fi
 }
 
+create_fsck()
+{
+    filename=$1
+    tmpfile=$2
+    
+    printf "/* This is a generated file. */\n\n" > $filename
+    
+    grep NETFS= /etc/rc.sysinit > $tmpfile
+    . $tmpfile
+    
+    add_define $filename "NETFS" $NETFS    
+}
+
 main()
 {
     printf "\nBuilding speedy for Arch Linux...\n\n"
-
+    tmpfile=scripts/archlinux/archlinux.tmp
+    
     create_locale "sysinit/config/locale.h.tmp"
     update_file "sysinit/config/locale.h" "sysinit/config/locale.h.tmp"
 
     create_hwclock "sysinit/config/hwclock.h.tmp"
     update_file "sysinit/config/hwclock.h" "sysinit/config/hwclock.h.tmp"
     
+    create_fsck "sysinit/config/fsck.h.tmp" $tmpfile
+    update_file "sysinit/config/fsck.h" "sysinit/config/fsck.h.tmp"
 }
 
 main $*
