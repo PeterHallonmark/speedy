@@ -22,12 +22,14 @@ header_files := $(foreach init_item, $(sysinit), sysinit/$(init_item).h) \
                 $(foreach daemon, $(daemons), daemons/$(daemon).h)
    
 init: .status
-                
-reinit: clean .status
+	scripts/$(system)/init.sh
+	cp lib/$(system)/config.h lib/config.h -u
+    
+reinit: clean init
 
-debug: .status/debug speedy
+debug: init .status/debug speedy
 
-release: .status/release speedy .status/strip 
+release: init .status/release speedy .status/strip 
 
 build_objects: .status/release object_test
 
@@ -48,9 +50,7 @@ clean :
 	scripts/if_file_exist.sh .status/debug $(MAKE) -r reinit
 	@touch $@
 	
-.status/init: ../Makefile scripts/$(system)/init.sh scripts/functions .status/$(target)
-	scripts/$(system)/init.sh
-	cp lib/$(system)/config.h lib/config.h -u
+.status/init: ../Makefile scripts/* .status/$(target)
 	scripts/gen_config.sh core/core.o core/config_sysinit.h sysinit $(sysinit)
 	scripts/gen_config.sh core/core.o core/config_daemons.h daemons $(daemons)
 	@touch $@
@@ -88,6 +88,7 @@ object_test : .status/init core/*.o lib/*.o sysinit/*.o \
 	
 .PHONY: debug release init reinit clean build_objects
 
-.NOTPARALLEL: .status .status/release .status/debug .status/strip reinit clean
+.NOTPARALLEL: .status .status/release .status/debug .status/strip \
+              init reinit clean
 
 .SILENT: .status .status/release .status/debug
