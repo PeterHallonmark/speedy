@@ -14,9 +14,18 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-init()
+function_path=`echo "$0" | sed 's/update.sh/..\/functions/g'`
+. $function_path
+
+update()
 {
-    printf "\nBuilding speedy for Arch Linux...\n\n"
+    update_file "sysinit/locale.h" "sysinit/locale.h.tmp"
+    update_file "sysinit/hwclock.h" "sysinit/hwclock.h.tmp"
+    update_file "sysinit/fsck.h" "sysinit/fsck.h.tmp"
+    update_file "sysinit/mount.h" "sysinit/mount.h.tmp"
+    update_file "sysinit/hostname.h" "sysinit/hostname.h.tmp"    
+    update_file "sysinit/nisdomainname.h" "sysinit/nisdomainname.h.tmp"        
+    update_file "sysinit/start.h" "sysinit/start.h.tmp"        
 }
 
-init $@
+update $@

@@ -39,6 +39,9 @@ export system
 .DEFAULT: release
 
 all: release
+
+init:
+	@./scripts/$(system)/init.sh        
 		
 copy: $(build)
 	cp scripts $(build) -r -u
@@ -47,15 +50,15 @@ copy: $(build)
 	cp sysinit $(build) -r -u
 	cp daemons $(build) -r -u
 	cp lib $(build) -r -u
-
+    
 $(build) :
 	mkdir -p $(build)
-				
-release: copy
+			           
+release: init copy
 	$(MAKE) -r -C $(build) release
 	
 debug: CFLAGS += -rdynamic -g
-debug: copy
+debug: init copy
 	$(MAKE) -r -C $(build) debug
 
 build_objects: copy
@@ -64,6 +67,6 @@ build_objects: copy
 clean : 
 	rm -rf $(build)
 
-.NOTPARALLEL: $(build) copy
+.NOTPARALLEL: $(build) copy init
 
-.PHONY: clean all release debug copy build_objects
+.PHONY: init clean all release debug copy build_objects

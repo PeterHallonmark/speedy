@@ -14,9 +14,24 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-init()
+add_define()
 {
-    printf "\nBuilding speedy for Arch Linux...\n\n"
+    filename=$1
+    if [ -n "$3" ]; then 
+        printf "#define %s \"%s\"\n\n" $2 $3 >> $filename
+    fi
 }
 
-init $@
+create_netfs()
+{
+    filename=$1
+    tmpfile="tmp/sysinit_fsck.tmp"
+    
+    printf "/* This is a generated file. */\n\n" > $filename
+    grep NETFS= /etc/rc.sysinit > $tmpfile
+    . $tmpfile
+    
+    add_define $filename "NETFS" $NETFS
+}
+
+create_netfs $@

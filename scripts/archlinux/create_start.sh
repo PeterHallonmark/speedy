@@ -14,9 +14,23 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-init()
+add_define()
 {
-    printf "\nBuilding speedy for Arch Linux...\n\n"
+    filename=$1
+    if [ -n "$3" ]; then 
+        printf "#define %s \"%s\"\n\n" $2 $3 >> $filename
+    fi
 }
 
-init $@
+create_start()
+{
+    filename=$1
+    tmpfile="tmp/sysinit_start.tmp"
+    
+    printf "/* This is a generated file. */\n\n" > $filename
+    grep RTC_MAJOR= /etc/rc.sysinit > $tmpfile
+    . $tmpfile
+    add_define $filename "RTC_MAJOR" $RTC_MAJOR
+}
+
+create_start $@

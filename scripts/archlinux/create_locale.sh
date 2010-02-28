@@ -14,9 +14,32 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-init()
+. /etc/rc.conf
+
+add_define()
 {
-    printf "\nBuilding speedy for Arch Linux...\n\n"
+    filename=$1
+    if [ -n "$3" ]; then 
+        printf "#define %s \"%s\"\n\n" $2 $3 >> $filename
+    fi
 }
 
-init $@
+create_locale()
+{
+    filename=$1    
+    printf "/* This is a generated file. */\n\n" > $filename
+    
+    if [ -z "$LOCALE" ]; then
+        LOCALE="en_US"
+    fi
+    add_define $filename "LOCALE" $LOCALE
+    add_define $filename "KEYMAP" $KEYMAP
+    
+    if echo "$LOCALE" | /bin/grep -qi utf ; then
+        printf "#define UTF8\n" >> $filename
+    else
+        printf "#define LEGACY\n" >> $filename    
+    fi
+}
+
+create_locale $@

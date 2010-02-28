@@ -22,7 +22,7 @@ header_files := $(foreach init_item, $(sysinit), sysinit/$(init_item).h) \
                 $(foreach daemon, $(daemons), daemons/$(daemon).h)
    
 init: .status sysinit/config
-	$(MAKE) -r -C scripts/$(system) init 
+	$(MAKE) -r -C scripts/$(system) update 
 	cp scripts/$(system)/sysinit/*.h sysinit/config -u
 	cp scripts/$(system)/config.h lib/config.h -u
     

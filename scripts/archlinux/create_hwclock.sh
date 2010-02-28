@@ -14,9 +14,34 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-init()
+. /etc/rc.conf
+
+add_define()
 {
-    printf "\nBuilding speedy for Arch Linux...\n\n"
+    filename=$1
+    if [ -n "$3" ]; then 
+        printf "#define %s \"%s\"\n\n" $2 $3 >> $filename
+    fi
 }
 
-init $@
+create_hwclock()
+{
+    filename=$1
+    printf "/* This is a generated file. */\n\n" > $filename
+
+    if [ "$HARDWARECLOCK" = "UTC" ]; then    
+        HWCLOCK_PARAMS="$HWCLOCK_PARAMS --utc"
+    elif [ "$HARDWARECLOCK" = "localtime" ]; then
+        HWCLOCK_PARAMS="$HWCLOCK_PARAMS --localtime"
+    else
+        HWCLOCK_PARAMS=""
+    fi
+
+    add_define $filename "HWCLOCK_PARAMS" $HWCLOCK_PARAMS
+    
+    if [ "$TIMEZONE" != "" -a -e "/usr/share/zoneinfo/$TIMEZONE" ]; then
+        printf "#define TIMEZONE \"%s\"\n\n" $TIMEZONE >> $filename
+    fi
+}
+
+create_hwclock $@

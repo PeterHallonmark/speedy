@@ -14,9 +14,20 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-init()
+. /etc/rc.conf
+
+add_const_string()
 {
-    printf "\nBuilding speedy for Arch Linux...\n\n"
+    filename=$1
+    printf "const char %s[] = \"%s\";\n\n" $2 $3 >> $filename
 }
 
-init $@
+create_hostname()
+{
+    filename=$1
+    
+    printf "/* This is a generated file. */\n\n" > $filename
+    add_const_string $filename "hostname" $HOSTNAME
+}
+
+create_hostname $@

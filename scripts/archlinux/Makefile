@@ -12,5 +12,23 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-init:
-	./init.sh
+files := $(foreach init_item, $(sysinit), sysinit/$(init_item).h.tmp)
+
+update : $(files) tmp sysinit
+	@./update.sh
+
+tmp:
+	@mkdir $@
+    
+sysinit: tmp
+	@mkdir $@
+
+sysinit/%.h.tmp: create_%.sh sysinit tmp
+	@./$< $@    
+
+sysinit/%.h.tmp: sysinit
+	@touch $@ 
+    
+.NOTPARALLEL: init
+
+.PHONY: update init sysinit/%.h.tmp
