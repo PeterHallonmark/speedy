@@ -20,11 +20,17 @@ function_path=`echo "$0" | sed 's/init.sh/..\/functions/g'`
 
 create_locale()
 {
-    filename=$1
+    filename=$1    
     printf "/* This is a generated file. */\n\n" > $filename
-    [ -z "$LOCALE" ] && LOCALE="en_US"
+    
+    if [ -z "$LOCALE" ]; then
+        LOCALE="en_US"
+    fi
     printf "#define LOCALE \"%s\"\n\n" $LOCALE >> $filename
-    [ -n "$KEYMAP" ] && printf "#define KEYMAP \"%s\"\n\n" $KEYMAP >> $filename
+    
+    if [ -n "$KEYMAP" ]; then 
+        printf "#define KEYMAP \"%s\"\n\n" $KEYMAP >> $filename
+    fi
     
     if echo "$LOCALE" | /bin/grep -qi utf ; then
         printf "#define UTF8\n" >> $filename
@@ -37,8 +43,22 @@ create_hwclock()
 {
     filename=$1
     printf "/* This is a generated file. */\n\n" > $filename
-    printf "#define TIMEZONE \"%s\"\n\n" $TIMEZONE >> $filename
-    printf "#define HARDWARECLOCK \"%s\"\n\n" $HARDWARECLOCK >> $filename
+
+    if [ "$HARDWARECLOCK" = "UTC" ]; then    
+        HWCLOCK_PARAMS="$HWCLOCK_PARAMS --utc"
+    elif [ "$HARDWARECLOCK" = "localtime" ]; then
+        HWCLOCK_PARAMS="$HWCLOCK_PARAMS --localtime"
+    else
+        HWCLOCK_PARAMS=""
+    fi
+
+    if [ -n "$HWCLOCK_PARAMS" ]; then
+        printf "#define HWCLOCK_PARAMS \"%s\"\n\n" $HWCLOCK_PARAMS >> $filename            
+    fi
+    
+    if [ "$TIMEZONE" != "" -a -e "/usr/share/zoneinfo/$TIMEZONE" ]; then
+        printf "#define TIMEZONE \"%s\"\n\n" $TIMEZONE >> $filename
+    fi
 }
 
 main()
