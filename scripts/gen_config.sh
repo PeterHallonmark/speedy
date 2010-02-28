@@ -15,7 +15,6 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 function_path=`echo "$0" | sed 's/gen_config.sh/functions/g'`
-
 . $function_path
 
 add_header()
@@ -101,7 +100,7 @@ create_file()
  
 main()
 {
-	remove_file=$1
+    remove_file=$1
     shift
     config_file=$1
     config_file_tmp=$config_file".tmp"
