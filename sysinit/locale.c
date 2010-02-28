@@ -31,7 +31,7 @@
 #define LEGACY
 #endif
 
-bool loacle_callback(const char *filename);
+bool locale_callback(const char *filename);
 
 
 const char *locale_get_name(void)
@@ -43,21 +43,20 @@ const char *locale_get_name(void)
 
 void locale_init(void)
 {
-
 #ifdef KEYMAP
 #ifdef UTF8
     char * const loadkeys_arg[] = {CMD_LOADKEYS, "-q", "-u", KEYMAP, NULL};
-#endif
+#endif /* UTF8 */
 #ifdef LEGACY
     char * const loadkeys_arg[] = {CMD_LOADKEYS, "-q", "", KEYMAP, NULL};
-#endif
-#endif
+#endif /* LEGACY */
+#endif /* KEYMAP */
 
     file_empty(FILE_PROFILE_LOCALE);
     file_chmod(FILE_PROFILE_LOCALE, 0755);
     file_write(FILE_PROFILE_LOCALE, "export LANG=" LOCALE "\n");
 
-    file_tty_action(loacle_callback);
+    file_tty_action(locale_callback);
 
 #ifdef UTF8
     file_write(FILE_PROFILE_LOCALE, "if [ \"$CONSOLE\" = \"\" -a \"$TERM\" = "
@@ -73,7 +72,7 @@ void locale_init(void)
 }
 
 #ifdef UTF8
-bool loacle_callback(const char *filename)
+bool locale_callback(const char *filename)
 {
     char * kbdmode_arg[] = {CMD_KBDMODE, "-u", NULL, NULL};
 
@@ -83,10 +82,10 @@ bool loacle_callback(const char *filename)
 
     return true;
 }
-#endif
+#endif /* UTF8 */
 
 #ifdef LEGACY
-bool loacle_callback(const char *filename)
+bool locale_callback(const char *filename)
 {
     char * kbdmode_arg[] = {CMD_KBDMODE, "-a", NULL, NULL};
 
@@ -96,4 +95,4 @@ bool loacle_callback(const char *filename)
 
     return true;
 }
-#endif
+#endif /* LEGACY */

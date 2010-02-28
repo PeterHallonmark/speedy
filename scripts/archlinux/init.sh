@@ -22,8 +22,9 @@ create_locale()
 {
     filename=$1
     printf "/* This is a generated file. */\n\n" > $filename
+    [ -z "$LOCALE" ] && LOCALE="en_US"
     printf "#define LOCALE \"%s\"\n\n" $LOCALE >> $filename
-    printf "#define KEYMAP \"%s\"\n\n" $KEYMAP >> $filename
+    [ -n "$KEYMAP" ] && printf "#define KEYMAP \"%s\"\n\n" $KEYMAP >> $filename
     
     if echo "$LOCALE" | /bin/grep -qi utf ; then
         printf "#define UTF8\n" >> $filename
