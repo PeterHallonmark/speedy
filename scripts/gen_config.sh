@@ -15,30 +15,36 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 function_path=`echo "$0" | sed 's/gen_config.sh/functions/g'`
-c_function_path=`echo "$0" | sed 's/gen_config.sh/c_functions/g'`
 
 . $function_path
-. $c_function_path
+
+add_header()
+{
+    header_name=$1
+    file_name=$2
+    
+    printf "#include %s\n" $header_name >> $file_name
+}
 
 add_function()
 {
     function_type=$1
     daemon_name=$2
-    file_name=$3
+    filename=$3
     path=$4
     end_char=$5
     
     function_name=$daemon_name"_"$function_type
     if grep -q $function_name $path"/"$daemon_name".h" ; then
-        printf "%13s%s%s%s%s\n" "." $function_type " = &" $function_name $end_char >> $file_name
+        printf "%13s%s%s%s%s\n" "." $function_type " = &" $function_name $end_char >> $filename
     else
-        printf "%13s%s%s%s\n" "." $function_type " = NULL" $end_char >> $file_name
+        printf "%13s%s%s%s\n" "." $function_type " = NULL" $end_char >> $filename
     fi
 }
 
 add_daemons()
 {
-    file_name=$1
+    filename=$1
     shift
     path=$1
     shift
@@ -51,46 +57,46 @@ add_daemons()
         if [ $first -eq 1 ] 
         then
             first=0
-            printf "%10s\n" "{" >> $file_name
+            printf "%10s\n" "{" >> $filename
         else
-            printf "%13s\n" "}, {" >> $file_name
+            printf "%13s\n" "}, {" >> $filename
         fi
-        add_function "get_name" $daemon_name $file_name $path ","
-        add_function "init" $daemon_name $file_name $path ","
-        add_function "shutdown" $daemon_name $file_name $path ""
+        add_function "get_name" $daemon_name $filename $path ","
+        add_function "init" $daemon_name $filename $path ","
+        add_function "shutdown" $daemon_name $filename $path ""
     }
      
-    printf "service_t %s[] = {\n" $path >> $file_name
+    printf "service_t %s[] = {\n" $path >> $filename
     for daemon in $daemons
     do
         add_daemon_struct $daemon
     done
     if [ $first -eq 0 ] 
     then
-        echo "         }" >> $file_name
+        echo "         }" >> $filename
     fi
-    echo "      };" >> $file_name
+    echo "      };" >> $filename
 }
 
 create_file()
 {
-    file_name=$1
+    filename=$1
     shift
     path=$1
     shift
     daemons=$*
     
-    add_c_comment_header $file_name
-    add_c_header_file "<stdlib.h>" $file_name
-    printf "\n"  >> $file_name
+    printf "/* This is a generated file. */\n\n" > $filename
+    add_header "<stdlib.h>" $filename
+    printf "\n"  >> $filename
 
     for daemon in $daemons
     do
-        add_c_header_file "\"../"$path"/"$daemon".h\"" $file_name
+        add_header "\"../"$path"/"$daemon".h\"" $filename
     done    
 
-    printf "\n\n" >> $file_name
-    add_daemons $file_name $path $daemons
+    printf "\n\n" >> $filename
+    add_daemons $filename $path $daemons
 } 
  
 main()
