@@ -22,6 +22,7 @@ header_files := $(foreach init_item, $(sysinit), sysinit/$(init_item).h) \
                 $(foreach daemon, $(daemons), daemons/$(daemon).h)
    
 init: .status
+	@mkdir sysinit/config
 	scripts/$(system)/init.sh
 	cp lib/$(system)/config.h lib/config.h -u
     
