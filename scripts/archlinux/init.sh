@@ -26,6 +26,12 @@ add_define()
     fi
 }
 
+add_const_string()
+{
+    filename=$1
+    printf "const char %s[] = \"%s\";\n\n" $2 $3 >> $filename
+}
+
 create_locale()
 {
     filename=$1    
@@ -70,15 +76,19 @@ create_netfs()
     tmpfile=$2
     
     printf "/* This is a generated file. */\n\n" > $filename
-    
     grep NETFS= /etc/rc.sysinit > $tmpfile
     . $tmpfile
     
-    add_define $filename "NETFS" $NETFS    
+    add_define $filename "NETFS" $NETFS
 }
 
-create_netfs()
+create_hostname()
 {
+    filename=$1
+    tmpfile=$2
+    
+    printf "/* This is a generated file. */\n\n" > $filename
+    add_const_string $filename "hostname" $HOSTNAME
 }
 
 main()
@@ -97,6 +107,9 @@ main()
 
     create_netfs "sysinit/config/mount.h.tmp" $tmpfile
     update_file "sysinit/config/mount.h" "sysinit/config/mount.h.tmp"
+
+    create_hostname "sysinit/config/hostname.h.tmp"
+    update_file "sysinit/config/hostname.h" "sysinit/config/hostname.h.tmp"    
 }
 
 main $*
