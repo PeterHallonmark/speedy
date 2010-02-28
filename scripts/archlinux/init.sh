@@ -17,6 +17,7 @@
 function_path=`echo "$0" | sed 's/init.sh/..\/functions/g'`
 . $function_path
 . /etc/rc.conf
+. /etc/conf.d/nisdomainname
 
 add_define()
 {
@@ -91,6 +92,15 @@ create_hostname()
     add_const_string $filename "hostname" $HOSTNAME
 }
 
+create_nisdomainname()
+{
+    filename=$1
+    tmpfile=$2
+    
+    printf "/* This is a generated file. */\n\n" > $filename
+    add_const_string $filename "nisdomainname" $NISDOMAINNAME
+}
+
 main()
 {
     printf "\nBuilding speedy for Arch Linux...\n\n"
@@ -110,6 +120,9 @@ main()
 
     create_hostname "sysinit/config/hostname.h.tmp"
     update_file "sysinit/config/hostname.h" "sysinit/config/hostname.h.tmp"    
+
+    create_nisdomainname "sysinit/config/nisdomainname.h.tmp"
+    update_file "sysinit/config/nisdomainname.h" "sysinit/config/nisdomainname.h.tmp"        
 }
 
 main $*
