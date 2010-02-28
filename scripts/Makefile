@@ -21,9 +21,9 @@ header_files := $(foreach init_item, $(sysinit), sysinit/$(init_item).h) \
                 $(foreach init_item, $(sysinit), sysinit/config/$(init_item).h) \
                 $(foreach daemon, $(daemons), daemons/$(daemon).h)
    
-init: .status
-	@mkdir sysinit/config
-	scripts/$(system)/init.sh
+init: .status sysinit/config
+	$(MAKE) -r -C scripts/$(system) init 
+	cp scripts/$(system)/sysinit/*.h sysinit/config -u
 	cp lib/$(system)/config.h lib/config.h -u
     
 reinit: clean init
@@ -38,6 +38,9 @@ clean :
 	rm -rf .status
 	rm -f $(files:.c=.o)
 
+sysinit/config :
+	@mkdir sysinit/config
+    
 .status :
 	@mkdir $@
     

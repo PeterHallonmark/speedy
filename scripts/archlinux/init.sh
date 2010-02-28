@@ -113,29 +113,31 @@ create_start()
 
 main()
 {
-    printf "\nBuilding speedy for Arch Linux...\n\n"
-    tmpfile=scripts/archlinux/archlinux.tmp
+    printf "\nBuilding speedy for Arch Linux...\n\n"    
     
-    create_locale "sysinit/config/locale.h.tmp"
-    update_file "sysinit/config/locale.h" "sysinit/config/locale.h.tmp"
-
-    create_hwclock "sysinit/config/hwclock.h.tmp"
-    update_file "sysinit/config/hwclock.h" "sysinit/config/hwclock.h.tmp"
+    mkdir sysinit
+    mkdir tmp
     
-    create_netfs "sysinit/config/fsck.h.tmp" $tmpfile
-    update_file "sysinit/config/fsck.h" "sysinit/config/fsck.h.tmp"
+    create_locale "locale.h.tmp"
+    update_file "sysinit/locale.h" "locale.h.tmp"
 
-    create_netfs "sysinit/config/mount.h.tmp" $tmpfile
-    update_file "sysinit/config/mount.h" "sysinit/config/mount.h.tmp"
-
-    create_hostname "sysinit/config/hostname.h.tmp"
-    update_file "sysinit/config/hostname.h" "sysinit/config/hostname.h.tmp"    
-
-    create_nisdomainname "sysinit/config/nisdomainname.h.tmp"
-    update_file "sysinit/config/nisdomainname.h" "sysinit/config/nisdomainname.h.tmp"        
+    create_hwclock "hwclock.h.tmp"
+    update_file "sysinit/hwclock.h" "hwclock.h.tmp"
     
-    create_start "sysinit/config/start.h.tmp"
-    update_file "sysinit/config/start.h" "sysinit/config/start.h.tmp"        
+    create_netfs "fsck.h.tmp" "tmp/fsck.tmp"
+    update_file "sysinit/fsck.h" "fsck.h.tmp"
+
+    create_netfs "mount.h.tmp" "tmp/mount.tmp"
+    update_file "sysinit/mount.h" "mount.h.tmp"
+
+    create_hostname "hostname.h.tmp"
+    update_file "sysinit/hostname.h" "hostname.h.tmp"    
+
+    create_nisdomainname "nisdomainname.h.tmp"
+    update_file "sysinit/nisdomainname.h" "nisdomainname.h.tmp"        
+    
+    create_start "start.h.tmp"
+    update_file "sysinit/start.h" "start.h.tmp"        
 }
 
 main $*
