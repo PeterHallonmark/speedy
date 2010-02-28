@@ -1,1 +1,0 @@
-#define RTC_MAJOR "254"

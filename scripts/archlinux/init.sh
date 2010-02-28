@@ -86,7 +86,6 @@ create_netfs()
 create_hostname()
 {
     filename=$1
-    tmpfile=$2
     
     printf "/* This is a generated file. */\n\n" > $filename
     add_const_string $filename "hostname" $HOSTNAME
@@ -95,10 +94,21 @@ create_hostname()
 create_nisdomainname()
 {
     filename=$1
-    tmpfile=$2
     
     printf "/* This is a generated file. */\n\n" > $filename
     add_const_string $filename "nisdomainname" $NISDOMAINNAME
+}
+
+create_start()
+{
+    filename=$1
+    
+    printf "/* This is a generated file. */\n\n" > $filename
+
+    grep RTC_MAJOR= /etc/rc.sysinit > $tmpfile
+    . $tmpfile
+    
+    add_define $filename "RTC_MAJOR" $RTC_MAJOR
 }
 
 main()
@@ -123,6 +133,9 @@ main()
 
     create_nisdomainname "sysinit/config/nisdomainname.h.tmp"
     update_file "sysinit/config/nisdomainname.h" "sysinit/config/nisdomainname.h.tmp"        
+    
+    create_start "sysinit/config/start.h.tmp"
+    update_file "sysinit/config/start.h" "sysinit/config/start.h.tmp"        
 }
 
 main $*
