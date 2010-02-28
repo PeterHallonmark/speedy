@@ -65,7 +65,7 @@ daemons/%.c:
 daemons/%.h:
 	@touch $@
 		
-sysinit/config/%.h:
+sysinit/config/%.h: .status/init
 	@touch $@
 
 sysinit/%.o: sysinit/%.h sysinit/config/%.h lib/*.h
