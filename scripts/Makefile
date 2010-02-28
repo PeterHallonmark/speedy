@@ -48,7 +48,7 @@ clean :
 	scripts/if_file_exist.sh .status/debug $(MAKE) -r reinit
 	@touch $@
 	
-.status/init: ../Makefile .status/$(target)
+.status/init: ../Makefile scripts/$(system)/init.sh scripts/functions .status/$(target)
 	scripts/$(system)/init.sh
 	cp lib/$(system)/config.h lib/config.h -u
 	scripts/gen_config.sh core/core.o core/config_sysinit.h sysinit $(sysinit)
@@ -65,7 +65,7 @@ daemons/%.c:
 daemons/%.h:
 	@touch $@
 		
-sysinit/config/%.h: .status/init
+sysinit/config/%.h:
 	@touch $@
 
 sysinit/%.o: sysinit/%.h sysinit/config/%.h lib/*.h

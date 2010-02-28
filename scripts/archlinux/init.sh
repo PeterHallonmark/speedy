@@ -20,8 +20,6 @@ function_path=`echo "$0" | sed 's/init.sh/..\/functions/g'`
 
 create_locale()
 {
-    echo locale
-
     filename=$1
     printf "/* This is a generated file. */\n\n" > $filename
     printf "#define LOCALE \"%s\"\n\n" $LOCALE >> $filename
@@ -34,12 +32,24 @@ create_locale()
     fi
 }
 
+create_hwclock()
+{
+    filename=$1
+    printf "/* This is a generated file. */\n\n" > $filename
+    printf "#define TIMEZONE \"%s\"\n\n" $TIMEZONE >> $filename
+    printf "#define HARDWARECLOCK \"%s\"\n\n" $HARDWARECLOCK >> $filename
+}
+
 main()
 {
     printf "\nBuilding speedy for Arch Linux...\n\n"
 
     create_locale "sysinit/config/locale.h.tmp"
     update_file "sysinit/config/locale.h" "sysinit/config/locale.h.tmp"
+
+    create_hwclock "sysinit/config/hwclock.h.tmp"
+    update_file "sysinit/config/hwclock.h" "sysinit/config/hwclock.h.tmp"
+    
 }
 
 main $*
