@@ -14,7 +14,10 @@
 
 files := $(foreach init_item, $(sysinit), sysinit/$(init_item).h)
 
-update : tmp sysinit $(files)
+init: sysinit
+	@touch .update
+
+update: init tmp sysinit $(files)
 
 tmp:
 	@mkdir $@
@@ -22,15 +25,19 @@ tmp:
 sysinit: tmp
 	@mkdir $@
 
-sysinit/%.h.tmp: create_%.sh sysinit tmp
+sysinit/%.h_gen: create_%.sh sysinit .update
 	@./$< $@
 
-sysinit/%.h.tmp: sysinit
+sysinit/%.h_gen: sysinit
 	@touch $@ 
 
-sysinit/%.h: sysinit/%.h.tmp
+sysinit/%.h: sysinit/%.h_gen sysinit .update
 	@../update_file.sh $< $@
     
+.update: init
+
 .DEFAULT: update
 
-.PHONY: update init sysinit/%.h.tmp sysinit/%.h
+.NOTPARALLEL: init
+
+.PHONY: update init

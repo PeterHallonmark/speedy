@@ -48,13 +48,15 @@ sysinit/config :
 .status/debug: .status
 	scripts/if_file_exist.sh .status/release $(MAKE) -r reinit
 	@touch $@
-	
+	@touch .status/target
+    
 .status/release: target := release
 .status/release: .status
 	scripts/if_file_exist.sh .status/debug $(MAKE) -r reinit
 	@touch $@
-	
-.status/init: ../Makefile .status/$(target)
+	@touch .status/target
+    
+.status/init: ../Makefile .status/$(target) sysinit/*.h
 	scripts/gen_config.sh core/core.o core/config_sysinit.h sysinit $(sysinit)
 	scripts/gen_config.sh core/core.o core/config_daemons.h daemons $(daemons)
 	@touch $@
@@ -62,26 +64,25 @@ sysinit/config :
 .status/strip: .status speedy
 	strip speedy
 	@touch $@
-	
+    
+.status/target: .status .status/$(target)    
+    
 daemons/%.c:
 	@touch $@
 	
 daemons/%.h:
 	@touch $@
 		
-sysinit/config/%.h:
-	@touch $@
-    
-sysinit/%.o: sysinit/%.c sysinit/%.h lib/*.h sysinit/config/%.h .status/$(target)
+sysinit/%.o: sysinit/%.c sysinit/%.h lib/*.h sysinit/config/%.h .status/target
 	$(CC) $(CFLAGS) -I. -c $< -o $@
     
-daemons/%.o: daemons/%.c daemons/%.h lib/*.h .status/$(target)
+daemons/%.o: daemons/%.c daemons/%.h lib/*.h .status/target
 	$(CC) $(CFLAGS) -I. -c $< -o $@
     
-core/%.o: core/%.c .status/init
+core/%.o: core/%.c .status/init 
 	$(CC) $(CFLAGS) -I. -c $< -o $@
     
-lib/%.o: lib/%.c lib/*.c .status/$(target)
+lib/%.o: lib/%.c lib/*.c .status/target
 	$(CC) $(CFLAGS) -I. -c $< -o $@
     
 speedy : $(files:.c=.o) $(header_files) .status/init 
