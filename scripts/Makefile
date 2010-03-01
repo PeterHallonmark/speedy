@@ -54,7 +54,7 @@ sysinit/config :
 	scripts/if_file_exist.sh .status/debug $(MAKE) -r reinit
 	@touch $@
 	
-.status/init: ../Makefile scripts/* .status/$(target)
+.status/init: ../Makefile .status/$(target)
 	scripts/gen_config.sh core/core.o core/config_sysinit.h sysinit $(sysinit)
 	scripts/gen_config.sh core/core.o core/config_daemons.h daemons $(daemons)
 	@touch $@
@@ -71,24 +71,25 @@ daemons/%.h:
 		
 sysinit/config/%.h:
 	@touch $@
-
-sysinit/%.o: sysinit/%.h sysinit/config/%.h lib/*.h
-
-daemons/%.o: daemons/%.h lib/*.h 
-
-core/%.o: .status/init
-
-lib/%.o: lib/*.h
-
-speedy : .status/init $(header_files) $(files:.c=.o) 
+    
+sysinit/%.o: sysinit/%.c sysinit/%.h lib/*.h sysinit/config/%.h .status/init 
+	$(CC) $(CFLAGS) -I. -c $< -o $@
+    
+daemons/%.o: daemons/%.c daemons/%.h lib/*.h .status/init 
+	$(CC) $(CFLAGS) -I. -c $< -o $@
+    
+core/%.o: core/%.c .status/init
+	$(CC) $(CFLAGS) -I. -c $< -o $@
+    
+lib/%.o: lib/%.c lib/*.c .status/init 
+	$(CC) $(CFLAGS) -I. -c $< -o $@
+    
+speedy : $(files:.c=.o) $(header_files) .status/init 
 	$(CC) -o speedy $(files:.c=.o)
 
 object_test : .status/init core/*.o lib/*.o sysinit/*.o \
               core/*.h lib/*.h sysinit/*.h
 	$(CC) -o speedy_test core/*.o lib/*.o sysinit/*.o
-	
-%.o: %.c
-	$(CC) $(CFLAGS) -I. -c $< -o $@
 	
 .PHONY: debug release init reinit clean build_objects
 
