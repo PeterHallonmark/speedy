@@ -55,6 +55,7 @@ update_file()
 
     if [ "$md5sum_new" != "$md5sum_old" ]; then
         mv -f $old_file $new_file
+        printf "Updating: %s\n" $new_file
         if [ $# -ge 3 ]; then 
             rm -f $remove_file
         fi
