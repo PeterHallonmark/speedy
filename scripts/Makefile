@@ -72,16 +72,16 @@ daemons/%.h:
 sysinit/config/%.h:
 	@touch $@
     
-sysinit/%.o: sysinit/%.c sysinit/%.h lib/*.h sysinit/config/%.h .status/init 
+sysinit/%.o: sysinit/%.c sysinit/%.h lib/*.h sysinit/config/%.h .status/$(target)
 	$(CC) $(CFLAGS) -I. -c $< -o $@
     
-daemons/%.o: daemons/%.c daemons/%.h lib/*.h .status/init 
+daemons/%.o: daemons/%.c daemons/%.h lib/*.h .status/$(target)
 	$(CC) $(CFLAGS) -I. -c $< -o $@
     
 core/%.o: core/%.c .status/init
 	$(CC) $(CFLAGS) -I. -c $< -o $@
     
-lib/%.o: lib/%.c lib/*.c .status/init 
+lib/%.o: lib/%.c lib/*.c .status/$(target)
 	$(CC) $(CFLAGS) -I. -c $< -o $@
     
 speedy : $(files:.c=.o) $(header_files) .status/init 
