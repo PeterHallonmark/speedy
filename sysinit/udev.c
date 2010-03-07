@@ -22,6 +22,8 @@
 
 #include <stdlib.h>
 
+bool udev_modprobe(void);
+
 const char *udev_get_name(void)
 {
     static const char priv_udev_name[] = "udev";
@@ -35,7 +37,6 @@ void udev_init(void)
     char *const udevadm_trigger_arg[] = {CMD_UDEVADM, "trigger", NULL};
     char *const udevadm_settle_arg[] = {CMD_UDEVADM, "settle", NULL};
     char *const udevadm_ctrl0_arg[] = {CMD_UDEVADM, "control", "--property=STARTUP=", NULL};
-    char *const modprobe_arg[] = {CMD_MODPROBE, "ath5k", NULL};
     char *const udevd_arg[] = {CMD_UDEVD, "--daemon", NULL};
     
     file_empty(KERNEL_HOTPLUG);
@@ -44,8 +45,21 @@ void udev_init(void)
     run(udevadm_ctrl1_arg);
     run(udevadm_trigger_arg);
     
-	run(modprobe_arg);
+    udev_modprobe();
     
     run(udevadm_settle_arg);
 	run(udevadm_ctrl0_arg);
+}
+
+bool udev_modprobe(void)
+{
+    char * modprobe_arg[] = {CMD_MODPROBE, NULL, NULL};
+    int i = 0;
+    
+    while (modules[i] != NULL) {
+        modprobe_arg[1] = modules[i];
+        run(modprobe_arg);
+        i++;
+    }
+    return true;
 }
