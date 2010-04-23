@@ -21,16 +21,23 @@ header_files := $(foreach init_item, $(sysinit), sysinit/$(init_item).h) \
                 $(foreach init_item, $(sysinit), sysinit/config/$(init_item).h) \
                 $(foreach daemon, $(daemons), daemons/$(daemon).h)
    
-init: .status sysinit/config
-	$(MAKE) -r -C scripts/$(system) update 
+
+init_release: target := release
+init_release: init .status/init
+
+init_debug: target := debug
+init_debug: init .status/init
+
+init: sysinit/config
+	$(MAKE) -r -j 4 -C scripts/$(system) update 
 	cp scripts/$(system)/sysinit/*.h sysinit/config -u
 	cp scripts/$(system)/config.h lib/config.h -u
     
 reinit: clean init
 
-debug: init .status/debug speedy
+debug: speedy
 
-release: init .status/release speedy .status/strip 
+release: speedy .status/strip 
 
 build_objects: .status/release object_test
 
@@ -38,7 +45,7 @@ clean :
 	rm -rf .status
 	rm -f $(files:.c=.o)
 
-sysinit/config :
+sysinit/config:
 	@mkdir sysinit/config
     
 .status :
@@ -56,7 +63,7 @@ sysinit/config :
 	@touch $@
 	@touch .status/target
     
-.status/init: ../Makefile .status/$(target) sysinit/*.h
+.status/init: .status ../Makefile .status/$(target) sysinit/*.h
 	scripts/gen_config.sh core/core.o core/config_sysinit.h sysinit $(sysinit)
 	scripts/gen_config.sh core/core.o core/config_daemons.h daemons $(daemons)
 	@touch $@
@@ -65,36 +72,31 @@ sysinit/config :
 	strip speedy
 	@touch $@
     
-.status/target: .status .status/$(target)    
-    
 daemons/%.c:
 	@touch $@
 	
 daemons/%.h:
 	@touch $@
 		
-sysinit/%.o: sysinit/%.c sysinit/%.h lib/*.h sysinit/config/%.h .status/target
+sysinit/%.o: sysinit/%.c sysinit/%.h lib/*.h sysinit/config/%.h .status/$(target)
 	$(CC) $(CFLAGS) -I. -c $< -o $@
     
-daemons/%.o: daemons/%.c daemons/%.h lib/*.h .status/target
+daemons/%.o: daemons/%.c daemons/%.h lib/*.h .status/$(target)
 	$(CC) $(CFLAGS) -I. -c $< -o $@
     
-core/%.o: core/%.c .status/init 
+core/%.o: core/%.c .status/init .status/$(target)
 	$(CC) $(CFLAGS) -I. -c $< -o $@
     
-lib/%.o: lib/%.c lib/*.c .status/target
+lib/%.o: lib/%.c lib/*.c .status/$(target)
 	$(CC) $(CFLAGS) -I. -c $< -o $@
     
-speedy : $(files:.c=.o) $(header_files) .status/init 
+speedy : $(files:.c=.o) $(header_files) .status/init .status/$(target)
 	$(CC) -o speedy $(files:.c=.o)
 
 object_test : .status/init core/*.o lib/*.o sysinit/*.o \
               core/*.h lib/*.h sysinit/*.h
 	$(CC) -o speedy_test core/*.o lib/*.o sysinit/*.o
 	
-.PHONY: debug release init reinit clean build_objects
-
-.NOTPARALLEL: .status .status/release .status/debug .status/strip \
-              init reinit clean
+.PHONY: debug release init init_release init_debug reinit clean build_objects
 
 .SILENT: .status .status/release .status/debug

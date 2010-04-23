@@ -55,11 +55,13 @@ $(build) :
 	mkdir -p $(build)
 			           
 release: init copy
-	$(MAKE) -r -C $(build) release
+	$(MAKE) -j 1 -r -C $(build) init_release
+	$(MAKE) -j 4 -r -C $(build) release
 	
 debug: CFLAGS += -rdynamic -g
 debug: init copy
-	$(MAKE) -r -C $(build) debug
+	$(MAKE) -j 1 -r -C $(build) init_debug
+	$(MAKE) -j 4 -r -C $(build) debug
 
 build_objects: copy
 	$(MAKE) -r -C $(build) build_objects
