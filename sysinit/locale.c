@@ -52,22 +52,22 @@ void locale_init(void)
 #endif /* LEGACY */
 #endif /* KEYMAP */
 
-    file_empty(FILE_PROFILE_LOCALE);
-    file_chmod(FILE_PROFILE_LOCALE, 0755);
-    file_write(FILE_PROFILE_LOCALE, "export LANG=" LOCALE "\n");
+    libspeedy_file_empty(FILE_PROFILE_LOCALE);
+    libspeedy_file_chmod(FILE_PROFILE_LOCALE, 0755);
+    libspeedy_file_write(FILE_PROFILE_LOCALE, "export LANG=" LOCALE "\n");
 
-    file_tty_action(locale_callback);
+    libspeedy_file_tty_action(locale_callback);
 
 #ifdef UTF8
-    file_write(FILE_PROFILE_LOCALE, "if [ \"$CONSOLE\" = \"\" -a \"$TERM\" = "
+    libspeedy_file_write(FILE_PROFILE_LOCALE, "if [ \"$CONSOLE\" = \"\" -a \"$TERM\" = "
                "\"linux\" -a -t 1 ]; then printf \"\\033%%G\"; fi");
 #endif /* UTF8 */
 #ifdef LEGACY
-    file_write(FILE_PROFILE_LOCALE, "if [ \"$CONSOLE\" = \"\" -a \"$TERM\" = "
+    libspeedy_file_write(FILE_PROFILE_LOCALE, "if [ \"$CONSOLE\" = \"\" -a \"$TERM\" = "
                "\"linux\" -a -t 1 ]; then printf \"\\033%%@\"; fi");
 #endif /* LEGACY */
 #ifdef KEYMAP
-    run(loadkeys_arg);
+    libspeedy_run(loadkeys_arg);
 #endif /* KEYMAP */
 }
 
@@ -76,8 +76,8 @@ bool locale_callback(const char *filename)
 {
     char * kbdmode_arg[] = {CMD_KBDMODE, "-u", filename, NULL};
 
-    run(kbdmode_arg);
-    file_write(filename, "\033%G");
+    libspeedy_run(kbdmode_arg);
+    libspeedy_file_write(filename, "\033%G");
 
     return true;
 }
@@ -88,8 +88,8 @@ bool locale_callback(const char *filename)
 {
     char * kbdmode_arg[] = {CMD_KBDMODE, "-a", filename, NULL};
 
-    run(kbdmode_arg);
-    file_write(filename, "\033%@");
+    libspeedy_run(kbdmode_arg);
+    libspeedy_file_write(filename, "\033%@");
 
     return true;
 }

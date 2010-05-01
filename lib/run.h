@@ -14,11 +14,11 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
  
-int run(char *const argv[]);
+int libspeedy_run(char *const argv[]);
  
-int run_system(const char *command);
+int libspeedy_system(const char *command);
 
-void run_exit(int code);
+void libspeedy_exit(int code);
 
-void run_sleep(int time);
+void libspeedy_sleep(int time);
 

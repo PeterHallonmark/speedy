@@ -14,6 +14,8 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
+#include <stdio.h>
+
 #include "end.h"
 #include "lib/run.h"
 #include "lib/config.h"
@@ -31,5 +33,5 @@ void end_init(void)
     
     printf("end...");
     scanf("%c",&ch);
-    run_system(CMD_DMESG " >| " FILE_DMESG_LOG);
+    libspeedy_system(CMD_DMESG " >| " FILE_DMESG_LOG);
 }

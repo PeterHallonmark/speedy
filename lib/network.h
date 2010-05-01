@@ -16,6 +16,6 @@
 
 #include <stdbool.h>
 
-bool network_sethostname(const char *hostname);
+bool libspeedy_sethostname(const char *hostname);
 
-bool network_setdomainname(const char *nisdomainname);
+bool libspeedy_setdomainname(const char *nisdomainname);

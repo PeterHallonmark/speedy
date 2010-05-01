@@ -32,5 +32,5 @@ void swap_init(void)
 {    
     char *const swapon_arg[] = {CMD_SWAPON, "-a", NULL};
 
-    run(swapon_arg);
+    libspeedy_run(swapon_arg);
 }

@@ -29,7 +29,7 @@
 
 #define BUF_SIZE 512
 
-bool file_exists(const char *filename)
+bool libspeedy_file_exists(const char *filename)
 {
     FILE* file = fopen(filename, "rb");
     
@@ -40,7 +40,7 @@ bool file_exists(const char *filename)
     return false;
 }
 
-bool file_copy(const char *source, const char *destination)
+bool libspeedy_file_copy(const char *source, const char *destination)
 {
     FILE *source_file;
     FILE *destination_file;
@@ -87,7 +87,7 @@ bool file_copy(const char *source, const char *destination)
     return true;
 }
 
-bool file_copy_all(const char *source_path, const char *dest_path, bool recursive)
+bool libspeedy_file_copy_all(const char *source_path, const char *dest_path, bool recursive)
 {
     DIR *dir;
     struct dirent *content;
@@ -100,7 +100,7 @@ bool file_copy_all(const char *source_path, const char *dest_path, bool recursiv
     if (dir)  
     {
         if (recursive) {
-            dir_mkdir(dest_path, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+            libspeedy_mkdir(dest_path, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
         }
         
         while ((content = readdir(dir)) != NULL)
@@ -117,11 +117,11 @@ bool file_copy_all(const char *source_path, const char *dest_path, bool recursiv
                         (strcmp(content->d_name, "..")  != 0)) { 
                     
                         if (recursive) {
-                            file_copy_all(next_source, next_dest, true);
+                            libspeedy_file_copy_all(next_source, next_dest, true);
                         }
                     }    
                 } else {
-                    if (!file_copy(next_source, next_dest)) {
+                    if (!libspeedy_file_copy(next_source, next_dest)) {
                         return false;
                     }
                 }
@@ -134,7 +134,7 @@ bool file_copy_all(const char *source_path, const char *dest_path, bool recursiv
     return true;
 }
 
-bool file_empty(const char *destination)
+bool libspeedy_file_empty(const char *destination)
 {
     FILE *destination_file;
     
@@ -152,7 +152,7 @@ bool file_empty(const char *destination)
 }
 
 
-bool file_remove(const char *destination)
+bool libspeedy_file_remove(const char *destination)
 {
     remove(destination);
     
@@ -160,7 +160,7 @@ bool file_remove(const char *destination)
 }
 
 
-bool file_remove_all(const char *dest_path, bool recursive, bool remove_dir)
+bool libspeedy_file_remove_all(const char *dest_path, bool recursive, bool remove_dir)
 {
     DIR *dir;
     struct dirent *content;
@@ -180,14 +180,14 @@ bool file_remove_all(const char *dest_path, bool recursive, bool remove_dir)
                         (strcmp(content->d_name, "..")  != 0)) { 
                     
                         if (recursive) {
-                            file_remove_all(next, true, remove_dir);
+                            libspeedy_file_remove_all(next, true, remove_dir);
                             if (remove_dir) {
-                                dir_rmdir(next);
+                                libspeedy_rmdir(next);
                             }
                         }
                     }    
                 } else {
-                    if (!file_remove(next)) {
+                    if (!libspeedy_file_remove(next)) {
                         return false;
                     }
                 }
@@ -201,14 +201,14 @@ bool file_remove_all(const char *dest_path, bool recursive, bool remove_dir)
     return true;
 }
 
-bool file_chmod(const char *pathname, int mode)
+bool libspeedy_file_chmod(const char *pathname, int mode)
 {
     chmod(pathname, mode);
     
     return true;
 }
 
-bool file_write(const char *filename, const char *text)
+bool libspeedy_file_write(const char *filename, const char *text)
 {
     FILE* file = fopen(filename, "w+");
     
@@ -221,7 +221,7 @@ bool file_write(const char *filename, const char *text)
     return true;
 }
 
-bool file_tty_action(bool (*callback)(const char *filename))
+bool libspeedy_file_tty_action(bool (*callback)(const char *filename))
 {
     DIR *dir;
     struct dirent *content;

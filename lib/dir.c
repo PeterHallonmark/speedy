@@ -21,14 +21,14 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-bool dir_mkdir(const char *pathname, int mode)
+bool libspeedy_mkdir(const char *pathname, int mode)
 {
     mkdir(pathname, mode);
     
     return true;
 }
 
-bool dir_rmdir(const char *pathname)
+bool libspeedy_rmdir(const char *pathname)
 {
     rmdir(pathname);
     

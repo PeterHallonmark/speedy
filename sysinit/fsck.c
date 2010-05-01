@@ -31,10 +31,10 @@ void fsck_reboot(void)
     char *const reboot_arg[] = {CMD_REBOOT, "-f", NULL};
 
     printf("Automatic reboot in progress...\n");
-    run(umount_arg);
-    run(remount_ro_arg);
-    run(reboot_arg);
-    run_exit(1);
+    libspeedy_run(umount_arg);
+    libspeedy_run(remount_ro_arg);
+    libspeedy_run(reboot_arg);
+    libspeedy_exit(1);
 }
 
 const char *fsck_get_name(void)
@@ -52,12 +52,12 @@ void fsck_init(void)
     int fsck_ret;
 
     /* Mount root file system as read only. */
-    run(remount_ro_arg);
+    libspeedy_run(remount_ro_arg);
 
-    if (file_exists(FILE_FORCECHK)) {
-        fsck_ret = run_system(CMD_FSCK " -A -T -C -a -t "NETFS" -- -f >/dev/stdout 2>/dev/null");
+    if (libspeedy_file_exists(FILE_FORCECHK)) {
+        fsck_ret = libspeedy_system(CMD_FSCK " -A -T -C -a -t "NETFS" -- -f >/dev/stdout 2>/dev/null");
     } else {
-        fsck_ret = run_system(CMD_FSCK " -A -T -C -a -t "NETFS" >/dev/stdout 2>/dev/null");
+        fsck_ret = libspeedy_system(CMD_FSCK " -A -T -C -a -t "NETFS" >/dev/stdout 2>/dev/null");
     }
 
     if (fsck_ret == 2) {
@@ -67,7 +67,7 @@ void fsck_init(void)
         printf("*                                                          *\n");
         printf("************************************************************\n\n");
 
-        run_sleep(15);
+        libspeedy_sleep(15);
         fsck_reboot();
 
     } else if ((fsck_ret > 1) && (fsck_ret == 32)) {
@@ -81,7 +81,7 @@ void fsck_init(void)
         printf("*                                                          *\n");
         printf("************************************************************\n\n");
 
-        run(sulogin_arg);
+        libspeedy_run(sulogin_arg);
         fsck_reboot();
     }
 }

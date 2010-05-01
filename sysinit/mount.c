@@ -30,11 +30,11 @@ const char *mount_get_name(void)
 
 void mount_init(void)
 {        
-    char *const remount1_arg[] = {CMD_MOUNT, "-n", "-o", "remount,rw", "/", NULL};    
-    char *const remount2_arg[] = {CMD_MOUNT, "-o", "remount,rw", "/", NULL};    
+    char *const remount1_arg[] = {CMD_MOUNT, "-n", "-o", "remount,rw", "/", NULL};
+    char *const remount2_arg[] = {CMD_MOUNT, "-o", "remount,rw", "/", NULL};
     char *const mount_arg[] = {CMD_MOUNT, "-a", "-t", NETFS, "-O", "no_netdev", NULL};
     
-    run(remount1_arg);
-    run(remount2_arg);
-    run(mount_arg);
+    libspeedy_run(remount1_arg);
+    libspeedy_run(remount2_arg);
+    libspeedy_run(mount_arg);
 }

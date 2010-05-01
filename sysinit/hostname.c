@@ -27,6 +27,6 @@ const char *hostname_get_name(void)
 
 void hostname_init(void)
 {
-    network_sethostname(hostname); 
+    libspeedy_sethostname(hostname); 
 }
 

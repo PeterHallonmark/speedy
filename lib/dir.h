@@ -16,6 +16,6 @@
 
 #include <stdbool.h>
 
-bool dir_mkdir(const char *pathname, int mode);
+bool libspeedy_mkdir(const char *pathname, int mode);
 
-bool dir_rmdir(const char *pathname);
+bool libspeedy_rmdir(const char *pathname);

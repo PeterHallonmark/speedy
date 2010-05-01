@@ -39,16 +39,16 @@ void udev_init(void)
     char *const udevadm_ctrl0_arg[] = {CMD_UDEVADM, "control", "--property=STARTUP=", NULL};
     char *const udevd_arg[] = {CMD_UDEVD, "--daemon", NULL};
     
-    file_empty(KERNEL_HOTPLUG);
-    run(udevd_arg);
+    libspeedy_file_empty(KERNEL_HOTPLUG);
+    libspeedy_run(udevd_arg);
 
-    run(udevadm_ctrl1_arg);
-    run(udevadm_trigger_arg);
+    libspeedy_run(udevadm_ctrl1_arg);
+    libspeedy_run(udevadm_trigger_arg);
     
     udev_modprobe();
     
-    run(udevadm_settle_arg);
-	run(udevadm_ctrl0_arg);
+    libspeedy_run(udevadm_settle_arg);
+	libspeedy_run(udevadm_ctrl0_arg);
 }
 
 bool udev_modprobe(void)
@@ -59,7 +59,7 @@ bool udev_modprobe(void)
     
     while (modules[i] != NULL) {
         module = modules[i];
-        run(modprobe_arg);
+        libspeedy_run(modprobe_arg);
         i++;
     }
     return true;

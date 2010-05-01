@@ -41,14 +41,14 @@ void start_init(void)
     mount("none", "/sys", "sysfs", 0, NULL);
 
     /* Copy static device nodes to /dev */
-    run_system("/bin/cp -a /lib/udev/devices/* /dev/");
+    libspeedy_system("/bin/cp -a /lib/udev/devices/* /dev/");
 
     /* start up mini logger until syslog takes over */
-    run(minilogd_arg);
+    libspeedy_run(minilogd_arg);
 
-    run(dmesg_arg);
+    libspeedy_run(dmesg_arg);
 
-    run_system(CMD_MODPROBE " rtc-cmos >/dev/null 2>&1");
-    run(mknod_arg);
-    run(ln_arg);
+    libspeedy_system(CMD_MODPROBE " rtc-cmos >/dev/null 2>&1");
+    libspeedy_run(mknod_arg);
+    libspeedy_run(ln_arg);
 }

@@ -30,5 +30,5 @@ const char *depmod_get_name(void)
 void depmod_init(void)
 {
     char *const depmod_arg[] = {CMD_DEPMOD, "-a", NULL};
-    run(depmod_arg);
+    libspeedy_run(depmod_arg);
 }

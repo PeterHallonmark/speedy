@@ -20,7 +20,7 @@
 #include <string.h>
 #include <unistd.h>
 
-bool network_sethostname(const char *hostname)
+bool libspeedy_sethostname(const char *hostname)
 {
     sethostname(hostname, strlen(hostname));
     
@@ -28,7 +28,7 @@ bool network_sethostname(const char *hostname)
 }
 
 
-bool network_setdomainname(const char *nisdomainname) 
+bool libspeedy_setdomainname(const char *nisdomainname) 
 {
     if (strlen(nisdomainname) > 0) {
         setdomainname(nisdomainname, strlen(nisdomainname)); 

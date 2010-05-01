@@ -28,14 +28,14 @@ const char *files_get_name(void)
 
 void files_init(void)
 {    
-    file_remove(FILE_NOLOGIN);
-    file_remove(FILE_SHUTDOWNPID);
-    file_remove_all(PATH_LOCK, false, false);
-    file_remove_all(PATH_TMP, true, true);
-    file_remove(FILE_FORCECHK);
-    file_remove_all(PATH_RUN, true, false);
-    file_empty(FILE_UTMP);
-    file_chmod(FILE_UTMP, 0664);
-    dir_mkdir(DIR_TMP_ICE, 1777);
-    dir_mkdir(DIR_TMP_X11, 1777);
+    libspeedy_file_remove(FILE_NOLOGIN);
+    libspeedy_file_remove(FILE_SHUTDOWNPID);
+    libspeedy_file_remove_all(PATH_LOCK, false, false);
+    libspeedy_file_remove_all(PATH_TMP, true, true);
+    libspeedy_file_remove(FILE_FORCECHK);
+    libspeedy_file_remove_all(PATH_RUN, true, false);
+    libspeedy_file_empty(FILE_UTMP);
+    libspeedy_file_chmod(FILE_UTMP, 0664);
+    libspeedy_mkdir(DIR_TMP_ICE, 1777);
+    libspeedy_mkdir(DIR_TMP_X11, 1777);
 }
