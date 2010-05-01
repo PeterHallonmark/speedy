@@ -26,6 +26,10 @@ const char *end_get_name(void)
 }
 
 void end_init(void)
-{    
+{
+    char ch;
+    
+    printf("end...");
+    scanf("%c",&ch);
     run_system(CMD_DMESG " >| " FILE_DMESG_LOG);
 }

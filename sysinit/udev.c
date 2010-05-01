@@ -53,11 +53,12 @@ void udev_init(void)
 
 bool udev_modprobe(void)
 {
-    char * modprobe_arg[] = {CMD_MODPROBE, NULL, NULL};
+    char * module = NULL;
+    char * modprobe_arg[] = {CMD_MODPROBE, module, NULL};
     int i = 0;
     
     while (modules[i] != NULL) {
-        modprobe_arg[1] = modules[i];
+        module = modules[i];
         run(modprobe_arg);
         i++;
     }

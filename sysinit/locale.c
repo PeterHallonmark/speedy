@@ -74,9 +74,8 @@ void locale_init(void)
 #ifdef UTF8
 bool locale_callback(const char *filename)
 {
-    char * kbdmode_arg[] = {CMD_KBDMODE, "-u", NULL, NULL};
+    char * kbdmode_arg[] = {CMD_KBDMODE, "-u", filename, NULL};
 
-    kbdmode_arg[2] = (char*) filename;
     run(kbdmode_arg);
     file_write(filename, "\033%G");
 
@@ -87,9 +86,8 @@ bool locale_callback(const char *filename)
 #ifdef LEGACY
 bool locale_callback(const char *filename)
 {
-    char * kbdmode_arg[] = {CMD_KBDMODE, "-a", NULL, NULL};
+    char * kbdmode_arg[] = {CMD_KBDMODE, "-a", filename, NULL};
 
-    kbdmode_arg[2] = (char*) filename;
     run(kbdmode_arg);
     file_write(filename, "\033%@");
 
