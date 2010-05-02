@@ -20,9 +20,10 @@
 #include "lib/file.h"
 #include "lib/config.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 
-bool udev_modprobe(void);
+bool udev_modprobe(char * module);
 
 const char *udev_get_name(void)
 {
@@ -38,6 +39,7 @@ void udev_init(void)
     char *const udevadm_settle_arg[] = {CMD_UDEVADM, "settle", NULL};
     char *const udevadm_ctrl0_arg[] = {CMD_UDEVADM, "control", "--property=STARTUP=", NULL};
     char *const udevd_arg[] = {CMD_UDEVD, "--daemon", NULL};
+    int i = 0;
     
     libspeedy_file_empty(KERNEL_HOTPLUG);
     libspeedy_run(udevd_arg);
@@ -45,22 +47,20 @@ void udev_init(void)
     libspeedy_run(udevadm_ctrl1_arg);
     libspeedy_run(udevadm_trigger_arg);
     
-    udev_modprobe();
+    while (modules[i] != 0) {
+        udev_modprobe(modules[i]);
+        i++;
+    }
     
     libspeedy_run(udevadm_settle_arg);
 	libspeedy_run(udevadm_ctrl0_arg);
 }
 
-bool udev_modprobe(void)
+bool udev_modprobe(char * module)
 {
-    char * module = NULL;
     char * modprobe_arg[] = {CMD_MODPROBE, module, NULL};
-    int i = 0;
-    
-    while (modules[i] != NULL) {
-        module = modules[i];
-        libspeedy_run(modprobe_arg);
-        i++;
-    }
+
+    printf("  modprobe %s\n",module);
+    libspeedy_run(modprobe_arg);
     return true;
 }

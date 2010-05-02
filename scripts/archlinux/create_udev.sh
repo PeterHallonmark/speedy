@@ -25,7 +25,7 @@ create_udev()
     for module in "${MODULES[@]}"; do
         printf "\"%s\", " $module >> $filename
     done
-    printf "\"NULL\"};" >> $filename
+    printf "0};" >> $filename
 }
 
 create_udev $@
