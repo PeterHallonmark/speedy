@@ -72,3 +72,5 @@ clean :
 .NOTPARALLEL: $(build) copy init
 
 .PHONY: init clean all release debug copy build_objects
+
+.SUFFIXES:

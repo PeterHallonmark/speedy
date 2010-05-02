@@ -40,3 +40,5 @@ sysinit/%.h: sysinit/%.h_gen sysinit tmp .update
 .DEFAULT: update
 
 .PHONY: update init
+
+.SUFFIXES:
