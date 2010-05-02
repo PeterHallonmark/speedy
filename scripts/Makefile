@@ -100,3 +100,5 @@ object_test : .status/init core/*.o lib/*.o sysinit/*.o \
 .PHONY: debug release init init_release init_debug reinit clean build_objects
 
 .SILENT: .status .status/release .status/debug
+
+.SUFFIXES:
