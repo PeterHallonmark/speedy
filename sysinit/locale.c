@@ -59,11 +59,11 @@ void locale_init(void)
     libspeedy_file_tty_action(locale_callback);
 
 #ifdef UTF8
-    libspeedy_file_write(FILE_PROFILE_LOCALE, "if [ \"$CONSOLE\" = \"\" -a \"$TERM\" = "
+    libspeedy_file_append(FILE_PROFILE_LOCALE, "if [ \"$CONSOLE\" = \"\" -a \"$TERM\" = "
                "\"linux\" -a -t 1 ]; then printf \"\\033%%G\"; fi");
 #endif /* UTF8 */
 #ifdef LEGACY
-    libspeedy_file_write(FILE_PROFILE_LOCALE, "if [ \"$CONSOLE\" = \"\" -a \"$TERM\" = "
+    libspeedy_file_append(FILE_PROFILE_LOCALE, "if [ \"$CONSOLE\" = \"\" -a \"$TERM\" = "
                "\"linux\" -a -t 1 ]; then printf \"\\033%%@\"; fi");
 #endif /* LEGACY */
 #ifdef KEYMAP

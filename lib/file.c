@@ -211,15 +211,33 @@ bool libspeedy_file_chmod(const char *pathname, int mode)
 bool libspeedy_file_write(const char *filename, const char *text)
 {
     FILE* file = fopen(filename, "w+");
-    
+
     if (file == NULL) {
         return false;
     }
-    fwrite(text, 1, strlen(text), file);
+
+    fwrite(text, sizeof(char) , strlen(text), file);
+    printf("  write: %s to %s\n",text,filename);
     fclose(file);
     
     return true;
 }
+
+bool libspeedy_file_append(const char *filename, const char *text)
+{
+    FILE* file = fopen(filename, "a+");
+
+    if (file == NULL) {
+        return false;
+    }
+
+    fwrite(text, sizeof(char) , strlen(text), file);
+    printf("  write: %s to %s\n",text,filename);
+    fclose(file);
+
+    return true;
+}
+
 
 bool libspeedy_file_tty_action(bool (*callback)(char *filename))
 {

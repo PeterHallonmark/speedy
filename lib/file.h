@@ -32,4 +32,6 @@ bool libspeedy_file_chmod(const char *pathname, int mode);
 
 bool libspeedy_file_write(const char *filename, const char *text);
 
+bool libspeedy_file_append(const char *filename, const char *text);
+
 bool libspeedy_file_tty_action(bool (*callback)(char *filename));
