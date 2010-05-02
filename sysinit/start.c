@@ -18,6 +18,7 @@
 #include "config/start.h"
 #include "lib/run.h"
 #include "lib/config.h"
+#include "lib/modprobe.h"
 
 #include <sys/mount.h> 
 #include <stdlib.h>
@@ -48,7 +49,7 @@ void start_init(void)
 
     libspeedy_run(dmesg_arg);
 
-    libspeedy_system(CMD_MODPROBE " rtc-cmos >/dev/null 2>&1");
+    libspeedy_modprobe("rtc-cmos");
     libspeedy_run(mknod_arg);
     libspeedy_run(ln_arg);
 }
