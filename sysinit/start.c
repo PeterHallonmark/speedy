@@ -20,8 +20,8 @@
 #include "lib/config.h"
 #include "lib/modprobe.h"
 
+#include <unistd.h>
 #include <sys/mount.h> 
-#include <stdlib.h>
 
 const char *start_get_name(void)
 {

@@ -84,6 +84,6 @@
 
 #define DEV_RTC "/dev/rtc"
 
-#define DEV_RTC_0 DEV_RTC"0"
+#define DEV_RTC_0 "/dev/rtc0"
 
 #define KERNEL_HOTPLUG "/proc/sys/kernel/hotplug"
