@@ -31,7 +31,7 @@
 #define LEGACY
 #endif
 
-bool locale_callback(const char *filename);
+bool locale_callback(char *filename);
 
 
 const char *locale_get_name(void)
@@ -72,7 +72,7 @@ void locale_init(void)
 }
 
 #ifdef UTF8
-bool locale_callback(const char *filename)
+bool locale_callback(char *filename)
 {
     char * kbdmode_arg[] = {CMD_KBDMODE, "-u", filename, NULL};
 
@@ -84,7 +84,7 @@ bool locale_callback(const char *filename)
 #endif /* UTF8 */
 
 #ifdef LEGACY
-bool locale_callback(const char *filename)
+bool locale_callback(char *filename)
 {
     char * kbdmode_arg[] = {CMD_KBDMODE, "-a", filename, NULL};
 

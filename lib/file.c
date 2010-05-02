@@ -221,7 +221,7 @@ bool libspeedy_file_write(const char *filename, const char *text)
     return true;
 }
 
-bool libspeedy_file_tty_action(bool (*callback)(const char *filename))
+bool libspeedy_file_tty_action(bool (*callback)(char *filename))
 {
     DIR *dir;
     struct dirent *content;
