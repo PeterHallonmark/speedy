@@ -27,7 +27,6 @@ bool libspeedy_modprobe(char * module)
     char * modprobe_arg[] = {CMD_MODPROBE, module, NULL};
 
     libspeedy_run(modprobe_arg);
-    printf("  modprobe %s\n", module);
     return true;
 }
 

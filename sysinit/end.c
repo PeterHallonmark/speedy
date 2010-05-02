@@ -31,7 +31,7 @@ void end_init(void)
 {
     char ch;
     
-    printf("end...");
-    scanf("%c",&ch);
+    /*printf("end...");
+    scanf("%c",&ch);*/
     libspeedy_system(CMD_DMESG " >| " FILE_DMESG_LOG);
 }

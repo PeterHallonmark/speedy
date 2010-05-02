@@ -217,7 +217,6 @@ bool libspeedy_file_write(const char *filename, const char *text)
     }
 
     fwrite(text, sizeof(char) , strlen(text), file);
-    printf("  write: %s to %s\n",text,filename);
     fclose(file);
     
     return true;
@@ -232,7 +231,6 @@ bool libspeedy_file_append(const char *filename, const char *text)
     }
 
     fwrite(text, sizeof(char) , strlen(text), file);
-    printf("  write: %s to %s\n",text,filename);
     fclose(file);
 
     return true;
