@@ -91,7 +91,7 @@ lib/%.o: lib/%.c lib/*.c .status/$(target)
 	$(CC) $(CFLAGS) -I. -c $< -o $@
     
 speedy : $(files:.c=.o) $(header_files) .status/init .status/$(target)
-	$(CC) -o speedy $(files:.c=.o)
+	$(CC) -o speedy -lpthread $(files:.c=.o)
 
 object_test : .status/init core/*.o lib/*.o sysinit/*.o \
               core/*.h lib/*.h sysinit/*.h

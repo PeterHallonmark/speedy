@@ -14,39 +14,18 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-#include "core_type.h"
-#include "config_sysinit.h"
-#include "config_daemons.h"
+#include "test_thread2.h"
+#include "lib/run.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-
-#include <pthread.h>
-
-void *thread_function(void *dummyPtr)
+const char *test_thread2_get_name(void)
 {
-    printf("Pthread test1\n");
+    static const char priv_name[] = "test_thread2";
+    
+    return priv_name;
 }
 
-int main(void)
+void test_thread2_init(void)
 {
-    pthread_t thread1;
-
-	int daemon_size = sizeof(daemons) / sizeof(service_t);
-	int sysinit_size = sizeof(sysinit) / sizeof(service_t);
-	int i;
-	
-	for (i = 0; i < sysinit_size; i++) {
-		if (sysinit[i].get_name != NULL) {
-            printf("%s\n",sysinit[i].get_name());
-        }
-        if (sysinit[i].init != NULL) {
-            sysinit[i].init();
-        }
-	}
-    pthread_create( &thread1, NULL, thread_function, NULL);
-    pthread_join(thread1, NULL);
-    printf("Pthread test2\n");
-
-	return 0;
+    libspeedy_sleep(1);
 }
+
