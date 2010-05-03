@@ -16,6 +16,8 @@
 
 const char *test_thread6_get_name(void);
 
-void test_thread6_init(void);
+const char *test_thread6_provides(void);
 
 const char ** test_thread6_get_dependency(void);
+
+void test_thread6_init(void);

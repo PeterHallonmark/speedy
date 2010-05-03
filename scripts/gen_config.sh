@@ -60,9 +60,10 @@ add_daemons()
         else
             printf "%13s\n" "}, {" >> $filename
         fi
-        add_function "init" $daemon_name $filename $path ","
         add_function "get_name" $daemon_name $filename $path ","
+        add_function "provides" $daemon_name $filename $path ","
         add_function "get_dependency" $daemon_name $filename $path ","
+        add_function "init" $daemon_name $filename $path ","
         add_function "shutdown" $daemon_name $filename $path ""
     }
      

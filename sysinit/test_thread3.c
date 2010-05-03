@@ -26,9 +26,9 @@ const char *test_thread3_get_name(void)
     return priv_name;
 }
 
-void test_thread3_init(void)
+const char *test_thread3_provides(void)
 {
-    libspeedy_sleep(1);
+    return test_thread3_get_name();
 }
 
 const char ** test_thread3_get_dependency(void)
@@ -36,4 +36,9 @@ const char ** test_thread3_get_dependency(void)
     static const char* priv_dependency[] = {"test_thread4", NULL};
 
     return priv_dependency;
+}
+
+void test_thread3_init(void)
+{
+    libspeedy_sleep(1);
 }
