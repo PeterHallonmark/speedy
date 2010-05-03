@@ -26,14 +26,15 @@ bool libspeedy_modprobe(char * module)
 {
     char * modprobe_arg[] = {CMD_MODPROBE, module, NULL};
 
-    libspeedy_run(modprobe_arg);
-    return true;
+    return libspeedy_run(modprobe_arg);
 }
 
 bool libspeedy_modprobe_list(char * const * modules)
 {
     while (*modules != NULL) {
-        libspeedy_modprobe(*modules);
+        if (!libspeedy_modprobe(*modules)) {
+            return false;
+        }
         modules++;
     }
     return true;

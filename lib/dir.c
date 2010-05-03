@@ -16,21 +16,16 @@
 
 #include "dir.h"
 
-#include <stdbool.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
 bool libspeedy_mkdir(const char *pathname, int mode)
 {
-    mkdir(pathname, mode);
-    
-    return true;
+    return (mkdir(pathname, mode) == 0);
 }
 
 bool libspeedy_rmdir(const char *pathname)
 {
-    rmdir(pathname);
-    
-    return true;
+    return (rmdir(pathname) == 0);
 }

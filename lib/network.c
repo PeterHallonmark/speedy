@@ -22,17 +22,14 @@
 
 bool libspeedy_sethostname(const char *hostname)
 {
-    sethostname(hostname, strlen(hostname));
-    
-    return true;
+    return (sethostname(hostname, strlen(hostname)) == 0);
 }
 
 
 bool libspeedy_setdomainname(const char *nisdomainname) 
 {
     if (strlen(nisdomainname) > 0) {
-        setdomainname(nisdomainname, strlen(nisdomainname)); 
-        return true;
+        return (setdomainname(nisdomainname, strlen(nisdomainname)) == 0);
     }
 
     return false;

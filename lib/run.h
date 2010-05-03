@@ -14,9 +14,11 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
  
-int libspeedy_run(char *const argv[]);
+#include <stdbool.h>
+
+bool libspeedy_run(char *const argv[]);
  
-int libspeedy_system(const char *command);
+bool libspeedy_system(const char *command);
 
 void libspeedy_exit(int code);
 

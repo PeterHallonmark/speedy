@@ -154,9 +154,7 @@ bool libspeedy_file_empty(const char *destination)
 
 bool libspeedy_file_remove(const char *destination)
 {
-    remove(destination);
-    
-    return true;
+    return (remove(destination) == 0);
 }
 
 
@@ -203,9 +201,7 @@ bool libspeedy_file_remove_all(const char *dest_path, bool recursive, bool remov
 
 bool libspeedy_file_chmod(const char *pathname, int mode)
 {
-    chmod(pathname, mode);
-    
-    return true;
+    return (chmod(pathname, mode) == 0);
 }
 
 bool libspeedy_file_write(const char *filename, const char *text)
