@@ -26,27 +26,40 @@
 void *thread_function(void *dummyPtr)
 {
     printf("Pthread test1\n");
+
+    return 0;
 }
 
 int main(void)
 {
     pthread_t thread1;
 
-	int daemon_size = sizeof(daemons) / sizeof(service_t);
-	int sysinit_size = sizeof(sysinit) / sizeof(service_t);
-	int i;
-	
-	for (i = 0; i < sysinit_size; i++) {
-		if (sysinit[i].get_name != NULL) {
+    int daemon_size = sizeof(daemons) / sizeof(service_t);
+    int sysinit_size = sizeof(sysinit) / sizeof(service_t);
+    const char **dependency;
+    int i;
+
+    for (i = 0; i < sysinit_size; i++) {
+        if (sysinit[i].get_name != NULL) {
             printf("%s\n",sysinit[i].get_name());
+        }
+        if (sysinit[i].get_dependency != NULL) {
+            printf("  dep: ");
+            dependency = sysinit[i].get_dependency();
+            while (*dependency != NULL) {
+                printf("%s ",*dependency);
+                dependency++;
+            }
+            printf("\n");
         }
         if (sysinit[i].init != NULL) {
             sysinit[i].init();
         }
-	}
+
+    }
     pthread_create( &thread1, NULL, thread_function, NULL);
     pthread_join(thread1, NULL);
     printf("Pthread test2\n");
 
-	return 0;
+    return 0;
 }

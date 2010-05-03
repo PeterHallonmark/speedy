@@ -17,6 +17,8 @@
 #include "test_thread5.h"
 #include "lib/run.h"
 
+#include <stdlib.h>
+
 const char *test_thread5_get_name(void)
 {
     static const char priv_name[] = "test_thread5";
@@ -27,5 +29,12 @@ const char *test_thread5_get_name(void)
 void test_thread5_init(void)
 {
     libspeedy_sleep(1);
+}
+
+const char ** test_thread5_get_dependency(void)
+{
+    static const char* priv_dependency[] = {"test_thread6", NULL};
+
+    return priv_dependency;
 }
 

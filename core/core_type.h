@@ -15,7 +15,8 @@
 */
 
 typedef struct {
-    const char* (*get_name)(void);
     void (*init)(void);
+    const char* (*get_name)(void);
+    const char** (*get_dependency)(void);
     void (*shutdown)(void);
 } service_t;
