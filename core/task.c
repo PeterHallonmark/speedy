@@ -25,9 +25,27 @@ task_t * task_init(service_t *service)
     return task;
 }
 
+const char * task_get_name(task_t *task)
+{
+    if (task->service->get_name != NULL) {
+        return task->service->get_name();
+    }
+    return NULL;
+}
+
+const char * task_provides(task_t *task)
+{
+    if (task->service->provides != NULL) {
+        return task->service->provides();
+    }
+    return NULL;
+}
+
 bool task_run(task_t *task)
 {
-    task->service->initialization();
+    if (task->service->initialization != NULL) {
+        task->service->initialization();
+    }
 }
 
 void task_deinit(task_t *task)
