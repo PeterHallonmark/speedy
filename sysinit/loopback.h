@@ -16,4 +16,4 @@
 
 const char *loopback_get_name(void);
 
-void loopback_init(void);
+void loopback_initialization(void);

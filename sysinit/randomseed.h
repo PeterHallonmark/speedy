@@ -16,4 +16,4 @@
 
 const char *randomseed_get_name(void);
 
-void randomseed_init(void);
+void randomseed_initialization(void);

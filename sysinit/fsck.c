@@ -44,7 +44,7 @@ const char *fsck_get_name(void)
     return priv_fsck_name;
 }
 
-void fsck_init(void)
+void fsck_initialization(void)
 {   
     char *const remount_ro_arg[] = {CMD_MOUNT, "-n", "-o", "remount,ro", "/", NULL};    
     char *const sulogin_arg[] = {CMD_SULOGIN, "-p", NULL};    

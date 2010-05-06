@@ -28,7 +28,7 @@ const char *mount_get_name(void)
     return priv_mount_name;
 }
 
-void mount_init(void)
+void mount_initialization(void)
 {        
     char *const remount1_arg[] = {CMD_MOUNT, "-n", "-o", "remount,rw", "/", NULL};
     char *const remount2_arg[] = {CMD_MOUNT, "-o", "remount,rw", "/", NULL};

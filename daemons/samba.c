@@ -17,7 +17,7 @@
 #include <stdio.h>
 #include "samba.h"
 
-void samba_init(void)
+void samba_initialization(void)
 {
     printf("samba init\n");
 }

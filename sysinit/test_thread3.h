@@ -20,4 +20,4 @@ const char *test_thread3_provides(void);
 
 const char ** test_thread3_get_dependency(void);
 
-void test_thread3_init(void);
+void test_thread3_initialization(void);

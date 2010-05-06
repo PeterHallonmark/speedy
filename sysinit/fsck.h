@@ -16,4 +16,4 @@
 
 const char *fsck_get_name(void);
 
-void fsck_init(void);
+void fsck_initialization(void);

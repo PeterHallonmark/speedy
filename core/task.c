@@ -27,7 +27,7 @@ task_t * task_init(service_t *service)
 
 bool task_run(task_t *task)
 {
-    task->service->init();
+    task->service->initialization();
 }
 
 void task_deinit(task_t *task)

@@ -41,7 +41,7 @@ const char *locale_get_name(void)
     return priv_locale_name;
 }
 
-void locale_init(void)
+void locale_initialization(void)
 {
 #ifdef KEYMAP
 #ifdef UTF8

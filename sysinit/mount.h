@@ -16,4 +16,4 @@
 
 const char *mount_get_name(void);
 
-void mount_init(void);
+void mount_initialization(void);

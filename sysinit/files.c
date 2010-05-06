@@ -26,7 +26,7 @@ const char *files_get_name(void)
     return priv_files_name;
 }
 
-void files_init(void)
+void files_initialization(void)
 {    
     libspeedy_file_remove(FILE_NOLOGIN);
     libspeedy_file_remove(FILE_SHUTDOWNPID);

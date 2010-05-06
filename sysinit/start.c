@@ -30,7 +30,7 @@ const char *start_get_name(void)
     return priv_start_name;
 }
 
-void start_init(void)
+void start_initialization(void)
 {    
     char *const minilogd_arg[] = {CMD_MINILOGD, NULL};
     char *const dmesg_arg[] = {CMD_DMESG, "-n", "3", NULL};

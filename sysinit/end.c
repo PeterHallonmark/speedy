@@ -27,7 +27,7 @@ const char *end_get_name(void)
     return priv_end_name;
 }
 
-void end_init(void)
+void end_initialization(void)
 {
     char ch;
     

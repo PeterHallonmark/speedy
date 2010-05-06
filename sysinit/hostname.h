@@ -16,4 +16,4 @@
 
 const char *hostname_get_name(void);
 
-void hostname_init(void);
+void hostname_initialization(void);

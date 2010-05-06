@@ -18,6 +18,6 @@ typedef struct {
     const char* (*get_name)(void);
     const char* (*provides)(void);
     const char** (*get_dependency)(void);
-    void (*init)(void);
+    void (*initialization)(void);
     void (*shutdown)(void);
 } service_t;

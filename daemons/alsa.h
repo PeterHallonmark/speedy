@@ -14,6 +14,6 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-void alsa_init(void);
+void alsa_initialization(void);
 
 void alsa_shutdown(void);

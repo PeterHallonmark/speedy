@@ -16,4 +16,4 @@
 
 const char *start_get_name(void);
 
-void start_init(void);
+void start_initialization(void);

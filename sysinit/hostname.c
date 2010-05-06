@@ -25,7 +25,7 @@ const char *hostname_get_name(void)
     return priv_hostname_name;
 }
 
-void hostname_init(void)
+void hostname_initialization(void)
 {
     libspeedy_sethostname(hostname); 
 }

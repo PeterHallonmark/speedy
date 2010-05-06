@@ -27,7 +27,7 @@ const char *randomseed_get_name(void)
     return priv_randomseed_name;
 }
 
-void randomseed_init(void)
+void randomseed_initialization(void)
 {
     system("cat " FILE_RANDOMSEED " > /dev/urandom");
 }

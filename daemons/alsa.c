@@ -17,7 +17,7 @@
 #include <stdio.h>
 #include "alsa.h"
 
-void alsa_init(void)
+void alsa_initialization(void)
 {
     printf("alsa init\n");
 }

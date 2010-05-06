@@ -20,5 +20,5 @@ const char *test_thread4_provides(void);
 
 const char ** test_thread4_get_dependency(void);
 
-void test_thread4_init(void);
+void test_thread4_initialization(void);
 

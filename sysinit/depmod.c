@@ -27,7 +27,7 @@ const char *depmod_get_name(void)
     return priv_depmod_name;
 }
 
-void depmod_init(void)
+void depmod_initialization(void)
 {
     char *const depmod_arg[] = {CMD_DEPMOD, "-a", NULL};
     libspeedy_run(depmod_arg);

@@ -16,4 +16,4 @@
 
 const char *end_get_name(void);
 
-void end_init(void);
+void end_initialization(void);

@@ -27,7 +27,7 @@ const char *loopback_get_name(void)
     return priv_loopback_name;
 }
 
-void loopback_init(void)
+void loopback_initialization(void)
 {    
     char *const loopback_arg[] = {CMD_IFCONFIG, "lo", "127.0.0.1", "up", NULL};
     

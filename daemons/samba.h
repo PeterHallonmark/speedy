@@ -14,6 +14,6 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-void samba_init(void);
+void samba_initialization(void);
 
 void samba_shutdown(void);

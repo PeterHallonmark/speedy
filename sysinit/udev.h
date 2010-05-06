@@ -16,4 +16,4 @@
 
 const char *udev_get_name(void);
 
-void udev_init(void);
+void udev_initialization(void);

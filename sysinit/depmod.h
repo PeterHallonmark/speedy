@@ -16,4 +16,4 @@
 
 const char *depmod_get_name(void);
 
-void depmod_init(void);
+void depmod_initialization(void);

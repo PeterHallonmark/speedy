@@ -78,8 +78,8 @@ int main(void)
             }
             printf("\n");
         }
-        if (sysinit[i].init != NULL) {
-            sysinit[i].init();
+        if (sysinit[i].initialization != NULL) {
+            sysinit[i].initialization();
         }
 
     }

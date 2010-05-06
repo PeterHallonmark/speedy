@@ -14,6 +14,6 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-void network_init(void);
+void network_initialization(void);
 
 void network_shutdown(void);

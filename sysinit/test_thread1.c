@@ -38,7 +38,7 @@ const char ** test_thread1_get_dependency(void)
     return priv_dependency;
 }
 
-void test_thread1_init(void)
+void test_thread1_initialization(void)
 {
     libspeedy_sleep(1);
 }

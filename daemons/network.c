@@ -17,7 +17,7 @@
 #include <stdio.h>
 #include "network.h"
 
-void network_init(void)
+void network_initialization(void)
 {
     printf("network init\n");
 }
