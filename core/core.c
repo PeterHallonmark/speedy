@@ -23,9 +23,32 @@
 
 #include <pthread.h>
 
-void *thread_function(void *dummyPtr)
+
+pthread_t start;
+
+void *thread_function1(void *dummyPtr)
 {
+    pthread_join(start, NULL);
     printf("Pthread test1\n");
+
+    return 0;
+}
+
+void *thread_function2(void *dummyPtr)
+{
+    pthread_join(start, NULL);
+    printf("Pthread test2\n");
+
+    return 0;
+}
+
+
+void *start_function(void *dummyPtr)
+{
+    char ch;
+
+    scanf("%c",&ch);
+    printf("Start1\n");
 
     return 0;
 }
@@ -33,11 +56,14 @@ void *thread_function(void *dummyPtr)
 int main(void)
 {
     pthread_t thread1;
+    pthread_t thread2;
 
     int daemon_size = sizeof(daemons) / sizeof(service_t);
     int sysinit_size = sizeof(sysinit) / sizeof(service_t);
     const char **dependency;
     int i;
+
+    pthread_create( &start, NULL, start_function, NULL);
 
     for (i = 0; i < sysinit_size; i++) {
         if (sysinit[i].get_name != NULL) {
@@ -57,9 +83,16 @@ int main(void)
         }
 
     }
-    pthread_create( &thread1, NULL, thread_function, NULL);
+
+    pthread_create( &thread1, NULL, thread_function1, NULL);
+    pthread_create( &thread2, NULL, thread_function2, NULL);
+
+
+
+
     pthread_join(thread1, NULL);
-    printf("Pthread test2\n");
+    pthread_join(thread2, NULL);
+    printf("Pthread join\n");
 
     return 0;
 }
