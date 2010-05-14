@@ -24,3 +24,4 @@ unsigned int hash_generate(const char *key)
 {
     return MurmurHashNeutral2((void *) key, strlen(key), 0);
 }
+
