@@ -36,6 +36,13 @@ typedef struct queue_t {
 queue_t * queue_create(void);
 
 /*!
+ * Initializes a queue.
+ *
+ * \param this_ptr - A pointer to the queue
+ */
+void queue_init(queue_t * this_ptr);
+
+/*!
  * Gets the next data item from the queue.
  *
  * \return A pointer to the data item which has been fetched from the queue.
@@ -78,6 +85,13 @@ int queue_next(queue_t *this_ptr);
  * \return The data from the current position in the queue.
  */
 data_t * queue_get_current(queue_t * this_ptr);
+
+/*!
+ *  Deinitializes the queue.
+ *
+ * \param this_ptr - A pointer to the queue
+ */
+void queue_deinit(queue_t *this_ptr);
 
 /*!
  *  Remove the queue.

@@ -18,21 +18,33 @@
 
 observer_t *observer_create(void)
 {
-    observer_t * observer = (observer_t*) malloc(sizeof(observer_t));
-    pthread_mutex_init(&observer->mutex, NULL);
+    observer_t * this_ptr = (observer_t*) malloc(sizeof(observer_t));
+    pthread_mutex_init(&this_ptr->mutex, NULL);
 
-    return observer;
+    return this_ptr;
 }
 
-void observer_notify(observer_t *observer)
+observer_t *observer_init(observer_t *this_ptr)
 {
-    pthread_mutex_lock(&observer->mutex);
+    pthread_mutex_init(&this_ptr->mutex, NULL);
+}
+
+void observer_notify(observer_t *this_ptr)
+{
+    pthread_mutex_lock(&this_ptr->mutex);
     /* put callback function here. */
-    pthread_mutex_unlock(&observer->mutex);
+    pthread_mutex_unlock(&this_ptr->mutex);
 }
 
-void observer_destroy(observer_t *observer)
+void observer_deinit(observer_t *this_ptr)
 {
-    pthread_mutex_destroy(observer->mutex);
-    free(observer);
+    pthread_mutex_destroy(this_ptr->mutex);
+}
+
+
+void observer_destroy(observer_t *this_ptr)
+{
+    observer_deinit();
+    free(this_ptr);
+    this_ptr = NULL;
 }

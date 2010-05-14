@@ -25,10 +25,14 @@ typedef struct node_t {
 queue_t * queue_create(void)
 {
     queue_t * this_ptr = (queue_t*) malloc(sizeof(queue_t));
+    queue_init(queue);
+    return this_ptr;
+}
+void queue_create(queue_t *this_ptr)
+{
     this_ptr->first = NULL;
     this_ptr->last = NULL;
     this_ptr->current = NULL;
-    return this_ptr;
 }
 
 data_t * queue_pop(queue_t *this_ptr)
@@ -104,11 +108,13 @@ data_t * queue_current(queue_t * this_ptr)
     return data;
 }
 
-void queue_destroy(queue_t *this_ptr)
+void queue_deinit(queue_t *this_ptr)
 {
-    node_t * node;
-
     while(queue_pop(this_ptr) != NULL) {
     }
+}
+
+void queue_destroy(queue_t *this_ptr)
+{
     free(this_ptr);
 }

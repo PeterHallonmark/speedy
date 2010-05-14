@@ -15,17 +15,24 @@
 */
 
 struct observer_t;
+struct queue_t;
 
 typedef struct subject_t {
     struct observer_t observer; /*!< C inheritance of the observer. */
+    struct queue_t queue;
 } subject_t;
 
 /*!
- * Creates a subject which then is initialized.
+ * Creates and initializes a subject.
  *
  * \return A pointer to the created subject.
  */
 subject_t *subject_create(void);
+
+/*!
+ * Initializes a subject.
+ */
+subject_t *subject_init(subject_t *this_ptr);
 
 /*!
  * Attached an observer to a subject.
@@ -42,5 +49,7 @@ int subject_attach(subject_t *this_ptr, struct observer_t *observer);
 int subject_detach(subject_t *this_ptr, struct observer_t *observer);
 
 void subject_notify(subject_t *this_ptr, void *arg);
+
+void subject_deinit(subject_t *this_ptr);
 
 void subject_destroy(subject_t *this_ptr);

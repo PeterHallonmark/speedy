@@ -15,32 +15,48 @@
 */
 
 #include "observer.h"
+#include "queue.h"
 #include "subject.h"
+
 
 #include <stdlib.h>
 
 subject_t *subject_create(void)
 {
-    subject_t * subject = (subject_t*) malloc(sizeof(subject_t));
-    return subject;
+    subject_t *this_ptr = (subject_t*) malloc(sizeof(subject_t));
+    subject_init(this_ptr);
+    return this_ptr;
 }
 
-int subject_attach(subject_t *subject, observer_t *observer)
+void subject_init(subject_t *this_ptr)
+{
+    queue_init(this_ptr->queue);
+    observer_init(this_ptr->queue);
+}
+
+int subject_attach(subject_t *this_ptr, observer_t *observer)
+{
+    return queue_push(this_ptr->queue, (void*) observer);
+}
+
+int subject_detach(subject_t *this_ptr, observer_t *observer)
+{
+    /* TODO: Need to detach observer. */
+}
+
+void subject_notify(subject_t *this_ptr, void *arg)
 {
 
 }
 
-int subject_detach(subject_t *subject, observer_t *observer)
+void subject_deinit(subject_t *this_ptr)
 {
-
+    queue_deinit(this_ptr->queue);
+    observer_deinit(this_ptr->queue);
 }
 
-void subject_notify(subject_t *subject, void *arg)
+void subject_destroy(subject_t *this_ptr)
 {
-
-}
-
-void subject_destroy(subject_t *subject)
-{
+    subject_deinit(this_ptr);
     free(subject);
 }

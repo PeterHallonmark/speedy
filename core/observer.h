@@ -16,12 +16,33 @@
 
 #include <pthread.h>
 
+/*!
+ * A type definition of an observer object which is used to keep track of the
+ * internal state of a specific observer.
+ */
 typedef struct observer_t {
+    /*! A mutex which makes sure that only one subject is dealing with an
+     *  observer. */
     pthread_mutex_t mutex;
 } observer_t;
 
+/*!
+ * Creates and initializes an observer.
+ *
+ * \return A newly created observer.
+ */
 observer_t *observer_create(void);
 
-void observer_notify(observer_t *observer);
+/*!
+ * Initializes an observer.
+ */
+void observer_init(observer_t *this_ptr);
 
-void observer_destroy(observer_t *observer);
+void observer_notify(observer_t *this_ptr);
+
+/*!
+ * Deinitializes an observer.
+ */
+void observer_deinit(observer_t *this_ptr);
+
+void observer_destroy(observer_t *this_ptr);
