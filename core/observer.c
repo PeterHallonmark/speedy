@@ -16,15 +16,22 @@
 
 #include "observer.h"
 
-observer_t *observer_create(void)
+/*!
+ * Creates and initializes an observer.
+ *
+ * \return A newly created observer.
+ */
+observer_t * observer_create(void)
 {
     observer_t * this_ptr = (observer_t*) malloc(sizeof(observer_t));
-    pthread_mutex_init(&this_ptr->mutex, NULL);
-
+    observer_init(this_ptr);
     return this_ptr;
 }
 
-observer_t *observer_init(observer_t *this_ptr)
+/*!
+ * Initializes an observer.
+ */
+void observer_init(observer_t *this_ptr)
 {
     pthread_mutex_init(&this_ptr->mutex, NULL);
 }
@@ -36,6 +43,9 @@ void observer_notify(observer_t *this_ptr)
     pthread_mutex_unlock(&this_ptr->mutex);
 }
 
+/*!
+ * Deinitializes an observer.
+ */
 void observer_deinit(observer_t *this_ptr)
 {
     pthread_mutex_destroy(this_ptr->mutex);

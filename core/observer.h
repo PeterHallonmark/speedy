@@ -26,23 +26,10 @@ typedef struct observer_t {
     pthread_mutex_t mutex;
 } observer_t;
 
-/*!
- * Creates and initializes an observer.
- *
- * \return A newly created observer.
- */
 observer_t *observer_create(void);
-
-/*!
- * Initializes an observer.
- */
 void observer_init(observer_t *this_ptr);
 
 void observer_notify(observer_t *this_ptr);
 
-/*!
- * Deinitializes an observer.
- */
 void observer_deinit(observer_t *this_ptr);
-
 void observer_destroy(observer_t *this_ptr);
