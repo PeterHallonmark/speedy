@@ -58,7 +58,15 @@ int subject_attach(subject_t *this_ptr, observer_t *observer)
  */
 int subject_detach(subject_t *this_ptr, observer_t *observer)
 {
-    /* TODO: Need to detach observer. */
+    observer_t *current;
+
+    queue_first(&this_ptr->queue);
+    while((current = queue_get_current(&this_ptr->queue)) != NULL) {
+        if (current == observer) {
+            queue_remove_current(&this_ptr->queue);
+        }
+        queue_next(&this_ptr->queue);
+    }
     return 0;
 }
 
