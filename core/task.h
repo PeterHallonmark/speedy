@@ -14,19 +14,21 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-#include "core_type.h"
+
 #include <stdbool.h>
 
+struct service_t;
+struct subject_t;
+
 typedef struct {
+    subject_t task;
     service_t *service;
 } task_t;
 
 task_t * task_init(service_t *service);
 
 const char * task_get_name(task_t *task);
-
 const char * task_provides(task_t *task);
-
 bool task_run(task_t *task);
 
 void task_deinit(task_t *task);

@@ -14,41 +14,45 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
+#include "core_type.h"
+#include "subject.h"
 #include "task.h"
+
 #include <stdlib.h>
 
 task_t * task_init(service_t *service)
 {
-    task_t * task = (task_t*) malloc(sizeof(task_t));
-
-    task->service = service;
+    task_t * this_ptr = (task_t*) malloc(sizeof(task_t));
+    subject_init(&this_ptr->task);
+    this_ptr->service = service;
     return task;
 }
 
-const char * task_get_name(task_t *task)
+const char * task_get_name(task_t *this_ptr)
 {
-    if (task->service->get_name != NULL) {
-        return task->service->get_name();
+    if (this_ptr->service->get_name != NULL) {
+        return this_ptr->service->get_name();
     }
     return NULL;
 }
 
-const char * task_provides(task_t *task)
+const char * task_provides(task_t *this_ptr)
 {
-    if (task->service->provides != NULL) {
-        return task->service->provides();
+    if (this_ptr->service->provides != NULL) {
+        return this_ptr->service->provides();
     }
     return NULL;
 }
 
-bool task_run(task_t *task)
+bool task_run(task_t *this_ptr)
 {
-    if (task->service->initialization != NULL) {
-        task->service->initialization();
+    if (this_ptr->service->initialization != NULL) {
+        this_ptr->service->initialization();
     }
 }
 
-void task_deinit(task_t *task)
+void task_deinit(task_t *this_ptr)
 {
-    free(task);
+    subject_deinit(&this_ptr->task);
+    free(this_ptr);
 }
