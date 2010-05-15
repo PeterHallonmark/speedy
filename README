@@ -5,8 +5,7 @@ the code modularized.
 
 Things that currently are on my TODO list:
 ------------------------------------------
-* Read rc.conf (and others) with a script and generate config files which 
-  contains information about for example locale settings, hostname, modules.
+* Multithreaded with dependency functionality
 
 * Make it possible to lanch daemons that are not implemented in C. Pretty much
   generate code to run anything from /etc/rc.d/* 
@@ -14,8 +13,6 @@ Things that currently are on my TODO list:
 
 Future improvements:
 --------------------
-* Multithreaded with dependency functionality
-
 * Add init functionality so it can replace sysvinit 
 
 * Add support for LVM and other stuff that I don't use.
