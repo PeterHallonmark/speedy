@@ -40,13 +40,10 @@ int queue_push(queue_t *this_ptr, data_t* data);
 
 int queue_first(queue_t *this_ptr);
 int queue_last(queue_t *this_ptr);
-
 int queue_next(queue_t *this_ptr);
 int queue_previous(queue_t *this_ptr);
-
 data_t * queue_get_current(queue_t * this_ptr);
 int queue_remove_current(queue_t *this_ptr);
-
 
 void queue_deinit(queue_t *this_ptr);
 void queue_destroy(queue_t *this_ptr);
