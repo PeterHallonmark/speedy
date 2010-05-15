@@ -38,7 +38,7 @@ subject_t *subject_create(void)
 void subject_init(subject_t *this_ptr)
 {
     queue_init(&this_ptr->queue);
-    observer_init(&this_ptr->observer);
+    observer_init(&this_ptr->observer, NULL);
 }
 
 /*!
@@ -76,7 +76,7 @@ void subject_notify(subject_t *this_ptr, void *arg)
 
     queue_first(&this_ptr->queue);
     while((current = queue_get_current(&this_ptr->queue)) != NULL) {
-        observer_notify(current);
+        observer_notify(current, arg);
         queue_next(&this_ptr->queue);
     }
 }

@@ -23,25 +23,27 @@
  *
  * \return A newly created observer.
  */
-observer_t * observer_create(void)
+observer_t * observer_create(void (*notify)(void *arg))
 {
     observer_t * this_ptr = (observer_t*) malloc(sizeof(observer_t));
-    observer_init(this_ptr);
+    observer_init(this_ptr, notify);
     return this_ptr;
 }
 
 /*!
  * Initializes an observer.
  */
-void observer_init(observer_t *this_ptr)
+void observer_init(observer_t *this_ptr, void (*notify)(void *arg))
 {
     pthread_mutex_init(&this_ptr->mutex, NULL);
 }
 
-void observer_notify(observer_t *this_ptr)
+void observer_notify(observer_t *this_ptr, void *arg)
 {
     pthread_mutex_lock(&this_ptr->mutex);
-    /* put callback function here. */
+    if (this_ptr->notify != NULL) {
+        this_ptr->notify(arg);
+    }
     pthread_mutex_unlock(&this_ptr->mutex);
 }
 

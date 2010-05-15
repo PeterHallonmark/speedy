@@ -24,12 +24,13 @@ typedef struct observer_t {
     /*! A mutex which makes sure that only one subject is dealing with an
      *  observer. */
     pthread_mutex_t mutex;
+    void (*notify)(void *arg);
 } observer_t;
 
-observer_t *observer_create(void);
-void observer_init(observer_t *this_ptr);
+observer_t *observer_create(void (*notify)(void *arg));
+void observer_init(observer_t *this_ptr, void (*notify)(void *arg));
 
-void observer_notify(observer_t *this_ptr);
+void observer_notify(observer_t *this_ptr, void *arg);
 
 void observer_deinit(observer_t *this_ptr);
 void observer_destroy(observer_t *this_ptr);
