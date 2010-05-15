@@ -14,7 +14,7 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-typedef struct {
+typedef struct service_t {
     const char* (*get_name)(void);
     const char* (*provides)(void);
     const char** (*get_dependency)(void);
