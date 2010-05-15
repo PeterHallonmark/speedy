@@ -36,7 +36,7 @@ observer_t * observer_create(void (*notify)(void *arg))
 void observer_init(observer_t *this_ptr, void (*notify)(void *arg))
 {
     observer_set_notify(this_ptr, notify);
-    pthread_mutex_init(&this_ptr->mutex, NzULL);
+    pthread_mutex_init(&this_ptr->mutex, NULL);
 }
 
 void observer_set_notify(observer_t *this_ptr, void (*notify)(void *arg))
