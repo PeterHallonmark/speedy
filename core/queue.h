@@ -18,7 +18,7 @@
 
 /*! The operation was successfully executed. */
 #define QUEUE_SUCESS 0
-/*! General error which mosty likely happens during malloc. */
+/*! General error which mostly likely happens during malloc. */
 #define QUEUE_ERROR -1
 /*! Error code for when it is not possible to go further next or previous in
  *  the queue. */
