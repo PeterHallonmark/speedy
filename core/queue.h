@@ -16,19 +16,30 @@
 
 #include <stdbool.h>
 
-#define QUEUE_OK 0
+/*! The operation was successfully executed. */
+#define QUEUE_SUCESS 0
+/*! General error which mosty likely happens during malloc. */
 #define QUEUE_ERROR -1
+/*! Error code for when it is not possible to go further next or previous in
+ *  the queue. */
 #define QUEUE_LAST -2
+/*! Error code for when the queue is empty. */
 #define QUEUE_EMPTY -3
 
+/*! A definition of the data pointer type. */
 typedef void data_t;
 
 struct node_t;
 
 typedef struct queue_t {
-    struct node_t * first;
-    struct node_t * last;
+    struct node_t * first; /*!< The first item in the queue. */
+    struct node_t * last; /*!< The last item in the queue. */
+    /*! The iterator has been integrated to the queue since the queue is not
+     * going to have two individual positions in the queue. The variable
+     * current is representing the current position in the queue. */
     struct node_t * current;
+    /*! A boolean which keeps track if the previous iterator operation went to
+     *  the next item or the previous item. */
     bool direction_next;
 } queue_t;
 

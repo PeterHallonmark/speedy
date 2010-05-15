@@ -17,10 +17,11 @@
 #include "queue.h"
 #include <stdlib.h>
 
+/*! A structure for storing each node in the queue. */
 typedef struct node_t {
-    data_t *data;
-    struct node_t *next;
-    struct node_t *previous;
+    data_t *data; /*!< A pointer to the data that is referenced from the node.*/
+    struct node_t *next; /*!< The next node in the queue. */
+    struct node_t *previous; /*!< The previous node in the queue. */
 } node_t;
 
 /*!
@@ -49,7 +50,8 @@ void queue_init(queue_t *this_ptr)
 /*!
  * Gets the next data item from the queue.
  *
- * \return A pointer to the data item which has been fetched from the queue.
+ * \return A pointer to the data item which has been fetched from the queue,
+ *         if it wasn't possible to pop from the queue then NULL is returned.
  */
 data_t * queue_pop(queue_t *this_ptr)
 {
@@ -80,7 +82,8 @@ data_t * queue_pop(queue_t *this_ptr)
  * \param this_ptr - A pointer to the queue
  * \param data - A pointer to the data that is put on the queue.
  *
- * \return The created queue.
+ * \return \c QUEUE_SUCESS if it was possible to push the node on to the queue.
+ * \return \c QUEUE_ERROR if it wasn't possible to allocate memory.
  */
 int queue_push(queue_t *this_ptr, data_t* data)
 {
@@ -102,10 +105,9 @@ int queue_push(queue_t *this_ptr, data_t* data)
             this_ptr->first = node;
             this_ptr->last = node;
         }
-        return QUEUE_OK;
-    } else {
-        return QUEUE_ERROR;
+        return QUEUE_SUCESS;
     }
+    return QUEUE_ERROR;
 }
 
 /*!
@@ -113,20 +115,19 @@ int queue_push(queue_t *this_ptr, data_t* data)
  *
  * \param this_ptr - A pointer to the queue
  *
- * \return status.
+ * \return \c QUEUE_SUCESS if it was possible to find the last node.
+ * \return \c QUEUE_EMPTY if it was not possible since the queue is empty.
  */
 int queue_first(queue_t *this_ptr)
 {
-    int status = QUEUE_EMPTY;
-
     this_ptr->current = NULL;
     this_ptr->direction_next = true;
 
     if (this_ptr->first != NULL) {
         this_ptr->current = this_ptr->first;
-        status = QUEUE_OK;
+        return QUEUE_SUCESS;
     }
-    return status;
+    return QUEUE_EMPTY;
 }
 
 /*!
@@ -134,20 +135,19 @@ int queue_first(queue_t *this_ptr)
  *
  * \param this_ptr - A pointer to the queue
  *
- * \return status.
+ * \return \c QUEUE_SUCESS if it was possible to find the last node.
+ * \return \c QUEUE_EMPTY if it was not possible since the queue is empty.
  */
 int queue_last(queue_t *this_ptr)
 {
-    int status = QUEUE_EMPTY;
-
     this_ptr->current = NULL;
     this_ptr->direction_next = false;
 
     if (this_ptr->last != NULL) {
         this_ptr->current = this_ptr->last;
-        status = QUEUE_OK;
+        return QUEUE_SUCESS;
     }
-    return status;
+    return QUEUE_EMPTY;
 }
 
 /*!
@@ -155,19 +155,20 @@ int queue_last(queue_t *this_ptr)
  *
  * \param this_ptr - A pointer to the queue
  *
- * \return status.
+ * \return \c QUEUE_SUCESS if it was possible to move the iterator to the
+ *                         next node.
+ * \return \c QUEUE_LAST when the last node was reached and there was no
+ *                       next node.
  */
 int queue_next(queue_t *this_ptr)
 {
-    int status = -QUEUE_LAST;
-
     this_ptr->direction_next = true;
 
     if (this_ptr->current != NULL) {
         this_ptr->current = this_ptr->current->next;
-        status = QUEUE_OK;
+        return QUEUE_SUCESS;
     }
-    return status;
+    return QUEUE_LAST;
 }
 
 /*!
@@ -175,19 +176,20 @@ int queue_next(queue_t *this_ptr)
  *
  * \param this_ptr - A pointer to the queue
  *
- * \return status.
+ * \return \c QUEUE_SUCESS if it was possible to move the iterator to the
+ *                         previous node.
+ * \return \c QUEUE_LAST when the first node was reached and there was no
+ *                       previous node.
  */
 int queue_previous(queue_t *this_ptr)
 {
-    int status = -QUEUE_LAST;
-
     this_ptr->direction_next = false;
 
     if (this_ptr->current != NULL) {
         this_ptr->current = this_ptr->current->previous;
-        status = QUEUE_OK;
+        return QUEUE_SUCESS;
     }
-    return status;
+    return QUEUE_LAST;
 }
 
 /*!
@@ -195,7 +197,8 @@ int queue_previous(queue_t *this_ptr)
  *
  * \param this_ptr - A pointer to the queue
  *
- * \return The data from the current position in the queue.
+ * \return The data from the current position in the queue. If the internal
+ *         iterator hasn't been moved NULL is returned.
  */
 data_t * queue_get_current(queue_t * this_ptr)
 {
@@ -212,7 +215,8 @@ data_t * queue_get_current(queue_t * this_ptr)
  *
  * \param this_ptr - A pointer to the queue
  *
- * \return status.
+ * \return \c QUEUE_SUCESS is the only thing that is returned from this
+ *                         function since it is not possible to fail.
  */
 int queue_remove_current(queue_t *this_ptr)
 {
@@ -222,15 +226,22 @@ int queue_remove_current(queue_t *this_ptr)
         node = this_ptr->current;
 
         if ((node->previous != NULL) && (node->next != NULL)) {
+            /* The current item is somewhere in the middle of the queue. */
             node->previous->next = node->next;
             node->next->previous = node->previous;
+
         } else if ((node == this_ptr->first) && (node != this_ptr->last)) {
+            /* The current item is the first in the queue and the queue size
+             * is greater or equal to 2 items. */
             this_ptr->first = node->next;
             node->next->previous = NULL;
 
         } else if ((node != this_ptr->first) && (node == this_ptr->last)) {
+            /* The current item is the last in the queue and the queue size
+             * is greater or equal to 2 items. */
             this_ptr->last = node->previous;
             node->previous->next = NULL;
+
         } else {
             /* It was the last item in the queue. */
             this_ptr->first = NULL;
@@ -246,7 +257,7 @@ int queue_remove_current(queue_t *this_ptr)
         }
         free(node);
     }
-    return QUEUE_OK;
+    return QUEUE_SUCESS;
 }
 
 /*!
