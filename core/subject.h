@@ -17,6 +17,11 @@
 struct observer_t;
 struct queue_t;
 
+/*! The operation was successfully executed. */
+#define SUBJECT_SUCESS 0
+/*! General error which mostly likely happens during malloc. */
+#define SUBJECT_ERROR -1
+
 typedef struct subject_t {
     /*! C inheritance of an observer. This makes it possible to use a subject
      *  as an observer for a different subject. */

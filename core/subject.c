@@ -18,7 +18,6 @@
 #include "queue.h"
 #include "subject.h"
 
-
 #include <stdlib.h>
 
 /*!
@@ -34,6 +33,8 @@ subject_t *subject_create(void)
 }
 /*!
  * Initializes a subject.
+ *
+ * \param this_ptr - A pointer to the subject.
  */
 void subject_init(subject_t *this_ptr)
 {
@@ -44,17 +45,29 @@ void subject_init(subject_t *this_ptr)
 /*!
  * Attached an observer to a subject.
  *
- * \return Error code.
+ * \param this_ptr - A pointer to the subject.
+ * \param observer - A pointer to the observer that is attached to the subject.
+ *
+ * \return \c SUBJECT_SUCESS if it was possible to attach the observer,
+ *            SUBJECT_ERROR otherwise.
  */
 int subject_attach(subject_t *this_ptr, observer_t *observer)
 {
-    return queue_push(&this_ptr->queue, (void*) observer);
+    if (queue_push(&this_ptr->queue, (void*) observer) == QUEUE_SUCESS) {
+        return SUBJECT_SUCESS;
+    }
+    return SUBJECT_ERROR;
 }
 
 /*!
  * Detach an observer from a subject.
  *
- * \return Error code.
+ * \param this_ptr - A pointer to the subject.
+ * \param observer - A pointer to the observer that is detached from
+ *                   the subject.
+ *
+ * \return \c SUBJECT_SUCESS is always returned since it is not possible to
+ *         fail at this point.
  */
 int subject_detach(subject_t *this_ptr, observer_t *observer)
 {
@@ -67,9 +80,15 @@ int subject_detach(subject_t *this_ptr, observer_t *observer)
         }
         queue_next(&this_ptr->queue);
     }
-    return 0;
+    return SUBJECT_SUCESS;
 }
 
+/*!
+ * Function which is used for notify all the observers.
+ *
+ * \param this_ptr - A pointer to the subject.
+ * \param arg - A pointer to the message that is sent to the observers.
+ */
 void subject_notify(subject_t *this_ptr, void *arg)
 {
     observer_t *current;
@@ -81,12 +100,22 @@ void subject_notify(subject_t *this_ptr, void *arg)
     }
 }
 
+/*!
+ * Deinitializes a subject.
+ *
+ * \param this_ptr - A pointer to the subject.
+ */
 void subject_deinit(subject_t *this_ptr)
 {
     queue_deinit(&this_ptr->queue);
     observer_deinit(&this_ptr->observer);
 }
 
+/*!
+ * Deletes a subject.
+ *
+ * \param this_ptr - A pointer to the subject.
+ */
 void subject_destroy(subject_t *this_ptr)
 {
     subject_deinit(this_ptr);
