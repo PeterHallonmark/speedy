@@ -246,8 +246,8 @@ int queue_remove_current(queue_t *this_ptr)
         }
         free(node);
     }
+    return QUEUE_OK;
 }
-
 
 /*!
  *  Deinitializes the queue.
