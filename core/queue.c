@@ -84,18 +84,23 @@ int queue_push(queue_t *this_ptr, data_t* data)
 {
     node_t * node = (node_t*) malloc(sizeof(node_t));
 
-    node->data = data;
-    node->next = NULL;
+    if (node != NULL) {
+        node->data = data;
+        node->next = NULL;
 
-    this_ptr->current = NULL;
+        this_ptr->current = NULL;
 
-    if (this_ptr->last != NULL) {
-        this_ptr->last->next = node;
-        this_ptr->last = node;
+        if (this_ptr->last != NULL) {
+            this_ptr->last->next = node;
+            this_ptr->last = node;
+        } else {
+            /* The queue was empty so make the node both the first and the last. */
+            this_ptr->first = node;
+            this_ptr->last = node;
+        }
+        return QUEUE_OK;
     } else {
-        /* The queue was empty so make the node both the first and the last. */
-        this_ptr->first = node;
-        this_ptr->last = node;
+        return QUEUE_ERROR;
     }
 }
 

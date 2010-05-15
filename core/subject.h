@@ -26,7 +26,7 @@ typedef struct subject_t {
 } subject_t;
 
 subject_t *subject_create(void);
-subject_t *subject_init(subject_t *this_ptr);
+void subject_init(subject_t *this_ptr);
 
 int subject_attach(subject_t *this_ptr, struct observer_t *observer);
 int subject_detach(subject_t *this_ptr, struct observer_t *observer);

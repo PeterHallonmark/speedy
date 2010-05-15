@@ -15,10 +15,8 @@
 */
 
 #include "hash.h"
+#include "hash/murmurhashneutral2.h"
 #include <string.h>
-
-extern unsigned int MurmurHashNeutral2(const void * key, int len,
-                                       unsigned int seed);
 
 unsigned int hash_generate(const char *key)
 {

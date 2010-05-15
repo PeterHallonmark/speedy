@@ -37,8 +37,8 @@ subject_t *subject_create(void)
  */
 void subject_init(subject_t *this_ptr)
 {
-    queue_init(this_ptr->queue);
-    observer_init(this_ptr->queue);
+    queue_init(&this_ptr->queue);
+    observer_init(&this_ptr->observer);
 }
 
 /*!
@@ -59,6 +59,7 @@ int subject_attach(subject_t *this_ptr, observer_t *observer)
 int subject_detach(subject_t *this_ptr, observer_t *observer)
 {
     /* TODO: Need to detach observer. */
+    return 0;
 }
 
 void subject_notify(subject_t *this_ptr, void *arg)
@@ -74,12 +75,12 @@ void subject_notify(subject_t *this_ptr, void *arg)
 
 void subject_deinit(subject_t *this_ptr)
 {
-    queue_deinit(this_ptr->queue);
-    observer_deinit(this_ptr->queue);
+    queue_deinit(&this_ptr->queue);
+    observer_deinit(&this_ptr->observer);
 }
 
 void subject_destroy(subject_t *this_ptr)
 {
     subject_deinit(this_ptr);
-    free(subject);
+    free(this_ptr);
 }

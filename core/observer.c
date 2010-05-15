@@ -16,6 +16,8 @@
 
 #include "observer.h"
 
+#include <stdlib.h>
+
 /*!
  * Creates and initializes an observer.
  *
@@ -48,13 +50,13 @@ void observer_notify(observer_t *this_ptr)
  */
 void observer_deinit(observer_t *this_ptr)
 {
-    pthread_mutex_destroy(this_ptr->mutex);
+    pthread_mutex_destroy(&this_ptr->mutex);
 }
 
 
 void observer_destroy(observer_t *this_ptr)
 {
-    observer_deinit();
+    observer_deinit(this_ptr);
     free(this_ptr);
     this_ptr = NULL;
 }

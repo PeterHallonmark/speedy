@@ -15,7 +15,9 @@
 
 files := $(foreach init_item, $(sysinit), sysinit/$(init_item).c) \
          $(foreach daemon, $(daemons), daemons/$(daemon).c) \
-         lib/run.c lib/dir.c lib/file.c lib/network.c lib/modprobe.c core/core.c
+         lib/run.c lib/dir.c lib/file.c lib/network.c lib/modprobe.c \
+         core/core.c core/queue.c core/observer.c core/subject.c \
+         core/hash.c
 
 header_files := $(foreach init_item, $(sysinit), sysinit/$(init_item).h) \
                 $(foreach init_item, $(sysinit), sysinit/config/$(init_item).h) \
