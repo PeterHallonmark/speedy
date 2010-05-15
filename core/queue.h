@@ -14,9 +14,12 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
+#include <stdbool.h>
+
 #define QUEUE_OK 0
 #define QUEUE_ERROR -1
 #define QUEUE_LAST -2
+#define QUEUE_EMPTY -3
 
 typedef void data_t;
 
@@ -26,6 +29,7 @@ typedef struct queue_t {
     struct node_t * first;
     struct node_t * last;
     struct node_t * current;
+    bool direction_next;
 } queue_t;
 
 queue_t * queue_create(void);
@@ -35,8 +39,14 @@ data_t * queue_pop(queue_t *this_ptr);
 int queue_push(queue_t *this_ptr, data_t* data);
 
 int queue_first(queue_t *this_ptr);
+int queue_last(queue_t *this_ptr);
+
 int queue_next(queue_t *this_ptr);
+int queue_previous(queue_t *this_ptr);
+
 data_t * queue_get_current(queue_t * this_ptr);
+int queue_remove_current(queue_t *this_ptr);
+
 
 void queue_deinit(queue_t *this_ptr);
 void queue_destroy(queue_t *this_ptr);
