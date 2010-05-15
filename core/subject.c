@@ -63,6 +63,13 @@ int subject_detach(subject_t *this_ptr, observer_t *observer)
 
 void subject_notify(subject_t *this_ptr, void *arg)
 {
+    observer_t *current;
+
+    queue_first(&this_ptr->queue);
+    while((current = queue_get_current(&this_ptr->queue)) != NULL) {
+        observer_notify(current);
+        queue_next(&this_ptr->queue);
+    }
 }
 
 void subject_deinit(subject_t *this_ptr)
