@@ -28,74 +28,15 @@ typedef struct queue_t {
     struct node_t * current;
 } queue_t;
 
-/*!
- * Creates and initializes a queue.
- *
- * \return The created queue.
- */
 queue_t * queue_create(void);
-
-/*!
- * Initializes a queue.
- *
- * \param this_ptr - A pointer to the queue
- */
 void queue_init(queue_t * this_ptr);
 
-/*!
- * Gets the next data item from the queue.
- *
- * \return A pointer to the data item which has been fetched from the queue.
- */
 data_t * queue_pop(queue_t *this_ptr);
-
-/*!
- *  Put the data item at the end of the queue.
- *
- * \param this_ptr - A pointer to the queue
- * \param data - A pointer to the data that is put on the queue.
- *
- * \return The created queue.
- */
 int queue_push(queue_t *this_ptr, data_t* data);
 
-/*!
- *  Set the internal iterator to the first item in the queue.
- *
- * \param this_ptr - A pointer to the queue
- *
- * \return status.
- */
 int queue_first(queue_t *this_ptr);
-
-/*!
- *  Set the internal iterator to the next item in the queue.
- *
- * \param this_ptr - A pointer to the queue
- *
- * \return status.
- */
 int queue_next(queue_t *this_ptr);
-
-/*!
- *  Get the data at the current position by using the internal iterator.
- *
- * \param this_ptr - A pointer to the queue
- *
- * \return The data from the current position in the queue.
- */
 data_t * queue_get_current(queue_t * this_ptr);
 
-/*!
- *  Deinitializes the queue.
- *
- * \param this_ptr - A pointer to the queue
- */
 void queue_deinit(queue_t *this_ptr);
-
-/*!
- *  Remove the queue.
- *
- * \param this_ptr - A pointer to the queue
- */
 void queue_destroy(queue_t *this_ptr);
