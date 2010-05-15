@@ -171,7 +171,7 @@ int queue_next(queue_t *this_ptr)
 }
 
 /*!
- *  Set the internal iterator to the next item in the queue.
+ *  Set the internal iterator to the previous item in the queue.
  *
  * \param this_ptr - A pointer to the queue
  *
