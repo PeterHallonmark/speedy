@@ -30,7 +30,7 @@ typedef struct node_t {
 queue_t * queue_create(void)
 {
     queue_t * this_ptr = (queue_t*) malloc(sizeof(queue_t));
-    queue_init(queue);
+    queue_init(this_ptr);
     return this_ptr;
 }
 
