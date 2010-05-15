@@ -30,6 +30,7 @@ typedef struct observer_t {
 observer_t *observer_create(void (*notify)(void *arg));
 void observer_init(observer_t *this_ptr, void (*notify)(void *arg));
 
+void observer_set_notify(observer_t *this_ptr, void (*notify)(void *arg));
 void observer_notify(observer_t *this_ptr, void *arg);
 
 void observer_deinit(observer_t *this_ptr);
