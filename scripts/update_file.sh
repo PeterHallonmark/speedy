@@ -14,7 +14,7 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-function_path=`echo "$0" | sed 's/update_file.sh/functions/g'`
+function_path=`echo "$0" | sed 's/update_file.sh/functions.sh/g'`
 . $function_path
 
 main()
