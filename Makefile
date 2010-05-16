@@ -71,8 +71,11 @@ build_objects: copy
 clean : 
 	rm -rf $(build)
 
-.NOTPARALLEL: $(build) copy init
+loc : clean
+	cloc .
 
-.PHONY: init clean all release debug copy build_objects
+.NOTPARALLEL: $(build) copy init clean
+
+.PHONY: init clean all release debug copy cloc build_objects
 
 .SUFFIXES:
