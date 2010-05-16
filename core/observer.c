@@ -14,7 +14,9 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
+#include "queue.h"
 #include "observer.h"
+#include "subject.h"
 
 #include <stdlib.h>
 
@@ -23,7 +25,7 @@
  *
  * \return A newly created observer.
  */
-observer_t * observer_create(void (*notify)(void *arg))
+observer_t * observer_create(void (*notify)(struct subject_t *from, void *msg))
 {
     observer_t * this_ptr = (observer_t*) malloc(sizeof(observer_t));
     observer_init(this_ptr, notify);
@@ -33,24 +35,26 @@ observer_t * observer_create(void (*notify)(void *arg))
 /*!
  * Initializes an observer.
  */
-void observer_init(observer_t *this_ptr, void (*notify)(void *arg))
+void observer_init(observer_t *this_ptr, void (*notify)(struct subject_t *from,
+                                                        void *msg))
 {
     observer_set_notify(this_ptr, notify);
     pthread_mutex_init(&this_ptr->mutex, NULL);
 }
 
-void observer_set_notify(observer_t *this_ptr, void (*notify)(void *arg))
-{
-    this_ptr->notify = notify;
-}
-
-void observer_notify(observer_t *this_ptr, void *arg)
+void observer_notify(observer_t *this_ptr, struct subject_t *from, void *msg)
 {
     pthread_mutex_lock(&this_ptr->mutex);
     if (this_ptr->notify != NULL) {
-        this_ptr->notify(arg);
+        this_ptr->notify(from, msg);
     }
     pthread_mutex_unlock(&this_ptr->mutex);
+}
+
+void observer_set_notify(observer_t *this_ptr, void (*notify)(struct subject_t
+                                                              *from, void *msg))
+{
+    this_ptr->notify = notify;
 }
 
 /*!

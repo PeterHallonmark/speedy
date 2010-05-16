@@ -14,6 +14,8 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
+#include <pthread.h>
+
 struct observer_t;
 struct queue_t;
 
@@ -28,6 +30,8 @@ typedef struct subject_t {
     struct observer_t observer;
     /*! A queue which contains all the observers. */
     struct queue_t queue;
+    /*! A lock to handle if multiple subjects are attaching/detaching. */
+    pthread_mutex_t mutex;
 } subject_t;
 
 subject_t *subject_create(void);
