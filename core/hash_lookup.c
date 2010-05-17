@@ -77,10 +77,12 @@ int hash_lookup_insert(hash_lookup_t *this_ptr, unsigned int key, void * data)
     unsigned int index = key % this_ptr->slot_size;
     hash_data_t *new_data = (hash_data_t*) malloc(sizeof(hash_data_t));
     hash_data_t *temp;
+    int status = HASH_LOOKUP_ERROR;
 
     if (new_data != NULL) {
         new_data->data = data;
         new_data->key = key;
+        status = HASH_LOOKUP_SUCESS;
 
         switch (this_ptr->slots[index].slot_type) {
             case SLOT_TYPE_DATA:
@@ -105,11 +107,11 @@ int hash_lookup_insert(hash_lookup_t *this_ptr, unsigned int key, void * data)
 
             default:
                 free(new_data);
-                /* TODO: return error code. */
+                status = HASH_LOOKUP_ERROR;
                 break;
         }
     }
-    return 0;
+    return status;
 }
 
 void * hash_lookup_remove(hash_lookup_t *this_ptr, unsigned int key)

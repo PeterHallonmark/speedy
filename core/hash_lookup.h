@@ -16,6 +16,11 @@
 
 struct hash_slot_t;
 
+/*! The operation was successfully executed. */
+#define HASH_LOOKUP_SUCESS 0
+/*! General error which mostly likely happens during malloc. */
+#define HASH_LOOKUP_ERROR -1
+
 typedef struct hash_lookup_t {
     struct hash_slot_t * slots;
     unsigned int slot_size;
