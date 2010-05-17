@@ -23,8 +23,7 @@ typedef struct hash_lookup_t {
 
 hash_lookup_t * hash_lookup_create(unsigned int size);
 
-unsigned int hash_lookup_insert(hash_lookup_t *this_ptr, unsigned int key,
-                                void * data);
+int hash_lookup_insert(hash_lookup_t *this_ptr, unsigned int key, void * data);
 void * hash_lookup_remove(hash_lookup_t *this_ptr, unsigned int key);
 void * hash_lookup_find(hash_lookup_t *this_ptr, unsigned int key);
 
