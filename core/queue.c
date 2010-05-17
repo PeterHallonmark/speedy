@@ -45,7 +45,7 @@ void queue_init(queue_t *this_ptr)
 {
     this_ptr->first = NULL;
     this_ptr->last = NULL;
-    this_ptr->current = NULL;
+    this_ptr->iterator.current = NULL;
 }
 /*!
  * Gets the next data item from the queue.
@@ -58,7 +58,7 @@ data_t * queue_pop(queue_t *this_ptr)
     node_t *node;
     data_t *data = NULL;
 
-    this_ptr->current = NULL;
+    this_ptr->iterator.current = NULL;
 
     if (this_ptr->first != NULL) {
         node = this_ptr->first;
@@ -89,7 +89,7 @@ int queue_push(queue_t *this_ptr, data_t* data)
 {
     node_t * node = (node_t*) malloc(sizeof(node_t));
 
-    this_ptr->current = NULL;
+    this_ptr->iterator.current = NULL;
 
     if (node != NULL) {
         node->data = data;
@@ -120,11 +120,11 @@ int queue_push(queue_t *this_ptr, data_t* data)
  */
 int queue_first(queue_t *this_ptr)
 {
-    this_ptr->current = NULL;
-    this_ptr->direction_next = true;
+    this_ptr->iterator.current = NULL;
+    this_ptr->iterator.direction_next = true;
 
     if (this_ptr->first != NULL) {
-        this_ptr->current = this_ptr->first;
+        this_ptr->iterator.current = this_ptr->first;
         return QUEUE_SUCESS;
     }
     return QUEUE_EMPTY;
@@ -140,11 +140,11 @@ int queue_first(queue_t *this_ptr)
  */
 int queue_last(queue_t *this_ptr)
 {
-    this_ptr->current = NULL;
-    this_ptr->direction_next = false;
+    this_ptr->iterator.current = NULL;
+    this_ptr->iterator.direction_next = false;
 
     if (this_ptr->last != NULL) {
-        this_ptr->current = this_ptr->last;
+        this_ptr->iterator.current = this_ptr->last;
         return QUEUE_SUCESS;
     }
     return QUEUE_EMPTY;
@@ -162,10 +162,10 @@ int queue_last(queue_t *this_ptr)
  */
 int queue_next(queue_t *this_ptr)
 {
-    this_ptr->direction_next = true;
+    this_ptr->iterator.direction_next = true;
 
-    if (this_ptr->current != NULL) {
-        this_ptr->current = this_ptr->current->next;
+    if (this_ptr->iterator.current != NULL) {
+        this_ptr->iterator.current = this_ptr->iterator.current->next;
         return QUEUE_SUCESS;
     }
     return QUEUE_LAST;
@@ -183,10 +183,10 @@ int queue_next(queue_t *this_ptr)
  */
 int queue_previous(queue_t *this_ptr)
 {
-    this_ptr->direction_next = false;
+    this_ptr->iterator.direction_next = false;
 
-    if (this_ptr->current != NULL) {
-        this_ptr->current = this_ptr->current->previous;
+    if (this_ptr->iterator.current != NULL) {
+        this_ptr->iterator.current = this_ptr->iterator.current->previous;
         return QUEUE_SUCESS;
     }
     return QUEUE_LAST;
@@ -204,8 +204,8 @@ data_t * queue_get_current(queue_t * this_ptr)
 {
     data_t * data = NULL;
 
-    if (this_ptr->current != NULL) {
-        data = this_ptr->current->data;
+    if (this_ptr->iterator.current != NULL) {
+        data = this_ptr->iterator.current->data;
     }
     return data;
 }
@@ -222,8 +222,8 @@ int queue_remove_current(queue_t *this_ptr)
 {
     node_t *node;
 
-    if (this_ptr->current != NULL) {
-        node = this_ptr->current;
+    if (this_ptr->iterator.current != NULL) {
+        node = this_ptr->iterator.current;
 
         if ((node->previous != NULL) && (node->next != NULL)) {
             /* The current item is somewhere in the middle of the queue. */
@@ -250,10 +250,10 @@ int queue_remove_current(queue_t *this_ptr)
 
         /* Depending on the last direction command, set the current position to
          * the previous position. */
-        if (this_ptr->direction_next) {
-            this_ptr->current = node->previous;
+        if (this_ptr->iterator.direction_next) {
+            this_ptr->iterator.current = node->previous;
         } else {
-            this_ptr->current = node->next;
+            this_ptr->iterator.current = node->next;
         }
         free(node);
     }

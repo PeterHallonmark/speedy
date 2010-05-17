@@ -31,16 +31,22 @@ typedef void data_t;
 
 struct node_t;
 
-typedef struct queue_t {
-    struct node_t * first; /*!< The first item in the queue. */
-    struct node_t * last; /*!< The last item in the queue. */
-    /*! The iterator has been integrated to the queue since the queue is not
-     * going to have two individual positions in the queue. The variable
-     * current is representing the current position in the queue. */
+
+typedef struct queue_iterator_t {
+    /*! The variable current is representing the current position in the
+     *  queue. */
     struct node_t * current;
     /*! A boolean which keeps track if the previous iterator operation went to
      *  the next item or the previous item. */
     bool direction_next;
+} queue_iterator_t;
+
+typedef struct queue_t {
+    struct node_t * first; /*!< The first item in the queue. */
+    struct node_t * last; /*!< The last item in the queue. */
+    /*! The iterator has been integrated to the queue since the queue is not
+     * going to have two individual positions in the queue at the same time. */
+    queue_iterator_t iterator;
 } queue_t;
 
 queue_t * queue_create(void);
