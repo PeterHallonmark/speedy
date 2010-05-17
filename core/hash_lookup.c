@@ -18,12 +18,23 @@
 #include "hash.h"
 #include "queue.h"
 
-#define SLOT_TYPE_EMPTY 0
-#define SLOT_TYPE_DATA 1
-#define SLOT_TYPE_QUEUE 2
+/*! Used for indicate if a slot is empty. */
+#define SLOT_TYPE_EMPTY 0u
+/*! Used for indicate if a slot contains one data item with a unique index in
+ *  the hash lookup table. */
+#define SLOT_TYPE_DATA 1u
+/*! Used for indicate if a slot has a queue in just to be able to handle more
+ *  than one data item with the same index in the hash lookup table. */
+#define SLOT_TYPE_QUEUE 2u
 
 typedef struct hash_data_t {
+    /*! Contains the hash key which will be useful if the data item which has
+     *  a single unique index gets another data item with the same index. In
+     *  other words, the single data item needs to be converted to a queue of
+     *  data items and therefore it is useful to be able to identify each
+     *  data item by each hash key. */
     unsigned int hash_key;
+    /*! Contains a pointer to the data that is supposed to be looked up. */
     void * data;
 } hash_data_t;
 
