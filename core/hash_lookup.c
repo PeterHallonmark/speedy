@@ -40,13 +40,30 @@ typedef struct hash_data_t {
 } hash_data_t;
 
 typedef struct hash_slot_t {
+    /*! Keeps track of if the slot is empty, if it has one data item or if there
+     * are more than two data items in the slot. */
     unsigned int slot_type;
     union {
+        /*! In most of the cases it will only be one data item for each index
+         *  and this pointer is used to access the data item. */
         hash_data_t *data;
+        /*! A pointer to the queue if there is several data items with the same
+         *  calculated index for the lookup table. This makes it possible to
+         *  store several items with the same index in the lookup table. */
         queue_t *queue;
-    } slot;
+    } slot; /*!< A slot can contain either a data pointer a queue which then
+                 contains several data pointers, slot is a union which makes
+                 it possible to use both but not at the same time. */
 } hash_slot_t;
 
+/*!
+ *  Creates and initializes a hash lookup table with a specific size.
+ *
+ * \param size - The size of the hash lookup table that is going to be created.
+ *
+ * \return The created hash lookup table when it was possible to create it,
+ *         \c NULL otherwise.
+ */
 hash_lookup_t * hash_lookup_create(unsigned int size)
 {
     unsigned int i;
@@ -72,6 +89,21 @@ hash_lookup_t * hash_lookup_create(unsigned int size)
     return this_ptr;
 }
 
+/*!
+ * Inserts a data item into the hash lookup table.
+ *
+ * \param this_ptr - A pointer to the hash lookup table.
+ * \param key - A key to be able to calculate where the data item should be
+ *              stored.
+ * \param data - A pointer to the data item that is going to be referenced.
+ *
+ * \note The current implementation does not handle several items with the same
+ *       key, this can be a problem but that is something to be handled for
+ *       future releases.
+ *
+ * \return \c HASH_LOOKUP_SUCESS if it was possible to insert an item,
+ *         \c HASH_LOOKUP_ERROR otherwise.
+ */
 int hash_lookup_insert(hash_lookup_t *this_ptr, unsigned int key, void * data)
 {
     unsigned int index = key % this_ptr->slot_size;
@@ -86,7 +118,8 @@ int hash_lookup_insert(hash_lookup_t *this_ptr, unsigned int key, void * data)
 
         switch (this_ptr->slots[index].slot_type) {
             case SLOT_TYPE_DATA:
-                /* Create queue. */
+                /* This is the second item with the same lookup table index so
+                 * create a queue and store both in it. */
                 temp = this_ptr->slots[index].slot.data;
                 this_ptr->slots[index].slot.queue = queue_create();
                 this_ptr->slots[index].slot_type = SLOT_TYPE_QUEUE;
@@ -95,17 +128,20 @@ int hash_lookup_insert(hash_lookup_t *this_ptr, unsigned int key, void * data)
                 break;
 
             case SLOT_TYPE_QUEUE:
-                /* Insert into queue. */
+                /* The queue already contains more than two items with the same
+                 * lookup table index so insert the new item into the queue. */
                 queue_push(this_ptr->slots[index].slot.queue, new_data);
                 break;
 
             case SLOT_TYPE_EMPTY:
-                /* The key creates a unique index. */
+                /* The key creates a unique index for the lookup table. */
                 this_ptr->slots[index].slot.data = new_data;
                 this_ptr->slots[index].slot_type = SLOT_TYPE_DATA;
                 break;
 
             default:
+                /* It shouldn't be possible to get here but if it happens
+                 * return an error code and free the newly allocated memory. */
                 free(new_data);
                 status = HASH_LOOKUP_ERROR;
                 break;
@@ -114,6 +150,19 @@ int hash_lookup_insert(hash_lookup_t *this_ptr, unsigned int key, void * data)
     return status;
 }
 
+/*!
+ * Removes a data item from the hash lookup table.
+ *
+ * \param this_ptr - A pointer to the hash lookup table.
+ * \param key - A key to be able to calculate where the data item is stored.
+ *
+ * \note The current implementation does not handle several items with the same
+ *       key, this can be a problem but that is something to be handled for
+ *       future releases.
+ *
+ * \return The data item if it was possible to remove it from the hash lookup
+ *         table, \c NULL otherwise.
+ */
 void * hash_lookup_remove(hash_lookup_t *this_ptr, unsigned int key)
 {
     unsigned int index = key % this_ptr->slot_size;
@@ -140,6 +189,19 @@ void * hash_lookup_remove(hash_lookup_t *this_ptr, unsigned int key)
     return data;
 }
 
+/*!
+ * Finds a data item from the hash lookup table.
+ *
+ * \param this_ptr - A pointer to the hash lookup table.
+ * \param key - A key to be able to calculate where the data item is stored.
+ *
+ * \note The current implementation does not handle several items with the same
+ *       key, this can be a problem but that is something to be handled for
+ *       future releases.
+ *
+ * \return The data item if it was possible to find it from the hash lookup
+ *         table, \c NULL otherwise.
+ */
 void * hash_lookup_find(hash_lookup_t *this_ptr, unsigned int key)
 {
     unsigned int index = key % this_ptr->slot_size;
@@ -162,6 +224,11 @@ void * hash_lookup_find(hash_lookup_t *this_ptr, unsigned int key)
     }
 }
 
+/*!
+ *  Removes and deinitializes a hash lookup table.
+ *
+ * \param this_ptr - A pointer to the hash lookup table.
+ */
 void hash_lookup_destroy(hash_lookup_t *this_ptr)
 {
     hash_data_t *temp;
