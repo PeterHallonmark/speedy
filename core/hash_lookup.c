@@ -33,7 +33,7 @@ typedef struct hash_data_t {
      *  other words, the single data item needs to be converted to a queue of
      *  data items and therefore it is useful to be able to identify each
      *  data item by each hash key. */
-    unsigned int hash_key;
+    unsigned int key;
     /*! Contains a pointer to the data that is supposed to be looked up. */
     void * data;
 } hash_data_t;
@@ -71,6 +71,90 @@ hash_lookup_t * hash_lookup_create(unsigned int size)
     return this_ptr;
 }
 
+int hash_lookup_insert(hash_lookup_t *this_ptr, unsigned int key, void * data)
+{
+    unsigned int index = key % this_ptr->slot_size;
+    hash_data_t *data = (hash_data_t*) malloc(sizeof(hash_data_t));
+    hash_data_t *temp;
+
+    if (data != NULL) {
+        switch (this_ptr->slots[index]->slot_type) {
+            case SLOT_TYPE_DATA:
+                /* Create queue. */
+                temp = this_ptr->slots[index]->data;
+                this_ptr->slots[index]->queue = queue_create();
+                this_ptr->slots[index]->slot_type = SLOT_TYPE_QUEUE;
+                queue_push(this_ptr->slots[index]->queue, temp);
+                queue_push(this_ptr->slots[index]->queue, data);
+                break;
+
+            case SLOT_TYPE_QUEUE:
+                /* Insert into queue. */
+                queue_push(this_ptr->slots[index]->queue, data);
+                break;
+
+            case SLOT_TYPE_EMPTY:
+                /* The key creates a unique index. */
+                this_ptr->slots[index]->data = data;
+                this_ptr->slots[index]->slot_type = SLOT_TYPE_DATA;
+                break;
+
+            default:
+                free(data);
+                /* TODO: return error code. */
+                break;
+        }
+    }
+    return 0;
+}
+
+void * hash_lookup_remove(hash_lookup_t *this_ptr, unsigned int key)
+{
+    unsigned int index = key % this_ptr->slot_size;
+    void *data = NULL;
+
+    switch (this_ptr->slots[index]->slot_type) {
+        case SLOT_TYPE_DATA:
+            data = this_ptr->slots[index]->data->data;
+            free(this_ptr->slots[index]->data);
+            this_ptr->slots[index]->slot_type = SLOT_TYPE_EMPTY;
+
+            break;
+
+        case SLOT_TYPE_QUEUE:
+            /* Remove from queue. */
+            /* TODO: Implement. */
+            break;
+
+        default:
+        case SLOT_TYPE_EMPTY:
+            /* Do nothing. */
+            break;
+    }
+    return data;
+}
+
+void * hash_lookup_find(hash_lookup_t *this_ptr, unsigned int key)
+{
+    unsigned int index = key % this_ptr->slot_size;
+    void *data = NULL;
+
+    switch (this_ptr->slots[index]->slot_type) {
+        case SLOT_TYPE_DATA:
+            data = this_ptr->slots[index]->data->data;
+            break;
+
+        case SLOT_TYPE_QUEUE:
+            /* Find from queue. */
+            /* TODO: Implement. */
+            break;
+
+        default:
+        case SLOT_TYPE_EMPTY:
+            /* Do nothing. */
+            break;
+    }
+}
 
 void hash_lookup_destroy(hash_lookup_t *this_ptr)
 {
