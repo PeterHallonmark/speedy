@@ -20,6 +20,9 @@ struct hash_slot_t;
 #define HASH_LOOKUP_SUCESS 0
 /*! General error which mostly likely happens during malloc. */
 #define HASH_LOOKUP_ERROR -1
+/*! At this point the hash lookup does not support multiple data items with the
+ *  same key, if that happens this error is returned. */
+#define HASH_LOOKUP_MULTIPLE_KEY_ERROR -2
 
 typedef struct hash_lookup_t {
     struct hash_slot_t * slots;

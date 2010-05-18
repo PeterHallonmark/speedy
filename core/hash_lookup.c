@@ -56,6 +56,12 @@ typedef struct hash_slot_t {
                  it possible to use both but not at the same time. */
 } hash_slot_t;
 
+static int hash_lookup_queue_push(queue_t *this_ptr, hash_data_t* data);
+
+static void * hash_lookup_queue_find(queue_t *this_ptr, unsigned int key);
+
+static void * hash_lookup_queue_remove(queue_t *this_ptr, unsigned int key);
+
 /*!
  *  Creates and initializes a hash lookup table with a specific size.
  *
@@ -98,8 +104,7 @@ hash_lookup_t * hash_lookup_create(unsigned int size)
  * \param data - A pointer to the data item that is going to be referenced.
  *
  * \note The current implementation does not handle several items with the same
- *       key, this can be a problem but that is something to be handled for
- *       future releases.
+ *       key, this can be a problem but is something for future implementations.
  *
  * \return \c HASH_LOOKUP_SUCESS if it was possible to insert an item,
  *         \c HASH_LOOKUP_ERROR otherwise.
@@ -124,13 +129,18 @@ int hash_lookup_insert(hash_lookup_t *this_ptr, unsigned int key, void * data)
                 this_ptr->slots[index].slot.queue = queue_create();
                 this_ptr->slots[index].slot_type = SLOT_TYPE_QUEUE;
                 queue_push(this_ptr->slots[index].slot.queue, temp);
-                queue_push(this_ptr->slots[index].slot.queue, new_data);
+                /* Use the internal wrapper push function just to be able to
+                 * check so that all keys are unique in the queue. */
+                status = hash_lookup_queue_push(
+                         this_ptr->slots[index].slot.queue, new_data);
                 break;
 
             case SLOT_TYPE_QUEUE:
                 /* The queue already contains more than two items with the same
-                 * lookup table index so insert the new item into the queue. */
-                queue_push(this_ptr->slots[index].slot.queue, new_data);
+                 * lookup table index so insert the new item into the queue
+                 * and check that the key is unique. */
+                status = hash_lookup_queue_push(
+                         this_ptr->slots[index].slot.queue, new_data);
                 break;
 
             case SLOT_TYPE_EMPTY:
@@ -157,8 +167,7 @@ int hash_lookup_insert(hash_lookup_t *this_ptr, unsigned int key, void * data)
  * \param key - A key to be able to calculate where the data item is stored.
  *
  * \note The current implementation does not handle several items with the same
- *       key, this can be a problem but that is something to be handled for
- *       future releases.
+ *       key, this can be a problem but is something for future implementations.
  *
  * \return The data item if it was possible to remove it from the hash lookup
  *         table, \c NULL otherwise.
@@ -173,12 +182,11 @@ void * hash_lookup_remove(hash_lookup_t *this_ptr, unsigned int key)
             data = this_ptr->slots[index].slot.data->data;
             free(this_ptr->slots[index].slot.data);
             this_ptr->slots[index].slot_type = SLOT_TYPE_EMPTY;
-
             break;
 
         case SLOT_TYPE_QUEUE:
-            /* Remove from queue. */
-            /* TODO: Implement. */
+            data = hash_lookup_queue_remove(this_ptr->slots[index].slot.queue,
+                                            key);
             break;
 
         default:
@@ -195,9 +203,8 @@ void * hash_lookup_remove(hash_lookup_t *this_ptr, unsigned int key)
  * \param this_ptr - A pointer to the hash lookup table.
  * \param key - A key to be able to calculate where the data item is stored.
  *
- * \note The current implementation does not handle several items with the same
- *       key, this can be a problem but that is something to be handled for
- *       future releases.
+* \note The current implementation does not handle several items with the same
+ *       key, this can be a problem but is something for future implementations.
  *
  * \return The data item if it was possible to find it from the hash lookup
  *         table, \c NULL otherwise.
@@ -205,6 +212,7 @@ void * hash_lookup_remove(hash_lookup_t *this_ptr, unsigned int key)
 void * hash_lookup_find(hash_lookup_t *this_ptr, unsigned int key)
 {
     unsigned int index = key % this_ptr->slot_size;
+    hash_data_t *current;
     void *data = NULL;
 
     switch (this_ptr->slots[index].slot_type) {
@@ -213,8 +221,8 @@ void * hash_lookup_find(hash_lookup_t *this_ptr, unsigned int key)
             break;
 
         case SLOT_TYPE_QUEUE:
-            /* Find from queue. */
-            /* TODO: Implement. */
+            data = hash_lookup_queue_find(this_ptr->slots[index].slot.queue,
+                                          key);
             break;
 
         default:
@@ -222,6 +230,7 @@ void * hash_lookup_find(hash_lookup_t *this_ptr, unsigned int key)
             /* Do nothing. */
             break;
     }
+    return data;
 }
 
 /*!
@@ -260,3 +269,51 @@ void hash_lookup_destroy(hash_lookup_t *this_ptr)
     free(this_ptr->slots);
     free(this_ptr);
 }
+
+static int hash_lookup_queue_push(queue_t *this_ptr, hash_data_t* data)
+{
+    /* Check if the key is unique. */
+    if (hash_lookup_queue_find(this_ptr, data->key) != NULL) {
+        free(data);
+        return HASH_LOOKUP_MULTIPLE_KEY_ERROR;
+    }
+    queue_push(this_ptr, data);
+    return HASH_LOOKUP_SUCESS;
+}
+
+static void * hash_lookup_queue_find(queue_t *this_ptr, unsigned int key)
+{
+    hash_data_t *current;
+    data_t *data = NULL;
+
+    queue_first(this_ptr);
+
+    while ((current = queue_get_current(this_ptr)) != NULL) {
+        if (current->key == key) {
+            data = current->data;
+            queue_last(this_ptr);
+        }
+        queue_next(this_ptr);
+    }
+    return data;
+}
+
+static void * hash_lookup_queue_remove(queue_t *this_ptr, unsigned int key)
+{
+    hash_data_t *current;
+    data_t *data = NULL;
+
+    queue_first(this_ptr);
+
+    while ((current = queue_get_current(this_ptr)) != NULL) {
+        if (current->key == key) {
+            data = current->data;
+            queue_remove_current(this_ptr);
+            queue_last(this_ptr);
+            free(current);
+        }
+        queue_next(this_ptr);
+    }
+    return data;
+}
+
