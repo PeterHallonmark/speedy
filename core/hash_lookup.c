@@ -73,10 +73,9 @@ hash_lookup_t * hash_lookup_create(unsigned int size)
     unsigned int i;
 
     hash_lookup_t *this_ptr = (hash_lookup_t*) malloc(sizeof(hash_lookup_t));
+    this_ptr->slot_size = 0u;
 
     if (this_ptr != NULL) {
-        this_ptr->slot_size = 0u;
-
         /* Try to allocate the slots. */
         this_ptr->slots = (hash_slot_t*) malloc(size * sizeof(hash_slot_t));
         if (this_ptr->slots == NULL) {
@@ -84,6 +83,7 @@ hash_lookup_t * hash_lookup_create(unsigned int size)
             free(this_ptr);
             return NULL;
         }
+        this_ptr->slot_size = size;
 
         /* Set all the allocated slots to empty. */
         for (i = 0; i < this_ptr->slot_size; i++) {
@@ -107,6 +107,7 @@ hash_lookup_t * hash_lookup_create(unsigned int size)
  * \return \c HASH_LOOKUP_SUCESS if it was possible to insert an item,
  *         \c HASH_LOOKUP_ERROR otherwise.
  */
+
 int hash_lookup_insert(hash_lookup_t *this_ptr, unsigned int key, void * data)
 {
     unsigned int index = key % this_ptr->slot_size;
