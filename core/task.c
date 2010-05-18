@@ -20,28 +20,39 @@
 
 #include <stdlib.h>
 
-task_t * task_init(service_t *service)
+task_t * task_create(service_t *service)
 {
     task_t * this_ptr = (task_t*) malloc(sizeof(task_t));
-    subject_init(&this_ptr->task);
-    this_ptr->service = service;
+
+    if (this_ptr != NULL) {
+        if (this_ptr->service->get_name != NULL) {
+            this_ptr->task_id = hash_generate(this_ptr->service->get_name);
+            this_ptr->provides = NULL;
+
+            /* Check if 'provides' is the same as the name of the task. */
+            if (this_ptr->service->provides != NULL) {
+                this_ptr->provides = (unsigned int*) malloc(sizeof(
+                                      unsigned int));
+                *this_ptr->provides = hash_generate(this_ptr->provides);
+                if (this_ptr->task_id == *this_ptr->provides) {
+                    /* 'Provides' is the same as the name of the task so remove
+                     * it since it should be enough with just the name. */
+                    free(this_ptr->provides);
+                    this_ptr->provides = NULL;
+                }
+            }
+
+            subject_init(&this_ptr->task);
+            this_ptr->service = service;
+
+        } else {
+            /* It wasn't possible to create a unique id for the task so remove
+             * the task and free the allocated memory. */
+            free(this_ptr);
+            this_ptr = NULL;
+        }
+    }
     return task;
-}
-
-const char * task_get_name(task_t *this_ptr)
-{
-    if (this_ptr->service->get_name != NULL) {
-        return this_ptr->service->get_name();
-    }
-    return NULL;
-}
-
-const char * task_provides(task_t *this_ptr)
-{
-    if (this_ptr->service->provides != NULL) {
-        return this_ptr->service->provides();
-    }
-    return NULL;
 }
 
 bool task_run(task_t *this_ptr)
@@ -54,5 +65,6 @@ bool task_run(task_t *this_ptr)
 void task_deinit(task_t *this_ptr)
 {
     subject_deinit(&this_ptr->task);
+    free(this_ptr->provides);
     free(this_ptr);
 }

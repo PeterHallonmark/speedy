@@ -22,13 +22,13 @@ struct subject_t;
 
 typedef struct {
     subject_t task;
+    unsigned int task_id;
+    unsigned int *provides;
     service_t *service;
 } task_t;
 
-task_t * task_init(service_t *service);
+task_t * task_create(service_t *service);
 
-const char * task_get_name(task_t *task);
-const char * task_provides(task_t *task);
 bool task_run(task_t *task);
 
 void task_deinit(task_t *task);
