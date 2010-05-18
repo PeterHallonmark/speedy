@@ -57,9 +57,7 @@ typedef struct hash_slot_t {
 } hash_slot_t;
 
 static int hash_lookup_queue_push(queue_t *this_ptr, hash_data_t* data);
-
 static void * hash_lookup_queue_find(queue_t *this_ptr, unsigned int key);
-
 static void * hash_lookup_queue_remove(queue_t *this_ptr, unsigned int key);
 
 /*!
@@ -212,7 +210,6 @@ void * hash_lookup_remove(hash_lookup_t *this_ptr, unsigned int key)
 void * hash_lookup_find(hash_lookup_t *this_ptr, unsigned int key)
 {
     unsigned int index = key % this_ptr->slot_size;
-    hash_data_t *current;
     void *data = NULL;
 
     switch (this_ptr->slots[index].slot_type) {
@@ -270,6 +267,18 @@ void hash_lookup_destroy(hash_lookup_t *this_ptr)
     free(this_ptr);
 }
 
+/*!
+ * Internal function which pushes an data item onto the queue if it has an
+ * unique key. If it doesn't have an unique key the function will return an
+ * error code.
+ *
+ * \param this_ptr - A pointer to the queue.
+ * \param data - A pointer to the data that is going to be inserted into the
+ *               queue.
+ *
+ * \return \c HASH_LOOKUP_SUCESS if the push operation was sucessful,
+ *         \c HASH_LOOKUP_MULTIPLE_KEY_ERROR otherwise.
+ */
 static int hash_lookup_queue_push(queue_t *this_ptr, hash_data_t* data)
 {
     /* Check if the key is unique. */
@@ -281,6 +290,15 @@ static int hash_lookup_queue_push(queue_t *this_ptr, hash_data_t* data)
     return HASH_LOOKUP_SUCESS;
 }
 
+/*!
+ * Internal function which searches for an data item from the queue.
+ *
+ * \param this_ptr - A pointer to the queue.
+ * \param key - A unique key which identifies the data item.
+ *
+ * \return If it was successful return the data item,
+ *         otherwise return \c NULL.
+ */
 static void * hash_lookup_queue_find(queue_t *this_ptr, unsigned int key)
 {
     hash_data_t *current;
@@ -298,6 +316,15 @@ static void * hash_lookup_queue_find(queue_t *this_ptr, unsigned int key)
     return data;
 }
 
+/*!
+ * Internal function which removes for an data item from the queue.
+ *
+ * \param this_ptr - A pointer to the queue.
+ * \param key - A unique key which identifies the data item.
+ *
+ * \return If it was successful return the data item,
+ *         otherwise return \c NULL.
+ */
 static void * hash_lookup_queue_remove(queue_t *this_ptr, unsigned int key)
 {
     hash_data_t *current;
