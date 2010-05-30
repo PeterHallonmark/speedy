@@ -15,25 +15,28 @@
 */
 
 #include "core_type.h"
+#include "observer.h"
+#include "queue.h"
 #include "subject.h"
+#include "hash.h"
 #include "task.h"
 
 #include <stdlib.h>
 
-task_t * task_create(service_t *service)
+task_t * task_create(struct service_t *service)
 {
     task_t * this_ptr = (task_t*) malloc(sizeof(task_t));
 
     if (this_ptr != NULL) {
         if (this_ptr->service->get_name != NULL) {
-            this_ptr->task_id = hash_generate(this_ptr->service->get_name);
+            this_ptr->task_id = hash_generate(service->get_name());
             this_ptr->provides = NULL;
 
             /* Check if 'provides' is the same as the name of the task. */
             if (this_ptr->service->provides != NULL) {
                 this_ptr->provides = (unsigned int*) malloc(sizeof(
                                       unsigned int));
-                *this_ptr->provides = hash_generate(this_ptr->provides);
+                *this_ptr->provides = hash_generate(service->provides());
                 if (this_ptr->task_id == *this_ptr->provides) {
                     /* 'Provides' is the same as the name of the task so remove
                      * it since it should be enough with just the name. */
@@ -52,8 +55,10 @@ task_t * task_create(service_t *service)
             this_ptr = NULL;
         }
     }
-    return task;
+    return this_ptr;
 }
+
+
 
 bool task_run(task_t *this_ptr)
 {
@@ -62,7 +67,7 @@ bool task_run(task_t *this_ptr)
     }
 }
 
-void task_deinit(task_t *this_ptr)
+void task_destroy(task_t *this_ptr)
 {
     subject_deinit(&this_ptr->task);
     free(this_ptr->provides);

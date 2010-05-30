@@ -14,21 +14,23 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
+#define TASK_HANDLER_SUCCESS 0
+#define TASK_HANDLER_FAIL -1
 
-#include <stdbool.h>
-
+struct queue_t;
+struct hash_lookup_t;
 struct service_t;
-struct subject_t;
 
-typedef struct {
-    subject_t task;
-    unsigned int task_id;
-    unsigned int *provides;
-    service_t *service;
-} task_t;
+typedef struct task_handler_t {
+    struct hash_lookup_t *task_lookup;
+    struct queue_t * tasks; /*!< Queue with all the tasks. */
+} task_handler_t;
 
-task_t * task_create(struct service_t *service);
+task_handler_t * task_handler_create(void);
+int task_handler_init(task_handler_t *this_ptr);
 
-bool task_run(task_t *task);
+int task_handler_add_tasks(task_handler_t *this_ptr,
+                           struct service_t *services);
 
-void task_destroy(task_t *task);
+void task_handler_deinit(task_handler_t * this_ptr);
+void task_handler_destroy(task_handler_t * this_ptr);
