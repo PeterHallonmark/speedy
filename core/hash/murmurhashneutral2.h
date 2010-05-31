@@ -4,7 +4,7 @@
 // Same as MurmurHash2, but endian- and alignment-neutral.
 // Half the speed though, alas.
 
-unsigned int MurmurHashNeutral2 ( const void * key, int len, unsigned int seed )
+static inline unsigned int MurmurHashNeutral2 ( const void * key, int len, unsigned int seed )
 {
     const unsigned int m = 0x5bd1e995;
     const int r = 24;
