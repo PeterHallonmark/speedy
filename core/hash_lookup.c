@@ -277,7 +277,7 @@ void hash_lookup_destroy(hash_lookup_t *this_ptr)
  * \param data - A pointer to the data that is going to be inserted into the
  *               queue.
  *
- * \return \c HASH_LOOKUP_SUCESS if the push operation was sucessful,
+ * \return \c HASH_LOOKUP_SUCESS if the push operation was successful,
  *         \c HASH_LOOKUP_MULTIPLE_KEY_ERROR otherwise.
  */
 static int hash_lookup_queue_push(queue_t *this_ptr, hash_data_t* data)
