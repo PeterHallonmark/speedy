@@ -18,6 +18,14 @@
 #include "hash/murmurhashneutral2.h"
 #include <string.h>
 
+/*!
+ * Generates a hash number from a string which serves a key.
+ *
+ * \param key - The string that is going to be used for generating a hash
+ *              number.
+ *
+ * \return The generated hash number.
+ */
 unsigned int hash_generate(const char *key)
 {
     return MurmurHashNeutral2((void *) key, strlen(key), 0);
