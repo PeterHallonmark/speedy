@@ -15,13 +15,15 @@
 
 files := $(foreach init_item, $(sysinit), sysinit/$(init_item).c) \
          $(foreach daemon, $(daemons), daemons/$(daemon).c) \
+         $(foreach test, $(tests), tests/$(test).c) \
          lib/run.c lib/dir.c lib/file.c lib/network.c lib/modprobe.c \
          core/core.c core/queue.c core/observer.c core/subject.c \
          core/hash.c core/hash_lookup.c core/task_handler.c core/task.c
 
 header_files := $(foreach init_item, $(sysinit), sysinit/$(init_item).h) \
                 $(foreach init_item, $(sysinit), sysinit/config/$(init_item).h) \
-                $(foreach daemon, $(daemons), daemons/$(daemon).h)
+                $(foreach daemon, $(daemons), daemons/$(daemon).h) \
+                $(foreach test, $(tests), tests/$(test).h)
    
 
 init_release: target := release
@@ -68,6 +70,7 @@ sysinit/config:
 .status/init: .status ../Makefile .status/$(target) sysinit/*.h
 	scripts/gen_config.sh core/core.o core/config_sysinit.h sysinit $(sysinit)
 	scripts/gen_config.sh core/core.o core/config_daemons.h daemons $(daemons)
+	scripts/gen_config.sh core/core.o core/config_tests.h tests $(tests)
 	@touch $@
 	
 .status/strip: .status speedy
@@ -84,6 +87,9 @@ sysinit/%.o: sysinit/%.c sysinit/%.h lib/*.h sysinit/config/%.h .status/$(target
 	$(CC) $(CFLAGS) -I. -c $< -o $@
     
 daemons/%.o: daemons/%.c daemons/%.h lib/*.h .status/$(target)
+	$(CC) $(CFLAGS) -I. -c $< -o $@
+
+tests/%.o: tests/%.c tests/%.h lib/*.h .status/$(target)
 	$(CC) $(CFLAGS) -I. -c $< -o $@
     
 core/%.o: core/%.c .status/init .status/$(target)
