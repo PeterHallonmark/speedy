@@ -70,7 +70,7 @@ int task_handler_add_tasks(task_handler_t * this_ptr,
             }
         }
     }
-    if (tasks != services) {
+    if (tasks != services_size) {
         return TASK_HANDLER_FAIL;
     }
     return TASK_HANDLER_SUCCESS;
