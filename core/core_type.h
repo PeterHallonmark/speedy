@@ -32,7 +32,7 @@ typedef struct service_t {
      *  dependencies that needs to be started before the current service/daemon
      *  has started.
      *  \note Currently there isn't any decision if the dependency should be
-     *        mandatory or optional. This might be broken up in the future into
+     *        mandatory or optional. This might be divided in future into
      *        two dependency lists where one is optional and the other is
      *        mandatory. */
     const char** (*get_dependency)(void);
