@@ -23,6 +23,16 @@
 
 #include <stdlib.h>
 
+/*!
+ * Creates a task which encapsulates a service.
+ * The reason for this is to make it possible to observe services and to track
+ * dependencies. A task can be both an observer and a subject since it uses
+ * C inheritance from the \c struct \c subject_t.
+ *
+ * \param service - A service that is going to be encapsulated into a task.
+ *
+ * \return A task which encapsulates a service.
+ */
 task_t * task_create(struct service_t *service)
 {
     task_t * this_ptr = (task_t*) malloc(sizeof(task_t));
@@ -51,6 +61,10 @@ task_t * task_create(struct service_t *service)
         } else {
             /* It wasn't possible to create a unique id for the task so remove
              * the task and free the allocated memory. */
+
+            /* TODO Need to log it somehow to know if the hash_lookup table
+             *      needs to be able to track different tasks with the same id.
+             */
             free(this_ptr);
             this_ptr = NULL;
         }
@@ -58,9 +72,18 @@ task_t * task_create(struct service_t *service)
     return this_ptr;
 }
 
-
-
-int task_run(task_t *this_ptr)
+/*!
+ * Executes the initialization function from the service which basically is
+ * only run at startup.
+ *
+ * \param this_ptr - A pointer to the task.
+ *
+ * \return TASK_SUCCESS if it was possible to execute the initialization
+ *         function or if it didn't exist. It returns a negative value if there
+ *         was an error detected during the execution of the initialization
+ *         function.
+ */
+int task_run_initialization(task_t *this_ptr)
 {
     int status = TASK_SUCCESS;
 
@@ -70,6 +93,12 @@ int task_run(task_t *this_ptr)
     return status;
 }
 
+/*!
+ * Frees all the memory that was allocated during the creation and
+ * deinitializes the task.
+ *
+ * \param this_ptr - A pointer to the task.
+ */
 void task_destroy(task_t *this_ptr)
 {
     subject_deinit(&this_ptr->task);

@@ -14,6 +14,7 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
+/*! An error code if everything was successfully executed. */
 #define TASK_SUCCESS 0
 #define TASK_FAIL -1
 
@@ -21,14 +22,27 @@ struct service_t;
 struct subject_t;
 
 typedef struct {
+    /*! A C inheritance of the \c struct \c subject_t type which makes
+     * it possible to use a task as both an observer and a subject. The point
+     * of this is to actually be able to track dependencies, more or less to
+     * know when a task can execute. */
     subject_t task;
+    /*! An unique id for the task, this is used for tracking dependecies. */
     unsigned int task_id;
+    /*! An alternative id for the task, this is also used for tracking
+     * dependencies, especially dependencies that can be provided by different
+     * tasks. */
     unsigned int *provides;
+    /*! A pointer to the service struct which contains function pointers for
+     *  getting the task name, the alternative name of the task, the
+     *  dependencies, the initialization function and the shutdown function.
+     *  This actually gives the task something to do during startup or shutdown
+     *  and it also gives basic knowledge of the dependencies for the task. */
     service_t *service;
 } task_t;
 
 task_t * task_create(struct service_t *service);
 
-int task_run(task_t *task);
+int task_run_initialization(task_t *task);
 
 void task_destroy(task_t *task);
