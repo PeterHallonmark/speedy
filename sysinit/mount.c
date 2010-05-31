@@ -28,7 +28,7 @@ const char *mount_get_name(void)
     return priv_mount_name;
 }
 
-void mount_initialization(void)
+int mount_initialization(void)
 {        
     char *const remount1_arg[] = {CMD_MOUNT, "-n", "-o", "remount,rw", "/", NULL};
     char *const remount2_arg[] = {CMD_MOUNT, "-o", "remount,rw", "/", NULL};
@@ -37,4 +37,5 @@ void mount_initialization(void)
     libspeedy_run(remount1_arg);
     libspeedy_run(remount2_arg);
     libspeedy_run(mount_arg);
+    return 0;
 }

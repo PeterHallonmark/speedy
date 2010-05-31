@@ -29,18 +29,18 @@
 
 #define BUF_SIZE 512
 
-bool libspeedy_file_exists(const char *filename)
+int libspeedy_file_exists(const char *filename)
 {
     FILE* file = fopen(filename, "rb");
     
     if (file != 0) {
         fclose(file);
-        return true;
+        return -1;
     }
-    return false;
+    return 0;
 }
 
-bool libspeedy_file_copy(const char *source, const char *destination)
+int libspeedy_file_copy(const char *source, const char *destination)
 {
     FILE *source_file;
     FILE *destination_file;
@@ -50,13 +50,13 @@ bool libspeedy_file_copy(const char *source, const char *destination)
     source_file = fopen(source, "rb");
     if(source_file == NULL) {
         printf("Cannot open source file.\n");
-        return false;
+        return -1;
     }
     /* open destination file */
     destination_file = fopen(destination, "wb");
     if (destination_file == NULL) {
         printf("Cannot open destination file.\n");
-        return false;
+        return -1;
     }
 
     /* copy the file */
@@ -65,29 +65,29 @@ bool libspeedy_file_copy(const char *source, const char *destination)
         
         if (ferror(source_file)) {
             printf("Error reading source file.\n");
-            return false;
+            return -1;
         }
         if (!feof(source_file)) {
             fputc(temp, destination_file);
         }
         if (ferror(destination_file)) {
             printf("Error writing destination file.\n");
-            return false;
+            return -1;
         }
     }
 
     if (fclose(source_file) == EOF) {
         printf("Error closing source file.\n");
-        return false;
+        return -1;
     }
     if (fclose(destination_file) == EOF) {
         printf("Error closing destination file.\n");
-        return false;
+        return -1;
     }    
-    return true;
+    return 0;
 }
 
-bool libspeedy_file_copy_all(const char *source_path, const char *dest_path, bool recursive)
+int libspeedy_file_copy_all(const char *source_path, const char *dest_path, bool recursive)
 {
     DIR *dir;
     struct dirent *content;
@@ -121,20 +121,20 @@ bool libspeedy_file_copy_all(const char *source_path, const char *dest_path, boo
                         }
                     }    
                 } else {
-                    if (!libspeedy_file_copy(next_source, next_dest)) {
-                        return false;
+                    if (libspeedy_file_copy(next_source, next_dest) < 0) {
+                        return -1;
                     }
                 }
             } else {
-                return false;
+                return -1;
             }
         }
         closedir(dir);
     }
-    return true;
+    return 0;
 }
 
-bool libspeedy_file_empty(const char *destination)
+int libspeedy_file_empty(const char *destination)
 {
     FILE *destination_file;
     
@@ -142,23 +142,23 @@ bool libspeedy_file_empty(const char *destination)
     destination_file = fopen(destination, "wb");
     if (destination_file == NULL) {
         printf("Cannot open destination file.\n");
-        return false;
+        return -1;
     }
     if (fclose(destination_file) == EOF) {
         printf("Error closing destination file.\n");
-        return false;
+        return -1;
     }    
-    return true;
+    return 0;
 }
 
 
-bool libspeedy_file_remove(const char *destination)
+int libspeedy_file_remove(const char *destination)
 {
-    return (remove(destination) == 0);
+    return remove(destination);
 }
 
 
-bool libspeedy_file_remove_all(const char *dest_path, bool recursive, bool remove_dir)
+int libspeedy_file_remove_all(const char *dest_path, bool recursive, bool remove_dir)
 {
     DIR *dir;
     struct dirent *content;
@@ -167,7 +167,7 @@ bool libspeedy_file_remove_all(const char *dest_path, bool recursive, bool remov
         
     dir = opendir(dest_path);
     if (dir) {
-        while ((content = readdir(dir)) != NULL) {            
+        while ((content = readdir(dir)) != NULL) {
 
             if (snprintf(next, BUF_SIZE, "%s/%s", dest_path, content->d_name) < BUF_SIZE) {
                 stat(next, &stbuf);
@@ -183,57 +183,57 @@ bool libspeedy_file_remove_all(const char *dest_path, bool recursive, bool remov
                                 libspeedy_rmdir(next);
                             }
                         }
-                    }    
+                    }
                 } else {
-                    if (!libspeedy_file_remove(next)) {
-                        return false;
+                    if (libspeedy_file_remove(next) < 0) {
+                        return -1;
                     }
                 }
             } else {
-                return false;
+                return -1;
             }
         }
         closedir(dir);
     }
     
-    return true;
+    return 0;
 }
 
-bool libspeedy_file_chmod(const char *pathname, int mode)
+int libspeedy_file_chmod(const char *pathname, int mode)
 {
-    return (chmod(pathname, mode) == 0);
+    return chmod(pathname, mode);
 }
 
-bool libspeedy_file_write(const char *filename, const char *text)
+int libspeedy_file_write(const char *filename, const char *text)
 {
     FILE* file = fopen(filename, "w+");
 
     if (file == NULL) {
-        return false;
+        return -1;
     }
 
     fwrite(text, sizeof(char) , strlen(text), file);
     fclose(file);
     
-    return true;
+    return 0;
 }
 
-bool libspeedy_file_append(const char *filename, const char *text)
+int libspeedy_file_append(const char *filename, const char *text)
 {
     FILE* file = fopen(filename, "a+");
 
     if (file == NULL) {
-        return false;
+        return -1;
     }
 
     fwrite(text, sizeof(char) , strlen(text), file);
     fclose(file);
 
-    return true;
+    return 0;
 }
 
 
-bool libspeedy_file_tty_action(bool (*callback)(char *filename))
+int libspeedy_file_tty_action(int (*callback)(char *filename))
 {
     DIR *dir;
     struct dirent *content;
@@ -247,8 +247,8 @@ bool libspeedy_file_tty_action(bool (*callback)(char *filename))
                 (strcmp(content->d_name, "tty9999") <=  0)) {
 
                 if (snprintf(buffer, BUF_SIZE, "%s/%s", PATH_DEV, content->d_name) < BUF_SIZE) {
-                    if (!callback(buffer)) {
-                        return false;
+                    if (callback(buffer) != 0) {
+                        return -1;
                     }
                 }
             }
@@ -256,5 +256,5 @@ bool libspeedy_file_tty_action(bool (*callback)(char *filename))
         closedir(dir);
     }
 
-    return true;
+    return 0;
 }

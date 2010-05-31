@@ -27,7 +27,7 @@ const char *randomseed_get_name(void)
     return priv_randomseed_name;
 }
 
-void randomseed_initialization(void)
+int randomseed_initialization(void)
 {
-    system("cat " FILE_RANDOMSEED " > /dev/urandom");
+    return libspeedy_system("cat " FILE_RANDOMSEED " > /dev/urandom");
 }

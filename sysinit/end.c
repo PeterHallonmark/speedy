@@ -27,11 +27,11 @@ const char *end_get_name(void)
     return priv_end_name;
 }
 
-void end_initialization(void)
+int end_initialization(void)
 {
     char ch;
     
     /*printf("end...");
     scanf("%c",&ch);*/
-    libspeedy_system(CMD_DMESG " >| " FILE_DMESG_LOG);
+    return libspeedy_system(CMD_DMESG " >| " FILE_DMESG_LOG);
 }

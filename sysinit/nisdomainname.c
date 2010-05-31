@@ -25,7 +25,7 @@ const char *nisdomainname_get_name(void)
     return priv_nisdomainname_name;
 }
 
-void nisdomainname_initialization(void)
+int nisdomainname_initialization(void)
 {
-    libspeedy_setdomainname(nisdomainname); 
+    return libspeedy_setdomainname(nisdomainname);
 }

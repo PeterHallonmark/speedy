@@ -14,8 +14,6 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-#include <stdbool.h>
+int libspeedy_mkdir(const char *pathname, int mode);
 
-bool libspeedy_mkdir(const char *pathname, int mode);
-
-bool libspeedy_rmdir(const char *pathname);
+int libspeedy_rmdir(const char *pathname);

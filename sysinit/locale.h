@@ -16,4 +16,4 @@
 
 const char *locale_get_name(void);
 
-void locale_initialization(void);
+int locale_initialization(void);

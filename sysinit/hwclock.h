@@ -16,4 +16,4 @@
 
 const char *hwclock_get_name(void);
 
-void hwclock_initialization(void);
+int hwclock_initialization(void);

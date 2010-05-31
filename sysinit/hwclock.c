@@ -29,7 +29,7 @@ const char *hwclock_get_name(void)
     return priv_hwclock_name;
 }
 
-void hwclock_initialization(void)
+int hwclock_initialization(void)
 {
 #ifdef HWCLOCK_PARAMS    
     char *const hwclock1_arg[] = {CMD_HWCLOCK, "--adjust", NULL};
@@ -47,4 +47,5 @@ void hwclock_initialization(void)
     libspeedy_run(hwclock1_arg);
     libspeedy_run(hwclock2_arg);
 #endif
+    return 0;
 }

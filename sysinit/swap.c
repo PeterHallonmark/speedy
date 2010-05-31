@@ -28,9 +28,8 @@ const char *swap_get_name(void)
     return priv_swap_name;
 }
 
-void swap_initialization(void)
+int swap_initialization(void)
 {    
     char *const swapon_arg[] = {CMD_SWAPON, "-a", NULL};
-
-    libspeedy_run(swapon_arg);
+    return libspeedy_run(swapon_arg);
 }

@@ -16,22 +16,19 @@
 
 #include <stdbool.h>
 
-bool libspeedy_file_exists(const char *filename);
+int libspeedy_file_exists(const char *filename);
 
-bool libspeedy_file_copy(const char *source, const char *destination);
+int libspeedy_file_copy(const char *source, const char *destination);
+int libspeedy_file_copy_all(const char *source_dir, const char *dest_dir, bool recursive);
 
-bool libspeedy_file_copy_all(const char *source_dir, const char *dest_dir, bool recursive);
+int libspeedy_file_empty(const char *destination);
 
-bool libspeedy_file_empty(const char *destination);
+int libspeedy_file_remove(const char *destination);
+int libspeedy_file_remove_all(const char *dest_path, bool recursive, bool remove_dir);
 
-bool libspeedy_file_remove(const char *destination);
+int libspeedy_file_chmod(const char *pathname, int mode);
 
-bool libspeedy_file_remove_all(const char *dest_path, bool recursive, bool remove_dir);
+int libspeedy_file_write(const char *filename, const char *text);
+int libspeedy_file_append(const char *filename, const char *text);
 
-bool libspeedy_file_chmod(const char *pathname, int mode);
-
-bool libspeedy_file_write(const char *filename, const char *text);
-
-bool libspeedy_file_append(const char *filename, const char *text);
-
-bool libspeedy_file_tty_action(bool (*callback)(char *filename));
+int libspeedy_file_tty_action(int (*callback)(char *filename));

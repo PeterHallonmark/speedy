@@ -16,4 +16,4 @@
 
 const char *files_get_name(void);
 
-void files_initialization(void);
+int files_initialization(void);

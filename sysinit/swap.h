@@ -16,4 +16,4 @@
 
 const char *swap_get_name(void);
 
-void swap_initialization(void);
+int swap_initialization(void);

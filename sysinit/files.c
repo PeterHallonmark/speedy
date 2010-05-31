@@ -26,7 +26,7 @@ const char *files_get_name(void)
     return priv_files_name;
 }
 
-void files_initialization(void)
+int files_initialization(void)
 {    
     libspeedy_file_remove(FILE_NOLOGIN);
     libspeedy_file_remove(FILE_SHUTDOWNPID);
@@ -38,4 +38,5 @@ void files_initialization(void)
     libspeedy_file_chmod(FILE_UTMP, 0664);
     libspeedy_mkdir(DIR_TMP_ICE, 1777);
     libspeedy_mkdir(DIR_TMP_X11, 1777);
+    return 0;
 }

@@ -14,8 +14,5 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-#include <stdbool.h>
-
-bool libspeedy_modprobe(char * module);
-
-bool libspeedy_modprobe_list(char * const * modules);
+int libspeedy_modprobe(char * module);
+int libspeedy_modprobe_list(char * const * modules);

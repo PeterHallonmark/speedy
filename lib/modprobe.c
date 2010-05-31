@@ -22,20 +22,20 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-bool libspeedy_modprobe(char * module)
+int libspeedy_modprobe(char * module)
 {
     char * modprobe_arg[] = {CMD_MODPROBE, module, NULL};
 
     return libspeedy_run(modprobe_arg);
 }
 
-bool libspeedy_modprobe_list(char * const * modules)
+int libspeedy_modprobe_list(char * const * modules)
 {
     while (*modules != NULL) {
         if (!libspeedy_modprobe(*modules)) {
-            return false;
+            return -1;
         }
         modules++;
     }
-    return true;
+    return 0;
 }

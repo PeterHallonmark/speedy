@@ -44,7 +44,7 @@ const char *fsck_get_name(void)
     return priv_fsck_name;
 }
 
-void fsck_initialization(void)
+int fsck_initialization(void)
 {   
     char *const remount_ro_arg[] = {CMD_MOUNT, "-n", "-o", "remount,ro", "/", NULL};    
     char *const sulogin_arg[] = {CMD_SULOGIN, "-p", NULL};    
@@ -69,6 +69,7 @@ void fsck_initialization(void)
 
         libspeedy_sleep(15);
         fsck_reboot();
+        return -1;
 
     } else if ((fsck_ret > 1) && (fsck_ret == 32)) {
         printf("\n*****************  FILESYSTEM CHECK FAILED  ****************\n");
@@ -83,5 +84,7 @@ void fsck_initialization(void)
 
         libspeedy_run(sulogin_arg);
         fsck_reboot();
+        return -1;
     }
+    return 0;
 }

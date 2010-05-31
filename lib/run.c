@@ -22,7 +22,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
  
-bool libspeedy_run(char *const argv[])
+int libspeedy_run(char *const argv[])
 {
     char * const env[] = {NULL};
     pid_t pid = fork();
@@ -45,14 +45,14 @@ bool libspeedy_run(char *const argv[])
     }
     if (status != 0) {
         printf("FAIL: %s\n",argv[0]);
-        return false;
+        return -1;
     }
-    return true;
+    return 0;
 }
 
-bool libspeedy_system(const char *command)
+int libspeedy_system(const char *command)
 {
-    return (system(command) == 0);
+    return system(command);
 }
 
 void libspeedy_exit(int code)

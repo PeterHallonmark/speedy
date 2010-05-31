@@ -30,7 +30,7 @@ const char *start_get_name(void)
     return priv_start_name;
 }
 
-void start_initialization(void)
+int start_initialization(void)
 {    
     char *const minilogd_arg[] = {CMD_MINILOGD, NULL};
     char *const dmesg_arg[] = {CMD_DMESG, "-n", "3", NULL};
@@ -52,4 +52,5 @@ void start_initialization(void)
     libspeedy_modprobe("rtc-cmos");
     libspeedy_run(mknod_arg);
     libspeedy_run(ln_arg);
+    return 0;
 }

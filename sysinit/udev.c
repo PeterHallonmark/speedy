@@ -30,7 +30,7 @@ const char *udev_get_name(void)
     return priv_udev_name;
 }
 
-void udev_initialization(void)
+int udev_initialization(void)
 {    
     char *const udevadm_ctrl1_arg[] = {CMD_UDEVADM, "control", "--property=STARTUP=1", NULL};
     char *const udevadm_trigger_arg[] = {CMD_UDEVADM, "trigger", NULL};
@@ -48,6 +48,7 @@ void udev_initialization(void)
 
     libspeedy_run(udevadm_settle_arg);
 	libspeedy_run(udevadm_ctrl0_arg);
+	return 0;
 }
 
 

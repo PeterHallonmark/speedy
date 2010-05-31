@@ -20,12 +20,12 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-bool libspeedy_mkdir(const char *pathname, int mode)
+int libspeedy_mkdir(const char *pathname, int mode)
 {
-    return (mkdir(pathname, mode) == 0);
+    return mkdir(pathname, mode);
 }
 
-bool libspeedy_rmdir(const char *pathname)
+int libspeedy_rmdir(const char *pathname)
 {
-    return (rmdir(pathname) == 0);
+    return rmdir(pathname);
 }

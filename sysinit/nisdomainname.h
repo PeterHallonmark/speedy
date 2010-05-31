@@ -16,4 +16,4 @@
 
 const char *nisdomainname_get_name(void);
 
-void nisdomainname_initialization(void);
+int nisdomainname_initialization(void);

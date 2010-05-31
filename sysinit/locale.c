@@ -31,7 +31,7 @@
 #define LEGACY
 #endif
 
-bool locale_callback(char *filename);
+int locale_callback(char *filename);
 
 
 const char *locale_get_name(void)
@@ -41,7 +41,7 @@ const char *locale_get_name(void)
     return priv_locale_name;
 }
 
-void locale_initialization(void)
+int locale_initialization(void)
 {
 #ifdef KEYMAP
 #ifdef UTF8
@@ -69,28 +69,29 @@ void locale_initialization(void)
 #ifdef KEYMAP
     libspeedy_run(loadkeys_arg);
 #endif /* KEYMAP */
+    return 0;
 }
 
 #ifdef UTF8
-bool locale_callback(char *filename)
+int locale_callback(char *filename)
 {
     char * kbdmode_arg[] = {CMD_KBDMODE, "-u", filename, NULL};
 
     libspeedy_run(kbdmode_arg);
     libspeedy_file_write(filename, "\033%G");
 
-    return true;
+    return 0;
 }
 #endif /* UTF8 */
 
 #ifdef LEGACY
-bool locale_callback(char *filename)
+int locale_callback(char *filename)
 {
     char * kbdmode_arg[] = {CMD_KBDMODE, "-a", filename, NULL};
 
     libspeedy_run(kbdmode_arg);
     libspeedy_file_write(filename, "\033%@");
 
-    return true;
+    return 0;
 }
 #endif /* LEGACY */
