@@ -62,12 +62,12 @@ task_t * task_create(struct service_t *service)
 
 int task_run(task_t *this_ptr)
 {
+    int status = TASK_SUCCESS;
+
     if (this_ptr->service->initialization != NULL) {
-        if (!this_ptr->service->initialization()) {
-            return TASK_FAIL;
-        }
+        status = this_ptr->service->initialization();
     }
-    return TASK_SUCCESS;
+    return status;
 }
 
 void task_destroy(task_t *this_ptr)
