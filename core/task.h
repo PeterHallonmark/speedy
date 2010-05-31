@@ -14,8 +14,8 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-
-#include <stdbool.h>
+#define TASK_SUCCESS 0
+#define TASK_FAIL -1
 
 struct service_t;
 struct subject_t;
@@ -29,6 +29,6 @@ typedef struct {
 
 task_t * task_create(struct service_t *service);
 
-bool task_run(task_t *task);
+int task_run(task_t *task);
 
 void task_destroy(task_t *task);
