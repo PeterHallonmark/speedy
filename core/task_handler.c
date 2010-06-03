@@ -76,6 +76,35 @@ int task_handler_add_tasks(task_handler_t * this_ptr,
     return TASK_HANDLER_SUCCESS;
 }
 
+int task_handler_calculate_dependency(task_handler_t * this_ptr)
+{
+    unsigned int provides_id;
+    unsigned int task_id;
+    task_t *task;
+
+    /* Build up the lookup table. */
+    queue_first(this_ptr->tasks);
+    while ((task = queue_get_current(this_ptr->tasks)) != NULL) {
+        provides_id = task_get_provides_id(task);
+        task_id = task_get_id(task);
+
+        hash_lookup_insert(this_ptr->task_lookup, task_id, task);
+        if (provides_id != task_id) {
+            hash_lookup_insert(this_ptr->task_lookup, provides_id, task);
+        }
+        queue_next(this_ptr->tasks);
+    }
+
+    /* Use the lookup table to connect all the tasks. */
+    queue_first(this_ptr->tasks);
+    while ((task = queue_get_current(this_ptr->tasks)) != NULL) {
+
+
+        queue_next(this_ptr->tasks);
+    }
+    return 0;
+}
+
 void task_handler_deinit(task_handler_t * this_ptr)
 {
     task_t *task;

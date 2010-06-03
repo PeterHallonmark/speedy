@@ -21,7 +21,7 @@
 struct service_t;
 struct subject_t;
 
-typedef struct {
+typedef struct task_t {
     /*! A C inheritance of the \c struct \c subject_t type which makes
      * it possible to use a task as both an observer and a subject. The point
      * of this is to actually be able to track dependencies, more or less to
@@ -32,7 +32,9 @@ typedef struct {
     /*! An alternative id for the task, this is also used for tracking
      * dependencies, especially dependencies that can be provided by different
      * tasks. */
-    unsigned int *provides;
+    unsigned int provides_id;
+
+    struct queue_t *dependency;
     /*! A pointer to the service struct which contains function pointers for
      *  getting the task name, the alternative name of the task, the
      *  dependencies, the initialization function and the shutdown function.
@@ -44,5 +46,8 @@ typedef struct {
 task_t * task_create(struct service_t *service);
 
 int task_run_initialization(task_t *task);
+
+unsigned int task_get_id(task_t *this_ptr);
+unsigned int task_get_provides_id(task_t *this_ptr);
 
 void task_destroy(task_t *task);

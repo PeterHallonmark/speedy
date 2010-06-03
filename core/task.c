@@ -23,6 +23,11 @@
 
 #include <stdlib.h>
 
+typedef struct task_dependency_t {
+    unsigned int id;
+    char * dependency;
+} task_dependency_t;
+
 /*!
  * Creates a task which encapsulates a service.
  * The reason for this is to make it possible to observe services and to track
@@ -40,23 +45,33 @@ task_t * task_create(struct service_t *service)
     if (this_ptr != NULL) {
         if (this_ptr->service->get_name != NULL) {
             this_ptr->task_id = hash_generate(service->get_name());
-            this_ptr->provides = NULL;
+            this_ptr->dependency = NULL;
 
-            /* Check if 'provides' is the same as the name of the task. */
-            if (this_ptr->service->provides != NULL) {
-                this_ptr->provides = (unsigned int*) malloc(sizeof(
-                                      unsigned int));
-                *this_ptr->provides = hash_generate(service->provides());
-                if (this_ptr->task_id == *this_ptr->provides) {
-                    /* 'Provides' is the same as the name of the task so remove
-                     * it since it should be enough with just the name. */
-                    free(this_ptr->provides);
-                    this_ptr->provides = NULL;
-                }
+            if (service->provides != NULL) {
+                this_ptr->provides_id = hash_generate(service->provides());
+            } else {
+                this_ptr->provides_id = this_ptr->task_id;
             }
 
             subject_init(&this_ptr->task);
             this_ptr->service = service;
+
+            if (service->get_dependency != NULL) {
+                char **dependency = (char**) service->get_dependency();
+                task_dependency_t *task_dependency;
+
+                this_ptr->dependency = queue_create();
+
+                while (*dependency != NULL) {
+                    task_dependency = (task_dependency_t*) malloc(sizeof(task_dependency_t));
+
+                    task_dependency->dependency = *dependency;
+                    task_dependency->id = hash_generate(*dependency);
+                    queue_push(this_ptr->dependency, &task_dependency);
+
+                    dependency++;
+                }
+            }
 
         } else {
             /* It wasn't possible to create a unique id for the task so remove
@@ -93,6 +108,16 @@ int task_run_initialization(task_t *this_ptr)
     return status;
 }
 
+unsigned int task_get_id(task_t *this_ptr)
+{
+    return this_ptr->task_id;
+}
+
+unsigned int task_get_provides_id(task_t *this_ptr)
+{
+    return this_ptr->provides_id;
+}
+
 /*!
  * Frees all the memory that was allocated during the creation and
  * deinitializes the task.
@@ -101,7 +126,15 @@ int task_run_initialization(task_t *this_ptr)
  */
 void task_destroy(task_t *this_ptr)
 {
+    if (this_ptr->dependency != NULL) {
+        task_dependency_t *task_dependency;
+
+        while ((task_dependency = queue_pop(this_ptr->dependency)) != NULL) {
+            free(task_dependency);
+        }
+        queue_destroy(this_ptr->dependency);
+    }
+
     subject_deinit(&this_ptr->task);
-    free(this_ptr->provides);
     free(this_ptr);
 }
