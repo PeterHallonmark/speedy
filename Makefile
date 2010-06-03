@@ -17,7 +17,7 @@ override CFLAGS += -Wall
 
 # This is the array that simulates the rest of the rc.conf
 # So far it doesn't contain that much.
-sysinit :=  
+sysinit :=  start
 # start udev loopback fsck mount swap hwclock randomseed files \
 #           hostname locale end
 
