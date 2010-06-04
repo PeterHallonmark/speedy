@@ -24,14 +24,16 @@ struct queue_t;
 /*! General error which mostly likely happens during malloc. */
 #define SUBJECT_ERROR -1
 
+/*!
+ * \note The current implementation of the subject doesn't support multiple
+ *       attach/detach from different observers at the same time.
+ */
 typedef struct subject_t {
     /*! C inheritance of an observer. This makes it possible to use a subject
      *  as an observer for a different subject. */
     struct observer_t observer;
     /*! A queue which contains all the observers. */
     struct queue_t queue;
-    /*! A lock to handle if multiple subjects are attaching/detaching. */
-    pthread_mutex_t mutex;
 } subject_t;
 
 subject_t *subject_create(void);

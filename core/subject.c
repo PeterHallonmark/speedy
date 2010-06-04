@@ -40,7 +40,6 @@ void subject_init(subject_t *this_ptr)
 {
     queue_init(&this_ptr->queue);
     observer_init(&this_ptr->observer, NULL);
-    pthread_mutex_init(&this_ptr->mutex, NULL);
 }
 
 /*!
@@ -56,11 +55,9 @@ int subject_attach(subject_t *this_ptr, observer_t *observer)
 {
     int status = SUBJECT_ERROR;
 
-    pthread_mutex_lock(&this_ptr->mutex);
     if (queue_push(&this_ptr->queue, (void*) observer) == QUEUE_SUCESS) {
         status = SUBJECT_SUCESS;
     }
-    pthread_mutex_unlock(&this_ptr->mutex);
     return status;
 }
 /*!
@@ -77,7 +74,6 @@ int subject_detach(subject_t *this_ptr, observer_t *observer)
 {
     observer_t *current;
 
-    pthread_mutex_lock(&this_ptr->mutex);
     queue_first(&this_ptr->queue);
     while((current = queue_get_current(&this_ptr->queue)) != NULL) {
         if (current == observer) {
@@ -85,7 +81,6 @@ int subject_detach(subject_t *this_ptr, observer_t *observer)
         }
         queue_next(&this_ptr->queue);
     }
-    pthread_mutex_unlock(&this_ptr->mutex);
     return SUBJECT_SUCESS;
 }
 
@@ -99,13 +94,11 @@ void subject_notify(subject_t *this_ptr, void *msg)
 {
     observer_t *current;
 
-    pthread_mutex_lock(&this_ptr->mutex);
     queue_first(&this_ptr->queue);
     while((current = queue_get_current(&this_ptr->queue)) != NULL) {
         observer_notify(current, this_ptr, msg);
         queue_next(&this_ptr->queue);
     }
-    pthread_mutex_unlock(&this_ptr->mutex);
 }
 
 /*!
@@ -117,7 +110,6 @@ void subject_deinit(subject_t *this_ptr)
 {
     queue_deinit(&this_ptr->queue);
     observer_deinit(&this_ptr->observer);
-    pthread_mutex_destroy(&this_ptr->mutex);
 }
 
 /*!
