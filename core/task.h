@@ -20,6 +20,7 @@
 
 struct service_t;
 struct subject_t;
+struct hash_lookup_t;
 
 typedef struct task_t {
     /*! A C inheritance of the \c struct \c subject_t type which makes
@@ -49,5 +50,7 @@ int task_run_initialization(task_t *task);
 
 unsigned int task_get_id(task_t *this_ptr);
 unsigned int task_get_provides_id(task_t *this_ptr);
+
+int task_build_dependency(task_t *this_ptr, struct hash_lookup_t *lookup);
 
 void task_destroy(task_t *task);

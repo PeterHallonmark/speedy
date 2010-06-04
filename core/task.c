@@ -19,14 +19,20 @@
 #include "queue.h"
 #include "subject.h"
 #include "hash.h"
+#include "hash_lookup.h"
 #include "task.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 
+/*! A struct which connects the */
 typedef struct task_dependency_t {
     unsigned int id;
-    char * dependency;
+    char * name;
+    task_t *task;
 } task_dependency_t;
+
+void task_notify(observer_t * observer, struct subject_t *from, void *msg);
 
 /*!
  * Creates a task which encapsulates a service.
@@ -46,30 +52,35 @@ task_t * task_create(struct service_t *service)
         if (this_ptr->service->get_name != NULL) {
             this_ptr->task_id = hash_generate(service->get_name());
             this_ptr->dependency = NULL;
+            this_ptr->service = service;
+            subject_init((subject_t*) this_ptr);
+            observer_set_notify((observer_t*) this_ptr, task_notify);
 
+            /* Check if there is a provides string, if there isn't any provides
+             * string, use the task name instead for the generated id. */
             if (service->provides != NULL) {
                 this_ptr->provides_id = hash_generate(service->provides());
             } else {
                 this_ptr->provides_id = this_ptr->task_id;
             }
 
-            subject_init(&this_ptr->task);
-            this_ptr->service = service;
-
             if (service->get_dependency != NULL) {
-                char **dependency = (char**) service->get_dependency();
-                task_dependency_t *task_dependency;
+                char **dependency_arg = (char**) service->get_dependency();
+                task_dependency_t *dependency;
 
                 this_ptr->dependency = queue_create();
 
-                while (*dependency != NULL) {
-                    task_dependency = (task_dependency_t*) malloc(sizeof(task_dependency_t));
+                while (*dependency_arg != NULL) {
+                    dependency = (task_dependency_t*) malloc(sizeof(
+                                       task_dependency_t));
 
-                    task_dependency->dependency = *dependency;
-                    task_dependency->id = hash_generate(*dependency);
-                    queue_push(this_ptr->dependency, &task_dependency);
+                    dependency->name = *dependency_arg;
+                    dependency->id = hash_generate(dependency->name);
+                    dependency->task = NULL;
 
-                    dependency++;
+                    queue_push(this_ptr->dependency, &dependency);
+
+                    dependency_arg++;
                 }
             }
 
@@ -108,14 +119,58 @@ int task_run_initialization(task_t *this_ptr)
     return status;
 }
 
+/*!
+ * Gets the task id.
+ *
+ * \param this_ptr - A pointer to the task.
+ *
+ * \return The task id.
+ */
 unsigned int task_get_id(task_t *this_ptr)
 {
     return this_ptr->task_id;
 }
 
+/*!
+ * Gets the task provides id.
+ *
+ * \param this_ptr - A pointer to the task.
+ *
+ * \return The task provides id.
+ */
 unsigned int task_get_provides_id(task_t *this_ptr)
 {
     return this_ptr->provides_id;
+}
+
+/*!
+ * Builds the dependency by using the observer pattern. All the dependencies are
+ * observed.
+ *
+ * \param this_ptr - A pointer to the task.
+ * \param lookup - A lookup table which contains all the tasks..
+ */
+int task_build_dependency(task_t *this_ptr, struct hash_lookup_t *lookup)
+{
+    task_dependency_t *dependency;
+    task_t *task;
+
+    if (this_ptr->dependency != NULL) {
+        queue_first(this_ptr->dependency);
+        while((dependency = queue_get_current(this_ptr->dependency)) != NULL) {
+
+            task = hash_lookup_find(lookup, dependency->id);
+            if (task != NULL) {
+                dependency->task = task;
+                subject_attach((subject_t*) task, (observer_t*) this_ptr);
+            }
+
+            queue_next(this_ptr->dependency);
+        }
+    } else {
+        return -1;
+    }
+    return 0;
 }
 
 /*!
@@ -137,4 +192,19 @@ void task_destroy(task_t *this_ptr)
 
     subject_deinit(&this_ptr->task);
     free(this_ptr);
+}
+
+/*!
+ * Notifies the task that something has happened in one of the dependencies.
+ *
+ * \param observer - A pointer to the task when it acts as an observer.
+ * \param from - The subject that sends the notify message.
+ * \param msg - The actually message.
+ */
+void task_notify(observer_t * observer, struct subject_t *from, void *msg)
+{
+    task_t *this_ptr = (task_t*) observer;
+    task_t *task_ptr = (task_t*) from;
+
+    printf("%s --> %s\n",task_ptr->service->get_name(), this_ptr->service->get_name());
 }

@@ -82,7 +82,7 @@ int task_handler_calculate_dependency(task_handler_t * this_ptr)
     unsigned int task_id;
     task_t *task;
 
-    /* Build up the lookup table. */
+    /* Build up the task lookup table. */
     queue_first(this_ptr->tasks);
     while ((task = queue_get_current(this_ptr->tasks)) != NULL) {
         provides_id = task_get_provides_id(task);
@@ -95,11 +95,10 @@ int task_handler_calculate_dependency(task_handler_t * this_ptr)
         queue_next(this_ptr->tasks);
     }
 
-    /* Use the lookup table to connect all the tasks. */
+    /* Use the lookup table to connect all the dependencies for the tasks. */
     queue_first(this_ptr->tasks);
     while ((task = queue_get_current(this_ptr->tasks)) != NULL) {
-
-
+        task_build_dependency(task, this_ptr->task_lookup);
         queue_next(this_ptr->tasks);
     }
     return 0;
