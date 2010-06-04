@@ -33,7 +33,7 @@ const char *test_thread3_provides(void)
 
 const char ** test_thread3_get_dependency(void)
 {
-    static const char* priv_dependency[] = {"test_thread4", NULL};
+    static const char* priv_dependency[] = {"test_thread4", "test_thread5", NULL};
 
     return priv_dependency;
 }
