@@ -55,13 +55,11 @@ int task_handler_init(task_handler_t * this_ptr)
 int task_handler_add_tasks(task_handler_t * this_ptr,
         struct service_t *services, unsigned int services_size)
 {
-    task_t *task;
+    task_t *task = NULL;
     int tasks = 0;
     int i;
-    printf("  Size: %d\n",services_size);
     for (i = 0; i < services_size; i++) {
         task = task_create(&services[i]);
-        printf("  %s\n",task->service->get_name());
 
         if (task != NULL) {
             if (queue_push(this_ptr->tasks, task) != QUEUE_ERROR) {
@@ -127,7 +125,6 @@ void task_handler_deinit(task_handler_t * this_ptr)
         }
         queue_destroy(this_ptr->tasks);
     }
-
     hash_lookup_destroy(this_ptr->task_lookup);
 }
 
