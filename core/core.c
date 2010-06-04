@@ -30,13 +30,10 @@ int main(void)
 {
     unsigned int size = sizeof(tests) / sizeof(service_t);
     task_handler_t *task_handler = task_handler_create();
-    printf("start\n");
 
     task_handler_add_tasks(task_handler, tests, size);
     task_handler_calculate_dependency(task_handler);
     task_handler_execute(task_handler);
-
-    printf("end\n");
     task_handler_destroy(task_handler);
 
     return 0;

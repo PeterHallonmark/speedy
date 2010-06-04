@@ -27,7 +27,7 @@ typedef struct task_t {
      * it possible to use a task as both an observer and a subject. The point
      * of this is to actually be able to track dependencies, more or less to
      * know when a task can execute. */
-    subject_t task;
+    struct subject_t task;
     /*! An unique id for the task, this is used for tracking dependecies. */
     unsigned int task_id;
     /*! An alternative id for the task, this is also used for tracking

@@ -48,10 +48,10 @@ void task_notify(observer_t * observer, struct subject_t *from, void *msg);
  */
 task_t * task_create(struct service_t *service)
 {
-    task_t * this_ptr = (task_t*) malloc(sizeof(task_t));
+    if (service->get_name != NULL) {
+        task_t * this_ptr = (task_t*) malloc(sizeof(task_t));
 
-    if (this_ptr != NULL) {
-        if (this_ptr->service->get_name != NULL) {
+        if (this_ptr != NULL) {
             this_ptr->task_id = hash_generate(service->get_name());
             this_ptr->dependency_queue = NULL;
             this_ptr->service = service;
@@ -80,24 +80,15 @@ task_t * task_create(struct service_t *service)
                     dependency->id = hash_generate(dependency->name);
                     dependency->task = NULL;
 
-                    queue_push(this_ptr->dependency_queue, &dependency);
+                    queue_push(this_ptr->dependency_queue, dependency);
 
                     dependency_arg++;
                 }
             }
-
-        } else {
-            /* It wasn't possible to create a unique id for the task so remove
-             * the task and free the allocated memory. */
-
-            /* TODO Need to log it somehow to know if the hash_lookup table
-             *      needs to be able to track different tasks with the same id.
-             */
-            free(this_ptr);
-            this_ptr = NULL;
         }
+        return this_ptr;
     }
-    return this_ptr;
+    return NULL;
 }
 
 /*!
@@ -171,7 +162,6 @@ int task_build_dependency(task_t *this_ptr, struct hash_lookup_t *lookup)
                 dependency->task = task;
                 subject_attach((subject_t*) task, (observer_t*) this_ptr);
             }
-
             queue_next(this_ptr->dependency_queue);
         }
     } else {
@@ -188,17 +178,21 @@ int task_build_dependency(task_t *this_ptr, struct hash_lookup_t *lookup)
  */
 void task_destroy(task_t *this_ptr)
 {
-    if (this_ptr->dependency_queue != NULL) {
-        task_dependency_t *dependency;
+    if (this_ptr != NULL) {
+        if (this_ptr->dependency_queue != NULL) {
+            task_dependency_t *dependency;
 
-        while ((dependency = queue_pop(this_ptr->dependency_queue)) != NULL) {
-            free(dependency);
+            while ((dependency = queue_pop(this_ptr->dependency_queue)) !=
+                    NULL) {
+
+                free(dependency);
+            }
+            queue_destroy(this_ptr->dependency_queue);
         }
-        queue_destroy(this_ptr->dependency_queue);
-    }
 
-    subject_deinit(&this_ptr->task);
-    free(this_ptr);
+        subject_deinit((subject_t*) this_ptr);
+        free(this_ptr);
+    }
 }
 
 /*!
