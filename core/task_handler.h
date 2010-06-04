@@ -30,7 +30,9 @@ task_handler_t * task_handler_create(void);
 int task_handler_init(task_handler_t *this_ptr);
 
 int task_handler_add_tasks(task_handler_t *this_ptr,
-                           struct service_t *services);
+                        struct service_t *services, unsigned int services_size);
+int task_handler_calculate_dependency(task_handler_t * this_ptr);
+int task_handler_execute(task_handler_t * this_ptr);
 
 void task_handler_deinit(task_handler_t * this_ptr);
 void task_handler_destroy(task_handler_t * this_ptr);

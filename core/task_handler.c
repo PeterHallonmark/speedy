@@ -23,6 +23,7 @@
 #include "task.h"
 
 #include <stdlib.h>
+#include <stdio.h>
 
 task_handler_t * task_handler_create(void)
 {
@@ -52,15 +53,15 @@ int task_handler_init(task_handler_t * this_ptr)
 }
 
 int task_handler_add_tasks(task_handler_t * this_ptr,
-                           struct service_t *services)
+        struct service_t *services, unsigned int services_size)
 {
-    unsigned int services_size = sizeof(services) / sizeof(service_t);
     task_t *task;
     int tasks = 0;
     int i;
-
+    printf("  Size: %d\n",services_size);
     for (i = 0; i < services_size; i++) {
         task = task_create(&services[i]);
+        printf("  %s\n",task->service->get_name());
 
         if (task != NULL) {
             if (queue_push(this_ptr->tasks, task) != QUEUE_ERROR) {
@@ -99,6 +100,18 @@ int task_handler_calculate_dependency(task_handler_t * this_ptr)
     queue_first(this_ptr->tasks);
     while ((task = queue_get_current(this_ptr->tasks)) != NULL) {
         task_build_dependency(task, this_ptr->task_lookup);
+        queue_next(this_ptr->tasks);
+    }
+    return 0;
+}
+
+int task_handler_execute(task_handler_t * this_ptr)
+{
+    task_t *task;
+
+    queue_first(this_ptr->tasks);
+    while ((task = queue_get_current(this_ptr->tasks)) != NULL) {
+        task_run_initialization(task);
         queue_next(this_ptr->tasks);
     }
     return 0;
