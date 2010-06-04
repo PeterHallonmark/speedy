@@ -25,7 +25,8 @@
  *
  * \return A newly created observer.
  */
-observer_t * observer_create(void (*notify)(struct subject_t *from, void *msg))
+observer_t * observer_create(
+        void (*notify)(observer_t *this_ptr, struct subject_t *from, void *msg))
 {
     observer_t * this_ptr = (observer_t*) malloc(sizeof(observer_t));
     observer_init(this_ptr, notify);
@@ -35,8 +36,8 @@ observer_t * observer_create(void (*notify)(struct subject_t *from, void *msg))
 /*!
  * Initializes an observer.
  */
-void observer_init(observer_t *this_ptr, void (*notify)(struct subject_t *from,
-                                                        void *msg))
+void observer_init(observer_t *this_ptr,
+        void (*notify)(observer_t *this_ptr, struct subject_t *from, void *msg))
 {
     observer_set_notify(this_ptr, notify);
     pthread_mutex_init(&this_ptr->mutex, NULL);
@@ -46,13 +47,13 @@ void observer_notify(observer_t *this_ptr, struct subject_t *from, void *msg)
 {
     pthread_mutex_lock(&this_ptr->mutex);
     if (this_ptr->notify != NULL) {
-        this_ptr->notify(from, msg);
+        this_ptr->notify(this_ptr, from, msg);
     }
     pthread_mutex_unlock(&this_ptr->mutex);
 }
 
-void observer_set_notify(observer_t *this_ptr, void (*notify)(struct subject_t
-                                                              *from, void *msg))
+void observer_set_notify(observer_t *this_ptr,
+        void (*notify)(observer_t *this_ptr, struct subject_t *from, void *msg))
 {
     this_ptr->notify = notify;
 }

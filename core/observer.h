@@ -26,16 +26,18 @@ typedef struct observer_t {
     /*! A mutex which makes sure that only one subject is dealing with an
      *  observer. */
     pthread_mutex_t mutex;
-    void (*notify)(struct subject_t *from, void *msg);
+    void (*notify)(struct observer_t *this_ptr, struct subject_t *from,
+                   void *msg);
 } observer_t;
 
-observer_t * observer_create(void (*notify)(struct subject_t *from, void *msg));
-void observer_init(observer_t *this_ptr, void (*notify)(struct subject_t *from,
-                                                        void *msg));
+observer_t * observer_create(
+       void (*notify)(observer_t *this_ptr, struct subject_t *from, void *msg));
+void observer_init(observer_t *this_ptr,
+       void (*notify)(observer_t *this_ptr, struct subject_t *from, void *msg));
 
 void observer_notify(observer_t *this_ptr, struct subject_t *from, void *msg);
-void observer_set_notify(observer_t *this_ptr, void (*notify)(struct subject_t
-                                                             *from, void *msg));
+void observer_set_notify(observer_t *this_ptr,
+     void (*notify)(observer_t *this_ptr, struct subject_t *from, void *msg));
 
 void observer_deinit(observer_t *this_ptr);
 void observer_destroy(observer_t *this_ptr);
