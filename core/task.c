@@ -116,8 +116,12 @@ int task_run_initialization(task_t *this_ptr)
     int status = TASK_SUCCESS;
 
     if (this_ptr->service->initialization != NULL) {
-        status = this_ptr->service->initialization();
+        if (this_ptr->service->initialization() < 0) {
+            status = TASK_FAIL;
+        }
     }
+    subject_notify((subject_t*) this_ptr, (void*) status);
+
     return status;
 }
 
@@ -209,5 +213,5 @@ void task_notify(observer_t * observer, struct subject_t *from, void *msg)
     task_t *this_ptr = (task_t*) observer;
     task_t *task_ptr = (task_t*) from;
 
-    printf("%s --> %s\n",task_ptr->service->get_name(), this_ptr->service->get_name());
+    printf("%s --> %s %d\n",task_ptr->service->get_name(), this_ptr->service->get_name(), (int) msg);
 }
