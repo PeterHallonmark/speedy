@@ -25,11 +25,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/*! A struct which connects the */
+/*!
+ * A struct which keeps track of the depencies.
+ */
 typedef struct task_dependency_t {
-    unsigned int id;
-    char * name;
-    task_t *task;
+    unsigned int id; /*! Id of the dependency task. */
+    char * name; /*!< The name of the dependency. */
+    task_t *task; /*! The task which is a dependency. */
 } task_dependency_t;
 
 void task_notify(observer_t * observer, struct subject_t *from, void *msg);
@@ -51,7 +53,7 @@ task_t * task_create(struct service_t *service)
     if (this_ptr != NULL) {
         if (this_ptr->service->get_name != NULL) {
             this_ptr->task_id = hash_generate(service->get_name());
-            this_ptr->dependency = NULL;
+            this_ptr->dependency_queue = NULL;
             this_ptr->service = service;
             subject_init((subject_t*) this_ptr);
             observer_set_notify((observer_t*) this_ptr, task_notify);
@@ -68,17 +70,17 @@ task_t * task_create(struct service_t *service)
                 char **dependency_arg = (char**) service->get_dependency();
                 task_dependency_t *dependency;
 
-                this_ptr->dependency = queue_create();
+                this_ptr->dependency_queue = queue_create();
 
                 while (*dependency_arg != NULL) {
                     dependency = (task_dependency_t*) malloc(sizeof(
-                                       task_dependency_t));
+                                  task_dependency_t));
 
                     dependency->name = *dependency_arg;
                     dependency->id = hash_generate(dependency->name);
                     dependency->task = NULL;
 
-                    queue_push(this_ptr->dependency, &dependency);
+                    queue_push(this_ptr->dependency_queue, &dependency);
 
                     dependency_arg++;
                 }
@@ -152,12 +154,13 @@ unsigned int task_get_provides_id(task_t *this_ptr)
  */
 int task_build_dependency(task_t *this_ptr, struct hash_lookup_t *lookup)
 {
-    task_dependency_t *dependency;
-    task_t *task;
+    if (this_ptr->dependency_queue != NULL) {
+        task_dependency_t *dependency;
+        task_t *task;
 
-    if (this_ptr->dependency != NULL) {
-        queue_first(this_ptr->dependency);
-        while((dependency = queue_get_current(this_ptr->dependency)) != NULL) {
+        queue_first(this_ptr->dependency_queue);
+        while ((dependency = queue_get_current(this_ptr->dependency_queue)) !=
+                NULL) {
 
             task = hash_lookup_find(lookup, dependency->id);
             if (task != NULL) {
@@ -165,7 +168,7 @@ int task_build_dependency(task_t *this_ptr, struct hash_lookup_t *lookup)
                 subject_attach((subject_t*) task, (observer_t*) this_ptr);
             }
 
-            queue_next(this_ptr->dependency);
+            queue_next(this_ptr->dependency_queue);
         }
     } else {
         return -1;
@@ -181,13 +184,13 @@ int task_build_dependency(task_t *this_ptr, struct hash_lookup_t *lookup)
  */
 void task_destroy(task_t *this_ptr)
 {
-    if (this_ptr->dependency != NULL) {
-        task_dependency_t *task_dependency;
+    if (this_ptr->dependency_queue != NULL) {
+        task_dependency_t *dependency;
 
-        while ((task_dependency = queue_pop(this_ptr->dependency)) != NULL) {
-            free(task_dependency);
+        while ((dependency = queue_pop(this_ptr->dependency_queue)) != NULL) {
+            free(dependency);
         }
-        queue_destroy(this_ptr->dependency);
+        queue_destroy(this_ptr->dependency_queue);
     }
 
     subject_deinit(&this_ptr->task);

@@ -35,7 +35,7 @@ typedef struct task_t {
      * tasks. */
     unsigned int provides_id;
 
-    struct queue_t *dependency;
+    struct queue_t *dependency_queue;
     /*! A pointer to the service struct which contains function pointers for
      *  getting the task name, the alternative name of the task, the
      *  dependencies, the initialization function and the shutdown function.
