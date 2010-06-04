@@ -17,82 +17,27 @@
 #include "core_type.h"
 #include "config_sysinit.h"
 #include "config_daemons.h"
+#include "config_tests.h"
+
+#include "hash_lookup.h"
+#include "queue.h"
+#include "task_handler.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <pthread.h>
-
-
-pthread_t start;
-
-void *thread_function1(void *dummyPtr)
-{
-    pthread_join(start, NULL);
-    printf("Pthread test1\n");
-
-    return 0;
-}
-
-void *thread_function2(void *dummyPtr)
-{
-    pthread_join(start, NULL);
-    printf("Pthread test2\n");
-
-    return 0;
-}
-
-
-void *start_function(void *dummyPtr)
-{
-    char ch;
-
-    scanf("%c",&ch);
-    printf("Start1\n");
-
-    return 0;
-}
-
 int main(void)
 {
-    pthread_t thread1;
-    pthread_t thread2;
+    unsigned int size = sizeof(tests) / sizeof(service_t);
+    task_handler_t *task_handler = task_handler_create();
+    printf("start\n");
 
-    int daemon_size = sizeof(daemons) / sizeof(service_t);
-    int sysinit_size = sizeof(sysinit) / sizeof(service_t);
-    const char **dependency;
-    int i;
+    task_handler_add_tasks(task_handler, tests, size);
+    task_handler_calculate_dependency(task_handler);
+    task_handler_execute(task_handler);
 
-    pthread_create( &start, NULL, start_function, NULL);
-
-    for (i = 0; i < sysinit_size; i++) {
-        if (sysinit[i].get_name != NULL) {
-            printf("%s\n",sysinit[i].get_name());
-        }
-        if (sysinit[i].get_dependency != NULL) {
-            printf("  dep: ");
-            dependency = sysinit[i].get_dependency();
-            while (*dependency != NULL) {
-                printf("%s ",*dependency);
-                dependency++;
-            }
-            printf("\n");
-        }
-        if (sysinit[i].initialization != NULL) {
-            sysinit[i].initialization();
-        }
-
-    }
-
-    pthread_create( &thread1, NULL, thread_function1, NULL);
-    pthread_create( &thread2, NULL, thread_function2, NULL);
-
-
-
-
-    pthread_join(thread1, NULL);
-    pthread_join(thread2, NULL);
-    printf("Pthread join\n");
+    printf("end\n");
+    task_handler_destroy(task_handler);
 
     return 0;
 }
