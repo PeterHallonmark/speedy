@@ -62,8 +62,8 @@ data_t * queue_pop(queue_t *this_ptr)
 
     if (this_ptr->first != NULL) {
         node = this_ptr->first;
-        this_ptr->first = node->next;
         this_ptr->first->previous = NULL;
+        this_ptr->first = node->next;
 
         /* In case it was the last node. */
         if (this_ptr->first == NULL) {
