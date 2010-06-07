@@ -43,6 +43,8 @@ int task_handler_init(task_handler_t * this_ptr)
 {
     this_ptr->task_lookup = hash_lookup_create(64);
     this_ptr->tasks = queue_create();
+    this_ptr->run_queue = queue_create();
+
 
     if ((this_ptr->tasks == NULL) || (this_ptr->tasks == NULL)) {
         task_handler_deinit(this_ptr);
@@ -59,7 +61,7 @@ int task_handler_add_tasks(task_handler_t * this_ptr,
     int tasks = 0;
     int i;
     for (i = 0; i < services_size; i++) {
-        task = task_create(&services[i]);
+        task = task_create(&services[i], this_ptr);
 
         if (task != NULL) {
             if (queue_push(this_ptr->tasks, task) != QUEUE_ERROR) {
@@ -107,12 +109,30 @@ int task_handler_execute(task_handler_t * this_ptr)
 {
     task_t *task;
 
-    queue_first(this_ptr->tasks);
-    while ((task = queue_get_current(this_ptr->tasks)) != NULL) {
+    while ((task = task_handler_run_queue_pop(this_ptr)) != NULL) {
+        printf("run:  %s\n",task->service->get_name());
         task_run_initialization(task);
-        queue_next(this_ptr->tasks);
     }
     return 0;
+}
+
+task_t *task_handler_run_queue_pop(task_handler_t *this_ptr)
+{
+    task_t *task;
+
+    /* Lock mutex. */
+    task = queue_pop(this_ptr->run_queue);
+    /* Unlock mutex. */
+    return task;
+}
+
+
+void task_handler_run_queue_push(task_handler_t *this_ptr, task_t *task)
+{
+    printf("push: %s\n",task->service->get_name());
+    /* Lock mutex. */
+    queue_push(this_ptr->run_queue, task);
+    /* Unlock mutex. */
 }
 
 void task_handler_deinit(task_handler_t * this_ptr)
@@ -125,6 +145,7 @@ void task_handler_deinit(task_handler_t * this_ptr)
         }
         queue_destroy(this_ptr->tasks);
     }
+    queue_destroy(this_ptr->run_queue);
     hash_lookup_destroy(this_ptr->task_lookup);
 }
 

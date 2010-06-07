@@ -20,6 +20,7 @@
 #include "subject.h"
 #include "hash.h"
 #include "hash_lookup.h"
+#include "task_handler.h"
 #include "task.h"
 
 #include <stdio.h>
@@ -35,7 +36,6 @@ typedef struct task_dependency_t {
 } task_dependency_t;
 
 void task_notify(observer_t * observer, struct subject_t *from, void *msg);
-
 /*!
  * Creates a task which encapsulates a service.
  * The reason for this is to make it possible to observe services and to track
@@ -46,7 +46,7 @@ void task_notify(observer_t * observer, struct subject_t *from, void *msg);
  *
  * \return A task which encapsulates a service.
  */
-task_t * task_create(struct service_t *service)
+task_t * task_create(struct service_t *service, struct task_handler_t *handler)
 {
     if (service->get_name != NULL) {
         task_t * this_ptr = (task_t*) malloc(sizeof(task_t));
@@ -55,6 +55,8 @@ task_t * task_create(struct service_t *service)
             this_ptr->task_id = hash_generate(service->get_name());
             this_ptr->dependency_queue = NULL;
             this_ptr->service = service;
+            this_ptr->task_handler = handler;
+            this_ptr->counter = 0;
             subject_init((subject_t*) this_ptr);
             observer_set_notify((observer_t*) this_ptr, task_notify);
 
@@ -160,13 +162,17 @@ int task_build_dependency(task_t *this_ptr, struct hash_lookup_t *lookup)
             task = hash_lookup_find(lookup, dependency->id);
             if (task != NULL) {
                 dependency->task = task;
+                this_ptr->counter++;
                 subject_attach((subject_t*) task, (observer_t*) this_ptr);
             }
             queue_next(this_ptr->dependency_queue);
         }
-    } else {
-        return -1;
     }
+
+    if (this_ptr->counter == 0) {
+        task_handler_run_queue_push(this_ptr->task_handler, this_ptr);
+    }
+
     return 0;
 }
 
@@ -208,4 +214,9 @@ void task_notify(observer_t * observer, struct subject_t *from, void *msg)
     task_t *task_ptr = (task_t*) from;
 
     printf("%s --> %s %d\n",task_ptr->service->get_name(), this_ptr->service->get_name(), (int) msg);
+    this_ptr->counter--;
+
+    if (this_ptr->counter == 0) {
+        task_handler_run_queue_push(this_ptr->task_handler, this_ptr);
+    }
 }

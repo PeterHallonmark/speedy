@@ -21,6 +21,7 @@
 struct service_t;
 struct subject_t;
 struct hash_lookup_t;
+struct task_handler_t;
 
 typedef struct task_t {
     /*! A C inheritance of the \c struct \c subject_t type which makes
@@ -42,9 +43,13 @@ typedef struct task_t {
      *  This actually gives the task something to do during startup or shutdown
      *  and it also gives basic knowledge of the dependencies for the task. */
     service_t *service;
+
+    struct task_handler_t *task_handler;
+
+    int counter;
 } task_t;
 
-task_t * task_create(struct service_t *service);
+task_t * task_create(struct service_t *service, struct task_handler_t *handler);
 
 int task_run_initialization(task_t *task);
 
