@@ -33,7 +33,7 @@ int main(void)
 
     task_handler_add_tasks(task_handler, tests, size);
     task_handler_calculate_dependency(task_handler);
-    task_handler_execute(task_handler);
+    task_handler_wait(task_handler);
     task_handler_destroy(task_handler);
 
     return 0;
