@@ -116,8 +116,6 @@ void *thread_pool_run_thread(void *arg)
         task = NULL;
         task = queue_pop(this_ptr->queue);
 
-        printf("tasks: %d passive threads: %d\n",this_ptr->tasks, this_ptr->passive_threads);
-
         if (this_ptr->passive_threads <= this_ptr->tasks) {
             for (i = 0; i < this_ptr->passive_threads; i++) {
                 pthread_cond_signal(this_ptr->condititon);
@@ -132,7 +130,6 @@ void *thread_pool_run_thread(void *arg)
 
         if (task != NULL) {
             pthread_mutex_unlock(this_ptr->mutex);
-            printf("run:  %s\n",task->service->get_name());
             task_run_initialization(task);
 
         } else {
@@ -146,11 +143,11 @@ void *thread_pool_run_thread(void *arg)
             } else {
                 pthread_cond_wait(this_ptr->condititon, this_ptr->mutex);
                 pthread_mutex_unlock(this_ptr->mutex);
-
-                pthread_mutex_lock(this_ptr->mutex);
-                this_ptr->passive_threads--;
-                pthread_mutex_unlock(this_ptr->mutex);
             }
+
+            pthread_mutex_lock(this_ptr->mutex);
+            this_ptr->passive_threads--;
+            pthread_mutex_unlock(this_ptr->mutex);
         }
     }
     return 0;
