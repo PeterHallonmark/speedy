@@ -170,7 +170,7 @@ int task_build_dependency(task_t *this_ptr, struct hash_lookup_t *lookup)
     }
 
     if (this_ptr->counter == 0) {
-        task_handler_run_queue_push(this_ptr->task_handler, this_ptr);
+        task_handler_run_add_task(this_ptr->task_handler, this_ptr);
     }
 
     return 0;
@@ -217,6 +217,6 @@ void task_notify(observer_t * observer, struct subject_t *from, void *msg)
     this_ptr->counter--;
 
     if (this_ptr->counter == 0) {
-        task_handler_run_queue_push(this_ptr->task_handler, this_ptr);
+        task_handler_run_add_task(this_ptr->task_handler, this_ptr);
     }
 }

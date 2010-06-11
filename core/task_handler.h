@@ -18,13 +18,14 @@
 #define TASK_HANDLER_FAIL -1
 
 struct queue_t;
+struct thread_pool_t;
 struct hash_lookup_t;
 struct service_t;
 
 typedef struct task_handler_t {
     struct hash_lookup_t *task_lookup;
     struct queue_t *tasks; /*!< Queue with all the tasks. */
-    struct queue_t *run_queue;
+    struct thread_pool_t *thread_pool;
 } task_handler_t;
 
 task_handler_t * task_handler_create(void);
@@ -33,10 +34,10 @@ int task_handler_init(task_handler_t *this_ptr);
 int task_handler_add_tasks(task_handler_t *this_ptr,
                         struct service_t *services, unsigned int services_size);
 int task_handler_calculate_dependency(task_handler_t * this_ptr);
-int task_handler_execute(task_handler_t * this_ptr);
+int task_handler_wait(task_handler_t * this_ptr);
 
-struct task_t *task_handler_run_queue_pop(task_handler_t *this_ptr);
-void task_handler_run_queue_push(task_handler_t *this_ptr, struct task_t *task);
+struct task_t *task_handler_thread_pool_pop(task_handler_t *this_ptr);
+void task_handler_run_add_task(task_handler_t *this_ptr, struct task_t *task);
 
 void task_handler_deinit(task_handler_t * this_ptr);
 void task_handler_destroy(task_handler_t * this_ptr);

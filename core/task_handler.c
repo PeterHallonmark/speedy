@@ -21,6 +21,7 @@
 #include "queue.h"
 #include "subject.h"
 #include "task.h"
+#include "thread_pool.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -43,8 +44,7 @@ int task_handler_init(task_handler_t * this_ptr)
 {
     this_ptr->task_lookup = hash_lookup_create(64);
     this_ptr->tasks = queue_create();
-    this_ptr->run_queue = queue_create();
-
+    this_ptr->thread_pool = thread_pool_create(4);
 
     if ((this_ptr->tasks == NULL) || (this_ptr->tasks == NULL)) {
         task_handler_deinit(this_ptr);
@@ -105,34 +105,16 @@ int task_handler_calculate_dependency(task_handler_t * this_ptr)
     return 0;
 }
 
-int task_handler_execute(task_handler_t * this_ptr)
+int task_handler_wait(task_handler_t * this_ptr)
 {
-    task_t *task;
-
-    while ((task = task_handler_run_queue_pop(this_ptr)) != NULL) {
-        printf("run:  %s\n",task->service->get_name());
-        task_run_initialization(task);
-    }
+    thread_pool_wait(this_ptr->thread_pool);
     return 0;
 }
 
-task_t *task_handler_run_queue_pop(task_handler_t *this_ptr)
-{
-    task_t *task;
-
-    /* Lock mutex. */
-    task = queue_pop(this_ptr->run_queue);
-    /* Unlock mutex. */
-    return task;
-}
-
-
-void task_handler_run_queue_push(task_handler_t *this_ptr, task_t *task)
+void task_handler_run_add_task(task_handler_t *this_ptr, task_t *task)
 {
     printf("push: %s\n",task->service->get_name());
-    /* Lock mutex. */
-    queue_push(this_ptr->run_queue, task);
-    /* Unlock mutex. */
+    thread_pool_add_task(this_ptr->thread_pool, task);
 }
 
 void task_handler_deinit(task_handler_t * this_ptr)
@@ -145,7 +127,7 @@ void task_handler_deinit(task_handler_t * this_ptr)
         }
         queue_destroy(this_ptr->tasks);
     }
-    queue_destroy(this_ptr->run_queue);
+    thread_pool_destroy(this_ptr->thread_pool);
     hash_lookup_destroy(this_ptr->task_lookup);
 }
 
