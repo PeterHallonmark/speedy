@@ -44,7 +44,7 @@ int task_handler_init(task_handler_t * this_ptr)
 {
     this_ptr->task_lookup = hash_lookup_create(64);
     this_ptr->tasks = queue_create();
-    this_ptr->thread_pool = thread_pool_create(4);
+    this_ptr->thread_pool = thread_pool_create(12);
 
     if ((this_ptr->tasks == NULL) || (this_ptr->tasks == NULL)) {
         task_handler_deinit(this_ptr);
@@ -113,7 +113,6 @@ int task_handler_wait(task_handler_t * this_ptr)
 
 void task_handler_run_add_task(task_handler_t *this_ptr, task_t *task)
 {
-    printf("push: %s\n",task->service->get_name());
     thread_pool_add_task(this_ptr->thread_pool, task);
 }
 
