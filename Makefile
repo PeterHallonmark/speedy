@@ -17,16 +17,15 @@ override CFLAGS += -Wall
 
 # This is the array that simulates the rest of the rc.conf
 # So far it doesn't contain that much.
-sysinit :=  start
-# start udev loopback fsck mount swap hwclock randomseed files \
-#           hostname locale end
+sysinit :=  start udev loopback fsck mount swap hwclock randomseed files \
+            hostname locale end
 
 # This is the array that simulates the DAEMONS array in the rc.conf 
 daemons :=
 
 # Some test code just to be able to test that the core work as intended. 
-tests := test_thread1 test_thread2 test_thread3 \
-         test_thread4 test_thread5 test_thread6
+# tests := test_thread1 test_thread2 test_thread3 \
+#          test_thread4 test_thread5 test_thread6
 
 # Specifies the system and which predefined scripts and configs that are
 # going to be used. 
