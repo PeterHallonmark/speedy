@@ -5,8 +5,6 @@ the code modularized.
 
 Things that currently are on my TODO list:
 ------------------------------------------
-* Multithreaded with dependency functionality
-
 * Make it possible to lanch daemons that are not implemented in C. Pretty much
   generate code to run anything from /etc/rc.d/* 
 
