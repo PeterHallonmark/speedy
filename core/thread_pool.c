@@ -56,7 +56,6 @@ thread_pool_t *thread_pool_create(unsigned int threads)
             for (i = 0; i < this_ptr->thread_size; i++) {
                 pthread_create(&this_ptr->threads[i], NULL,
                                thread_pool_run_thread, this_ptr);
-                printf("thread %d\n",i);
             }
 
         } else {
@@ -75,7 +74,6 @@ int thread_pool_wait(thread_pool_t *this_ptr)
 {
     int i;
 
-    printf("tasks: %d passive threads: %d\n",this_ptr->tasks, this_ptr->passive_threads);
     thread_pool_run_thread(this_ptr);
 
     for (i = 0; i < this_ptr->thread_size; i++) {
