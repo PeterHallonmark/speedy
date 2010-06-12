@@ -34,3 +34,9 @@ int loopback_initialization(void)
     /* bring up the loopback interface */
     return libspeedy_run(loopback_arg);
 }
+
+const char ** loopback_get_dependency(void)
+{
+    static const char* priv_dependency[] = {"udev", NULL};
+    return priv_dependency;
+}

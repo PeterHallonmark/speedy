@@ -17,3 +17,5 @@
 const char *hwclock_get_name(void);
 
 int hwclock_initialization(void);
+
+const char ** hwclock_get_dependency(void);

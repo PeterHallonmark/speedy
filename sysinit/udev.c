@@ -51,4 +51,9 @@ int udev_initialization(void)
 	return 0;
 }
 
+const char ** udev_get_dependency(void)
+{
+    static const char* priv_dependency[] = {"start", NULL};
+    return priv_dependency;
+}
 

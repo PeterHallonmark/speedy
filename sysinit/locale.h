@@ -17,3 +17,5 @@
 const char *locale_get_name(void);
 
 int locale_initialization(void);
+
+const char ** locale_get_dependency(void);

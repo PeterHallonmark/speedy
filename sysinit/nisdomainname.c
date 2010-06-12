@@ -18,6 +18,8 @@
 #include "config/nisdomainname.h"
 #include "lib/network.h"
 
+#include <stdlib.h>
+
 const char *nisdomainname_get_name(void)
 {
     static const char priv_nisdomainname_name[] = "nisdomainname";
@@ -28,4 +30,10 @@ const char *nisdomainname_get_name(void)
 int nisdomainname_initialization(void)
 {
     return libspeedy_setdomainname(nisdomainname);
+}
+
+const char ** nisdomainname_get_dependency(void)
+{
+    static const char* priv_dependency[] = {"loopback", NULL};
+    return priv_dependency;
 }

@@ -32,3 +32,9 @@ int depmod_initialization(void)
     char *const depmod_arg[] = {CMD_DEPMOD, "-a", NULL};
     return libspeedy_run(depmod_arg);
 }
+
+const char ** depmod_get_dependency(void)
+{
+    static const char* priv_dependency[] = {"mount", NULL};
+    return priv_dependency;
+}

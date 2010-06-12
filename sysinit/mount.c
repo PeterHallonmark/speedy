@@ -39,3 +39,10 @@ int mount_initialization(void)
     libspeedy_run(mount_arg);
     return 0;
 }
+
+const char ** mount_get_dependency(void)
+{
+    static const char* priv_dependency[] = {"fsck", NULL};
+    return priv_dependency;
+}
+

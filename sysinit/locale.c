@@ -95,3 +95,9 @@ int locale_callback(char *filename)
     return 0;
 }
 #endif /* LEGACY */
+
+const char ** locale_get_dependency(void)
+{
+    static const char* priv_dependency[] = {"mount", NULL};
+    return priv_dependency;
+}

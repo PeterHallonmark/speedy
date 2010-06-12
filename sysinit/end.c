@@ -14,11 +14,11 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-#include <stdio.h>
-
 #include "end.h"
 #include "lib/run.h"
 #include "lib/config.h"
+
+#include <stdlib.h>
 
 const char *end_get_name(void)
 {
@@ -29,9 +29,11 @@ const char *end_get_name(void)
 
 int end_initialization(void)
 {
-    char ch;
-    
-    /*printf("end...");
-    scanf("%c",&ch);*/
     return libspeedy_system(CMD_DMESG " >| " FILE_DMESG_LOG);
+}
+
+const char ** end_get_dependency(void)
+{
+    static const char* priv_dependency[] = {"hostname", "nisdomainname", "locale", "files", "randomseed", "hwclock", "swap", NULL};
+    return priv_dependency;
 }

@@ -88,3 +88,9 @@ int fsck_initialization(void)
     }
     return 0;
 }
+
+const char ** fsck_get_dependency(void)
+{
+    static const char* priv_dependency[] = {"udev", NULL};
+    return priv_dependency;
+}

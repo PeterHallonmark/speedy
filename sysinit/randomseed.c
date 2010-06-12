@@ -31,3 +31,9 @@ int randomseed_initialization(void)
 {
     return libspeedy_system("cat " FILE_RANDOMSEED " > /dev/urandom");
 }
+
+const char ** randomseed_get_dependency(void)
+{
+    static const char* priv_dependency[] = {"mount", NULL};
+    return priv_dependency;
+}

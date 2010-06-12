@@ -33,3 +33,10 @@ int swap_initialization(void)
     char *const swapon_arg[] = {CMD_SWAPON, "-a", NULL};
     return libspeedy_run(swapon_arg);
 }
+
+const char ** swap_get_dependency(void)
+{
+    static const char* priv_dependency[] = {"udev", NULL};
+    return priv_dependency;
+}
+

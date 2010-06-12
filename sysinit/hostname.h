@@ -17,3 +17,5 @@
 const char *hostname_get_name(void);
 
 int hostname_initialization(void);
+
+const char ** hostname_get_dependency(void);

@@ -17,3 +17,5 @@
 const char *depmod_get_name(void);
 
 int depmod_initialization(void);
+
+const char ** depmod_get_dependency(void);

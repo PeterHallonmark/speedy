@@ -17,3 +17,5 @@
 const char *end_get_name(void);
 
 int end_initialization(void);
+
+const char ** end_get_dependency(void);

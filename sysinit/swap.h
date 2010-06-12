@@ -17,3 +17,5 @@
 const char *swap_get_name(void);
 
 int swap_initialization(void);
+
+const char ** swap_get_dependency(void);

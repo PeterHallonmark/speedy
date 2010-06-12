@@ -17,3 +17,5 @@
 const char *files_get_name(void);
 
 int files_initialization(void);
+
+const char ** files_get_dependency(void);

@@ -17,3 +17,5 @@
 const char *fsck_get_name(void);
 
 int fsck_initialization(void);
+
+const char ** fsck_get_dependency(void);

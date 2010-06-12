@@ -17,3 +17,5 @@
 const char *loopback_get_name(void);
 
 int loopback_initialization(void);
+
+const char ** loopback_get_dependency(void);

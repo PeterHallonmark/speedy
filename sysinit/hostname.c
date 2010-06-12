@@ -18,6 +18,8 @@
 #include "config/hostname.h"
 #include "lib/network.h"
 
+#include <stdlib.h>
+
 const char *hostname_get_name(void)
 {
     static const char priv_hostname_name[] = "hostname";
@@ -30,3 +32,8 @@ int hostname_initialization(void)
     return libspeedy_sethostname(hostname);
 }
 
+const char ** hostname_get_dependency(void)
+{
+    static const char* priv_dependency[] = {"loopback", NULL};
+    return priv_dependency;
+}

@@ -17,3 +17,5 @@
 const char *udev_get_name(void);
 
 int udev_initialization(void);
+
+const char ** udev_get_dependency(void);

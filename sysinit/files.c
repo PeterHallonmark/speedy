@@ -19,6 +19,8 @@
 #include "lib/dir.h"
 #include "lib/config.h"
 
+#include <stdlib.h>
+
 const char *files_get_name(void)
 {
     static const char priv_files_name[] = "files";
@@ -40,3 +42,10 @@ int files_initialization(void)
     libspeedy_mkdir(DIR_TMP_X11, 1777);
     return 0;
 }
+
+const char ** files_get_dependency(void)
+{
+    static const char* priv_dependency[] = {"mount", NULL};
+    return priv_dependency;
+}
+

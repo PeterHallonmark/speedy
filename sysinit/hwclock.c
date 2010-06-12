@@ -49,3 +49,9 @@ int hwclock_initialization(void)
 #endif
     return 0;
 }
+
+const char ** hwclock_get_dependency(void)
+{
+    static const char* priv_dependency[] = {"mount", NULL};
+    return priv_dependency;
+}
