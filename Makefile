@@ -17,15 +17,15 @@ override CFLAGS += -Wall
 
 # This is the array that simulates the rest of the rc.conf
 # So far it doesn't contain that much.
-sysinit :=  start udev loopback fsck mount swap hwclock randomseed files \
-            hostname locale end
+sysinit :=  start #udev loopback fsck mount swap hwclock randomseed files \
+            #hostname locale end
 
 # This is the array that simulates the DAEMONS array in the rc.conf 
 daemons :=
 
 # Some test code just to be able to test that the core work as intended. 
-# tests := test_thread1 test_thread2 test_thread3 \
-#          test_thread4 test_thread5 test_thread6
+tests := test_thread1 test_thread2 test_thread3 \
+         test_thread4 test_thread5 test_thread6
 
 # Specifies the system and which predefined scripts and configs that are
 # going to be used. 
@@ -59,12 +59,12 @@ copy: $(build)
     
 $(build) :
 	mkdir -p $(build)
-			           
+
 release: init copy
 	$(MAKE) -j 1 -r -C $(build) init_release
 	$(MAKE) -j 4 -r -C $(build) release
 	
-debug: CFLAGS += -rdynamic -g
+debug: CFLAGS += -Wextra -g
 debug: init copy
 	$(MAKE) -j 1 -r -C $(build) init_debug
 	$(MAKE) -j 4 -r -C $(build) debug

@@ -22,19 +22,21 @@
 #include "hash_lookup.h"
 #include "queue.h"
 #include "task_handler.h"
+#include "task_parser.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 
 int main(void)
 {
-    unsigned int size = sizeof(sysinit) / sizeof(service_t);
+    task_parser_readfile("test2.txt");
+
+/*    unsigned int size = sizeof(tests) / sizeof(service_t);
     task_handler_t *task_handler = task_handler_create();
 
-    task_handler_add_tasks(task_handler, sysinit, size);
+    task_handler_add_tasks(task_handler, tests, size);
     task_handler_calculate_dependency(task_handler);
     task_handler_wait(task_handler);
-    task_handler_destroy(task_handler);
-
+    task_handler_destroy(task_handler);*/
     return 0;
 }
