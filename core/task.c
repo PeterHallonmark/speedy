@@ -48,11 +48,11 @@ void task_notify(observer_t * observer, struct subject_t *from, void *msg);
  */
 task_t * task_create(struct service_t *service, struct task_handler_t *handler)
 {
-    if (service->get_name != NULL) {
+    if (service->name != NULL) {
         task_t * this_ptr = (task_t*) malloc(sizeof(task_t));
 
         if (this_ptr != NULL) {
-            this_ptr->task_id = hash_generate(service->get_name());
+            this_ptr->task_id = hash_generate(service->name());
             this_ptr->dependency_queue = NULL;
             this_ptr->service = service;
             this_ptr->task_handler = handler;
@@ -68,8 +68,8 @@ task_t * task_create(struct service_t *service, struct task_handler_t *handler)
                 this_ptr->provides_id = this_ptr->task_id;
             }
 
-            if (service->get_dependency != NULL) {
-                char **dependency_arg = (char**) service->get_dependency();
+            if (service->dependency != NULL) {
+                char **dependency_arg = (char**) service->dependency();
                 task_dependency_t *dependency;
 
                 this_ptr->dependency_queue = queue_create();
@@ -108,10 +108,10 @@ int task_run_initialization(task_t *this_ptr)
 {
     int status = TASK_SUCCESS;
 
-    printf("%s\n",this_ptr->service->get_name());
+    printf("%s\n",this_ptr->service->name());
 
-    if (this_ptr->service->initialization != NULL) {
-        if (this_ptr->service->initialization() < 0) {
+    if (this_ptr->service->action != NULL) {
+        if (this_ptr->service->action() < 0) {
             status = TASK_FAIL;
         }
     }
@@ -213,7 +213,6 @@ void task_destroy(task_t *this_ptr)
 void task_notify(observer_t * observer, struct subject_t *from, void *msg)
 {
     task_t *this_ptr = (task_t*) observer;
-    task_t *task_ptr = (task_t*) from;
 
     this_ptr->counter--;
 
