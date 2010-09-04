@@ -61,12 +61,12 @@ void config_parser_read(config_parser_t *config)
 
     config->mode = NEW_LINE;
 
-    while (config->mode != EXIT) {
+    while ((config->mode != EXIT) && (config->mode != ERROR)) {
 
         config_parser_readfile(config);
 
         while ((config->buffer_pos < config->bytes_read) &&
-               (config->mode != EXIT)) {
+               (config->mode != EXIT) && (config->mode != ERROR)) {
 
             switch(config->mode) {
                 case NEW_LINE:
@@ -75,7 +75,21 @@ void config_parser_read(config_parser_t *config)
                     *command_pos_ptr = '\0';
                     *argument_pos_ptr = '\0';
                     config->line++;
-                    config->mode = COMMAND;
+                    config->mode = PRE_COMMAND;
+                    break;
+
+                case PRE_COMMAND:
+                    switch(*config->buffer_pos_ptr) {
+                        case ' ':
+                        case '\t':
+                            config->buffer_pos_ptr++;
+                            config->buffer_pos++;
+                            break;
+
+                        default:
+                            config->mode = COMMAND;
+                            break;
+                    }
                     break;
 
                 case COMMAND:
@@ -90,18 +104,16 @@ void config_parser_read(config_parser_t *config)
 
                         case '=':
                             if (command_pos_ptr != config->command) {
-                                config->mode = ARGUMENT;
+                                config->mode = PRE_ARGUMENT;
                             } else {
                                 //command_data->error_msg = "Missing command.";
-                                config->mode = EXIT;
+                                config->mode = PRE_ERROR;
                             }
                             break;
 
                         case ' ':
                         case '\t':
-                            if (command_pos_ptr != config->command) {
-                                config->mode = SPACE;
-                            }
+                            config->mode = SPACE;
                             break;
 
                         default:
@@ -112,7 +124,7 @@ void config_parser_read(config_parser_t *config)
                                 command_pos_ptr++;
                             } else {
                                 //command_data->error_msg = "Command to long.";
-                                config->mode = EXIT;
+                                config->mode = PRE_ERROR;
                             }
                             break;
                     }
@@ -128,10 +140,10 @@ void config_parser_read(config_parser_t *config)
 
                         case '=':
                             if (command_pos_ptr != config->command) {
-                                config->mode = ARGUMENT;
+                                config->mode = PRE_ARGUMENT;
                             } else {
                                 //command_data->error_msg = "Missing command.";
-                                config->mode = EXIT;
+                                config->mode = PRE_ERROR;
                             }
                             break;
 
@@ -146,11 +158,25 @@ void config_parser_read(config_parser_t *config)
 
                         default:
                             //command_data->error_msg = "Space is not supported in a command.";
-                            config->mode = EXIT;
+                            config->mode = PRE_ERROR;
                             break;
                     }
                     config->buffer_pos_ptr++;
                     config->buffer_pos++;
+                    break;
+
+                case PRE_ARGUMENT:
+                    switch(*config->buffer_pos_ptr) {
+                        case ' ':
+                        case '\t':
+                            config->buffer_pos_ptr++;
+                            config->buffer_pos++;
+                            break;
+
+                        default:
+                            config->mode = ARGUMENT;
+                            break;
+                    }
                     break;
 
                 case ARGUMENT:
@@ -171,7 +197,7 @@ void config_parser_read(config_parser_t *config)
                                 argument_pos_ptr++;
                             } else {
                                 //command_data->error_msg = "Argument to long.";
-                                config->mode = EXIT;
+                                config->mode = PRE_ERROR;
                             }
                             break;
                     }
@@ -204,8 +230,23 @@ void config_parser_read(config_parser_t *config)
                     }
                     break;
 
+                case PRE_ERROR:
+                    switch(*config->buffer_pos_ptr) {
+                        case '\n':
+                            config->argument[0] = '\0';
+                            config->command[0] = '\0';
+                            config->mode = ERROR;
+                            break;
+
+                        default:
+                            /* Do nothing. */
+                            break;
+                    }
+                    config->buffer_pos_ptr++;
+                    config->buffer_pos++;
+                    break;
+
                 default:
-                    config->mode = EXIT;
                     config->buffer_pos_ptr++;
                     config->buffer_pos++;
                     break;

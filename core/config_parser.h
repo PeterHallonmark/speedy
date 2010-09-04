@@ -26,10 +26,14 @@ typedef enum {
     NEW_LINE,
     SPACE,
     COMMENT,
+    PRE_COMMAND,
     COMMAND,
+    PRE_ARGUMENT,
     ARGUMENT,
     ADD_COMMAND,
-    EXIT
+    EXIT,
+    PRE_ERROR,
+    ERROR
 } parser_mode_t;
 
 typedef struct config_parser_t {
