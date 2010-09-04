@@ -19,7 +19,7 @@ files := $(foreach init_item, $(sysinit), sysinit/$(init_item).c) \
          lib/run.c lib/dir.c lib/file.c lib/network.c lib/modprobe.c \
          core/core.c core/queue.c core/observer.c core/subject.c \
          core/hash.c core/hash_lookup.c core/task_handler.c core/task.c \
-         core/thread_pool.c core/task_parser.c
+         core/thread_pool.c core/task_parser.c core/config_parser.c
 
 header_files := $(foreach init_item, $(sysinit), sysinit/$(init_item).h) \
                 $(foreach init_item, $(sysinit), sysinit/config/$(init_item).h) \

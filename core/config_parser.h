@@ -14,24 +14,10 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-#include "core_type.h"
-#include "task_parser.h"
+struct queue_t;
 
-#include <stdlib.h>
+typedef struct config_parser_t {
+    struct queue_t *queue;
+} config_parser_t;
 
-service_t * task_parser_readfile(const char* filename)
-{
-    service_t *service = malloc(sizeof(service_t));
-
-    service->name = NULL;
-    service->dependency = NULL;
-    service->provides = NULL;
-    service->action = NULL;
-
-    return service;
-}
-
-void task_parser_destroy_service(service_t *service)
-{
-    free(service);
-}
+config_parser_t *config_parser_readfile(char* filename);
