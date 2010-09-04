@@ -21,3 +21,5 @@ typedef struct config_parser_t {
 } config_parser_t;
 
 config_parser_t *config_parser_readfile(char* filename);
+
+void config_parser_print(config_parser_t *config_data);
