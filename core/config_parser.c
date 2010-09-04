@@ -285,8 +285,12 @@ static void config_parser_readfile(config_parser_t *config)
             config->buffer_pos_ptr = config->buffer;
             config->buffer_pos = 0u;
         } else {
+            if (config->mode == PRE_ERROR) {
+                config->mode = ERROR;
+            } else {
+                config->mode = EXIT;
+            }
 
-            config->mode = EXIT;
             config->eof = true;
         }
     }
