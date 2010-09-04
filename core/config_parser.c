@@ -22,10 +22,6 @@
 #include <stdbool.h>
 #include <string.h>
 
-#define MAX_LENGTH 1024u
-#define MAX_ARGUMENT 1024u
-#define MAX_COMMAND 128u
-
 typedef struct parser_command_t {
     char *command;
     char *argument;
@@ -33,195 +29,224 @@ typedef struct parser_command_t {
     unsigned int line;
 } parser_command_t;
 
-typedef enum {
-    NEW_LINE,
-    SPACE,
-    COMMENT,
-    COMMAND,
-    ARGUMENT,
-    ADD_COMMAND
-} parser_mode_t;
 
-config_parser_t *config_parser_readfile(char* filename)
+static void config_parser_readfile(config_parser_t *config);
+
+
+config_parser_t *config_parser_open(char* filename)
 {
-    config_parser_t *config_parser = malloc(sizeof(config_parser_t));
-    char buffer[MAX_LENGTH];
-    char command[MAX_COMMAND];
-    char argument[MAX_ARGUMENT];
-    size_t bytes_read;
-    FILE* file;
-    char *buffer_pos;
-    char *command_pos;
-    char *argument_pos;
-    unsigned int pos;
-    unsigned int line = 0u;
-    parser_mode_t mode = NEW_LINE;
-    parser_command_t *command_data = NULL;
+    config_parser_t *config = malloc(sizeof(config_parser_t));
 
-    if (config_parser != NULL) {
-        if ((config_parser->queue = queue_create()) == NULL) {
-            free(config_parser);
-            return NULL;
-        }
+    if ((config != NULL) &&
+        ((config->file = fopen(filename, "r")) == NULL)) {
 
-        file = fopen(filename, "r");
+        free(config);
+        config = NULL;
 
-        while ((feof(file) == 0) && (ferror(file) == 0)) {
-            bytes_read = fread(buffer, 1, MAX_LENGTH, file);
-            buffer_pos = buffer;
-            pos = 0u;
+    } else {
+        config->command[0] = '\0';
+        config->argument[0] = '\0';
+        config->buffer_pos = 0;
+        config->bytes_read = 0;
+        config->line = 0u;
+        config->eof = false;
+    }
+    return config;
+}
 
-            while (pos < bytes_read) {
+void config_parser_read(config_parser_t *config)
+{
+    char *command_pos_ptr;
+    char *argument_pos_ptr;
 
-                switch(mode) {
-                    case NEW_LINE:
-                        command_pos = command;
-                        argument_pos = argument;
-                        *command_pos = '\0';
-                        *argument_pos = '\0';
-                        line++;
-                        mode = COMMAND;
-                        command_data = malloc(sizeof(parser_command_t));
-                        command_data->error_msg = NULL;
-                        break;
-                    
-                    case COMMAND:
-                        switch(*buffer_pos) {
-                            case '\n':
-                                mode = ADD_COMMAND;
-                                *command_pos = '\0';
-                                break;
+    config->mode = NEW_LINE;
 
-                            case '#':
-                                mode = COMMENT;
-                                *command_pos = '\0';
-                                break;
+    while (config->mode != EXIT) {
 
-                            case '=':
-                                if (command_pos != command) {
-                                    mode = ARGUMENT;
-                                    *command_pos = '\0';
-                                } else {
-                                    command_data->error_msg = "Missing command.";
-                                }
-                                break;
+        config_parser_readfile(config);
 
-                            case ' ':
-                            case '\t':
-                                if (command_pos != command) {
-                                    mode = SPACE;
-                                    *command_pos = '\0';
-                                }
-                                break;
+        while ((config->buffer_pos < config->bytes_read) &&
+               (config->mode != EXIT)) {
 
-                            default:
-                                if (command_pos < (command + MAX_COMMAND)) {
-                                    *command_pos = *buffer_pos;
-                                    command_pos++;
-                                } else {
-                                    command_data->error_msg = "Command to long.";
-                                }
-                                break;
-                        }
-                        buffer_pos++;
-                        pos++;                        
-                        break;
+            switch(config->mode) {
+                case NEW_LINE:
+                    command_pos_ptr = config->command;
+                    argument_pos_ptr = config->argument;
+                    *command_pos_ptr = '\0';
+                    *argument_pos_ptr = '\0';
+                    config->line++;
+                    config->mode = COMMAND;
+                    break;
 
-                    case SPACE:
-                        switch(*buffer_pos) {
-                            case '\n':
-                                mode = ADD_COMMAND;
-                                break;
+                case COMMAND:
+                    switch(*config->buffer_pos_ptr) {
+                        case '\n':
+                            config->mode = ADD_COMMAND;
+                            break;
 
-                            case '=':
-                                if (command_pos != command) {
-                                    mode = ARGUMENT;
-                                } else {
-                                    command_data->error_msg = "Missing command.";
-                                }
-                                break;
+                        case '#':
+                            config->mode = COMMENT;
+                            break;
 
-                            case '#':
-                                mode = COMMENT;
-                                break;
+                        case '=':
+                            if (command_pos_ptr != config->command) {
+                                config->mode = ARGUMENT;
+                            } else {
+                                //command_data->error_msg = "Missing command.";
+                                config->mode = EXIT;
+                            }
+                            break;
 
-                            case ' ':
-                            case '\t':
-                                /* Do nothing. */
-                                break;
+                        case ' ':
+                        case '\t':
+                            if (command_pos_ptr != config->command) {
+                                config->mode = SPACE;
+                            }
+                            break;
 
-                            default:
-                                command_data->error_msg = "Space is not supported in a command.";
-                                break;
-                        }
-                        buffer_pos++;
-                        pos++;                        
-                        break;
+                        default:
+                            if (command_pos_ptr <
+                                (config->command + MAX_COMMAND)) {
 
-                    case ARGUMENT:
-                        switch(*buffer_pos) {
-                            case '\n':
-                                mode = ADD_COMMAND;
-                                break;
+                                *command_pos_ptr = *config->buffer_pos_ptr;
+                                command_pos_ptr++;
+                            } else {
+                                //command_data->error_msg = "Command to long.";
+                                config->mode = EXIT;
+                            }
+                            break;
+                    }
+                    config->buffer_pos_ptr++;
+                    config->buffer_pos++;
+                    break;
 
-                            case '#':
-                                mode = COMMENT;
-                                break;
+                case SPACE:
+                    switch(*config->buffer_pos_ptr) {
+                        case '\n':
+                            config->mode = ADD_COMMAND;
+                            break;
 
-                            default:
-                                if (argument_pos < (argument + MAX_ARGUMENT)) {
-                                    *argument_pos = *buffer_pos;
-                                    argument_pos++;
-                                } else {
-                                    command_data->error_msg = "Argument to long.";
-                                }
-                                break;
-                        }
-                        buffer_pos++;
-                        pos++;
-                        break;
+                        case '=':
+                            if (command_pos_ptr != config->command) {
+                                config->mode = ARGUMENT;
+                            } else {
+                                //command_data->error_msg = "Missing command.";
+                                config->mode = EXIT;
+                            }
+                            break;
 
-                    case COMMENT:
-                        switch(*buffer_pos) {
-                            case '\n':
-                                mode = ADD_COMMAND;
-                                break;
+                        case '#':
+                            config->mode = COMMENT;
+                            break;
 
-                            default:
-                                /* Do nothing. */
-                                break;
-                        }
-                        buffer_pos++;
-                        pos++;
-                        break;
+                        case ' ':
+                        case '\t':
+                            /* Do nothing. */
+                            break;
 
-                    case ADD_COMMAND:
-                        if ((command_pos != command) || (command_data->error_msg != NULL)) {
-                            command_data->line = line;
-                            command_data->command = strdup(command);
-                            command_data->argument = strdup(argument);
-                            queue_push(config_parser->queue, command_data);
-                            command_data = NULL;
-                            mode = NEW_LINE;
-                        } else {
-                            mode = COMMAND;
-                            line++;
-                        }
-                        
-                        break;
-                }        
+                        default:
+                            //command_data->error_msg = "Space is not supported in a command.";
+                            config->mode = EXIT;
+                            break;
+                    }
+                    config->buffer_pos_ptr++;
+                    config->buffer_pos++;
+                    break;
+
+                case ARGUMENT:
+                    switch(*config->buffer_pos_ptr) {
+                        case '\n':
+                            config->mode = ADD_COMMAND;
+                            break;
+
+                        case '#':
+                            config->mode = COMMENT;
+                            break;
+
+                        default:
+                            if (argument_pos_ptr <
+                                (config->argument + MAX_ARGUMENT)) {
+
+                                *argument_pos_ptr = *config->buffer_pos_ptr;
+                                argument_pos_ptr++;
+                            } else {
+                                //command_data->error_msg = "Argument to long.";
+                                config->mode = EXIT;
+                            }
+                            break;
+                    }
+                    config->buffer_pos_ptr++;
+                    config->buffer_pos++;
+                    break;
+
+                case COMMENT:
+                    switch(*config->buffer_pos_ptr) {
+                        case '\n':
+                            config->mode = ADD_COMMAND;
+                            break;
+
+                        default:
+                            /* Do nothing. */
+                            break;
+                    }
+                    config->buffer_pos_ptr++;
+                    config->buffer_pos++;
+                    break;
+
+                case ADD_COMMAND:
+                    if (command_pos_ptr != config->command) {
+                        config->mode = EXIT;
+                        *command_pos_ptr = '\0';
+                        *argument_pos_ptr = '\0';
+                        printf("%s=%s\n",config->command, config->argument);
+                    } else {
+                        config->mode = NEW_LINE;
+                    }
+                    break;
+
+                default:
+                    config->mode = EXIT;
+                    config->buffer_pos_ptr++;
+                    config->buffer_pos++;
+                    break;
+
             }
         }
     }
-    return config_parser;
+}
+
+bool config_parser_is_eof(config_parser_t *config)
+{
+    if (config != NULL) {
+        return config->eof;
+    }
+    return true;
 }
 
 
-void config_parser_print(config_parser_t *config_data)
+/*void config_parser_print(config_parser_t *config_data)
 {
     parser_command_t *command_data;
 
     while ((command_data = queue_pop(config_data->queue)) != NULL) {
     printf("command: %s arg: %s error %s\n",command_data->command, command_data->argument, command_data->error_msg);    
+    }
+}*/
+
+static void config_parser_readfile(config_parser_t *config)
+{
+    /* Check if the buffer is empty. */
+    if (config->buffer_pos == config->bytes_read) {
+
+        if ((feof(config->file) == 0) && (ferror(config->file) == 0)) {
+            config->bytes_read = fread(config->buffer, 1, MAX_LENGTH,
+                                       config->file);
+            config->buffer_pos_ptr = config->buffer;
+            config->buffer_pos = 0u;
+        } else {
+
+            config->mode = EXIT;
+            config->eof = true;
+        }
     }
 }

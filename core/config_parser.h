@@ -14,12 +14,39 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
+#include <stdio.h>
+
 struct queue_t;
 
+#define MAX_LENGTH 1024u
+#define MAX_ARGUMENT 1024u
+#define MAX_COMMAND 128u
+
+typedef enum {
+    NEW_LINE,
+    SPACE,
+    COMMENT,
+    COMMAND,
+    ARGUMENT,
+    ADD_COMMAND,
+    EXIT
+} parser_mode_t;
+
 typedef struct config_parser_t {
-    struct queue_t *queue;
+    char buffer[MAX_LENGTH];
+    char command[MAX_COMMAND];
+    char argument[MAX_ARGUMENT];
+    char *buffer_pos_ptr;
+    FILE* file;
+    size_t buffer_pos;
+    size_t bytes_read;
+    unsigned int line;
+    parser_mode_t mode;
+    bool eof;
 } config_parser_t;
 
-config_parser_t *config_parser_readfile(char* filename);
+config_parser_t *config_parser_open(char* filename);
 
-void config_parser_print(config_parser_t *config_data);
+bool config_parser_is_eof(config_parser_t *config);
+
+void config_parser_read(config_parser_t *config);

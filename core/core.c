@@ -29,8 +29,11 @@
 
 int main(void)
 {
-    config_parser_print(config_parser_readfile("test2.txt"));
+    config_parser_t *config = config_parser_open("test2.txt");
     
+    while (!config_parser_is_eof(config)) {
+        config_parser_read(config);
+    }
 /*    unsigned int size = sizeof(tests) / sizeof(service_t);
     task_handler_t *task_handler = task_handler_create();
 
