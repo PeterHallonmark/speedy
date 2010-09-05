@@ -54,6 +54,13 @@ config_parser_t *config_parser_open(char* filename)
     return config;
 }
 
+void config_parser_close(config_parser_t *config)
+{
+    fclose(config->file);
+    free(config);
+    config = NULL;
+}
+
 void config_parser_read(config_parser_t *config)
 {
     char *command_pos_ptr;

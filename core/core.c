@@ -34,6 +34,8 @@ int main(void)
     while (!config_parser_is_eof(config)) {
         config_parser_read(config);
     }
+
+    config_parser_close(config);
 /*    unsigned int size = sizeof(tests) / sizeof(service_t);
     task_handler_t *task_handler = task_handler_create();
 
