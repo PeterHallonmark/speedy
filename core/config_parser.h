@@ -15,26 +15,11 @@
 */
 
 #include <stdio.h>
-
-struct queue_t;
+#include <stdbool.h>
 
 #define MAX_LENGTH 1024u
 #define MAX_ARGUMENT 1024u
 #define MAX_COMMAND 128u
-
-typedef enum {
-    NEW_LINE,
-    SPACE,
-    COMMENT,
-    PRE_COMMAND,
-    COMMAND,
-    PRE_ARGUMENT,
-    ARGUMENT,
-    ADD_COMMAND,
-    EXIT,
-    PRE_ERROR,
-    ERROR
-} parser_mode_t;
 
 typedef struct config_parser_t {
     char buffer[MAX_LENGTH];
@@ -45,7 +30,7 @@ typedef struct config_parser_t {
     size_t buffer_pos;
     size_t bytes_read;
     unsigned int line;
-    parser_mode_t mode;
+    unsigned int mode;
     bool eof;
 } config_parser_t;
 

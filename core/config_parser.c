@@ -14,21 +14,24 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-#include "queue.h"
 #include "config_parser.h"
 
-#include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include <string.h>
 
-typedef struct parser_command_t {
-    char *command;
-    char *argument;
-    char *error_msg;
-    unsigned int line;
-} parser_command_t;
-
+typedef enum {
+    NEW_LINE,
+    SPACE,
+    COMMENT,
+    PRE_COMMAND,
+    COMMAND,
+    PRE_ARGUMENT,
+    ARGUMENT,
+    ADD_COMMAND,
+    EXIT,
+    PRE_ERROR,
+    ERROR
+} parser_mode_t;
 
 static void config_parser_readfile(config_parser_t *config);
 
@@ -274,16 +277,6 @@ bool config_parser_is_eof(config_parser_t *config)
     }
     return true;
 }
-
-
-/*void config_parser_print(config_parser_t *config_data)
-{
-    parser_command_t *command_data;
-
-    while ((command_data = queue_pop(config_data->queue)) != NULL) {
-    printf("command: %s arg: %s error %s\n",command_data->command, command_data->argument, command_data->error_msg);    
-    }
-}*/
 
 static void config_parser_readfile(config_parser_t *config)
 {
