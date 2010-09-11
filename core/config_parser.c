@@ -63,8 +63,8 @@ void config_parser_close(config_parser_t *config)
 
 void config_parser_read(config_parser_t *config)
 {
-    char *command_pos_ptr;
-    char *argument_pos_ptr;
+    char *command_pos_ptr = NULL;
+    char *argument_pos_ptr = NULL;
 
     config->mode = NEW_LINE;
 
@@ -72,8 +72,9 @@ void config_parser_read(config_parser_t *config)
 
         config_parser_readfile(config);
 
-        while ((config->buffer_pos < config->bytes_read) &&
-               (config->mode != EXIT) && (config->mode != ERROR)) {
+        while (((config->buffer_pos < config->bytes_read) &&
+               (config->mode != EXIT) && (config->mode != ERROR)) ||
+               (config->mode == ADD_COMMAND)) {
 
             switch(config->mode) {
                 case NEW_LINE:
@@ -227,7 +228,10 @@ void config_parser_read(config_parser_t *config)
                     break;
 
                 case ADD_COMMAND:
-                    if (command_pos_ptr != config->command) {
+                    if ((command_pos_ptr == NULL) ||
+                        (argument_pos_ptr == NULL)) {
+                        config->mode = EXIT;
+                    } else if (command_pos_ptr != config->command) {
                         config->mode = EXIT;
                         *command_pos_ptr = '\0';
                         *argument_pos_ptr = '\0';
@@ -295,9 +299,8 @@ static void config_parser_readfile(config_parser_t *config)
             if (config->mode == PRE_ERROR) {
                 config->mode = ERROR;
             } else {
-                config->mode = EXIT;
+                config->mode = ADD_COMMAND;
             }
-
             config->eof = true;
         }
     }
