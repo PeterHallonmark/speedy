@@ -30,6 +30,8 @@ typedef enum {
     ARGUMENT,
     ARGUMENT_TEXT,
     ADD_ARGUMENT,
+    NAMESPACE,
+    POST_NAMESPACE,
     EXIT,
     PRE_ERROR,
     ERROR
@@ -69,6 +71,7 @@ int config_parser_read(config_parser_t *config)
 {
     char *command_pos_ptr = NULL;
     char *argument_pos_ptr = NULL;
+    char *namespace_pos_ptr = NULL;
     bool argument_exist = false;
     int status = PARSER_NO_DATA;
 
@@ -88,6 +91,7 @@ int config_parser_read(config_parser_t *config)
                 case NEW_LINE:
                     command_pos_ptr = config->command;
                     argument_pos_ptr = config->argument;
+                    namespace_pos_ptr = config->name_space;
                     *command_pos_ptr = '\0';
                     *argument_pos_ptr = '\0';
                     config->line++;
@@ -98,6 +102,12 @@ int config_parser_read(config_parser_t *config)
                     switch(*config->buffer_pos_ptr) {
                         case ' ':
                         case '\t':
+                            config->buffer_pos_ptr++;
+                            config->buffer_pos++;
+                            break;
+
+                        case '[':
+                            config->mode = NAMESPACE;
                             config->buffer_pos_ptr++;
                             config->buffer_pos++;
                             break;
@@ -269,6 +279,60 @@ int config_parser_read(config_parser_t *config)
                     config->buffer_pos++;
                     break;
 
+                case NAMESPACE:
+                    switch(*config->buffer_pos_ptr) {
+                        case ']':
+                            if (namespace_pos_ptr <
+                                (config->name_space + MAX_COMMAND)) {
+
+                                *namespace_pos_ptr = '\0';
+                                namespace_pos_ptr++;
+                                config->mode = POST_NAMESPACE;
+                            } else {
+                                //command_data->error_msg = "Command to long.";
+                                config->mode = PRE_ERROR;
+                            }
+                            break;
+
+                        default:
+                            if (namespace_pos_ptr <
+                                (config->name_space + MAX_COMMAND)) {
+
+                                *namespace_pos_ptr = *config->buffer_pos_ptr;
+                                namespace_pos_ptr++;
+                            } else {
+                                //command_data->error_msg = "Command to long.";
+                                config->mode = PRE_ERROR;
+                            }
+                            break;
+                    }
+                    config->buffer_pos_ptr++;
+                    config->buffer_pos++;
+                    break;
+
+                case POST_NAMESPACE:
+                    switch(*config->buffer_pos_ptr) {
+                        case '\n':
+                            config->mode = ADD_COMMAND;
+                            break;
+
+                        case ' ':
+                        case '\t':
+                            /* Do nothing. */
+                            break;
+
+                        case '#':
+                            config->mode = COMMENT;
+                            break;
+
+                        default:
+                            config->mode = PRE_ERROR;
+                            break;
+                    }
+                    config->buffer_pos_ptr++;
+                    config->buffer_pos++;
+                    break;
+
                 case COMMENT:
                     switch(*config->buffer_pos_ptr) {
                         case '\n':
@@ -347,6 +411,11 @@ const char* config_parser_get_command(config_parser_t *config)
     return config->command;
 }
 
+const char* config_parser_get_namespace(config_parser_t *config)
+{
+    return config->name_space;
+}
+
 const char* config_parser_get_next_argument(config_parser_t *config)
 {
     char *argument = NULL;
@@ -370,6 +439,11 @@ bool config_parser_is_eof(config_parser_t *config)
         return config->eof;
     }
     return true;
+}
+
+void config_parser_set_namespace(config_parser_t *config, const char *str)
+{
+    strcpy(config->name_space, str);
 }
 
 static void config_parser_readfile(config_parser_t *config)

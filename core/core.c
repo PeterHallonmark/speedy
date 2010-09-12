@@ -32,10 +32,13 @@ int main(void)
     config_parser_t *config = config_parser_open("test2.txt");
     char * arg;
 
+    config_parser_set_namespace(config, "default");
+
     while (!config_parser_is_eof(config)) {
 
-        if (config_parser_read(config) == 0) {
+        if (config_parser_read(config) == PARSER_OK) {
 
+            printf("[%s] ",config_parser_get_namespace(config));
             printf("%s=",config_parser_get_command(config));
             while ((arg = config_parser_get_next_argument(config)) != NULL) {
                 printf("%s ",arg);

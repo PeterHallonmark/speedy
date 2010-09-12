@@ -28,6 +28,7 @@
 typedef struct config_parser_t {
     char buffer[MAX_LENGTH];
     char command[MAX_COMMAND];
+    char name_space[MAX_COMMAND];
     char argument[MAX_ARGUMENT];
     char *buffer_pos_ptr;
     FILE* file;
@@ -48,4 +49,7 @@ bool config_parser_is_eof(config_parser_t *config);
 int config_parser_read(config_parser_t *config);
 
 const char* config_parser_get_command(config_parser_t *config);
+const char* config_parser_get_namespace(config_parser_t *config);
 const char* config_parser_get_next_argument(config_parser_t *config);
+
+void config_parser_set_namespace(config_parser_t *config, const char *str);
