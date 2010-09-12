@@ -33,13 +33,15 @@ int main(void)
     char * arg;
 
     while (!config_parser_is_eof(config)) {
-        config_parser_read(config);
 
-        printf("%s=",config_parser_get_command(config));
-        while ((arg = config_parser_get_next_argument(config)) != NULL) {
-            printf("%s ",arg);
+        if (config_parser_read(config) == 0) {
+
+            printf("%s=",config_parser_get_command(config));
+            while ((arg = config_parser_get_next_argument(config)) != NULL) {
+                printf("%s ",arg);
+            }
+            printf("\n");
         }
-        printf("\n");
     }
 
     config_parser_close(config);

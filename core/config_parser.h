@@ -18,8 +18,12 @@
 #include <stdbool.h>
 
 #define MAX_LENGTH 1024u
-#define MAX_ARGUMENT 1024u
-#define MAX_COMMAND 128u
+#define MAX_ARGUMENT 512u
+#define MAX_COMMAND 64u
+
+#define PARSER_OK 0
+#define PARSER_NO_DATA -1
+#define PARSER_ERROR -2
 
 typedef struct config_parser_t {
     char buffer[MAX_LENGTH];
@@ -41,7 +45,7 @@ void config_parser_close(config_parser_t *config);
 
 bool config_parser_is_eof(config_parser_t *config);
 
-void config_parser_read(config_parser_t *config);
+int config_parser_read(config_parser_t *config);
 
 const char* config_parser_get_command(config_parser_t *config);
 const char* config_parser_get_next_argument(config_parser_t *config);

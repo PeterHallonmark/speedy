@@ -65,11 +65,12 @@ void config_parser_close(config_parser_t *config)
     config = NULL;
 }
 
-void config_parser_read(config_parser_t *config)
+int config_parser_read(config_parser_t *config)
 {
     char *command_pos_ptr = NULL;
     char *argument_pos_ptr = NULL;
     bool argument_exist = false;
+    int status = PARSER_NO_DATA;
 
     config->mode = NEW_LINE;
     config->argument_size = 0u;
@@ -307,6 +308,7 @@ void config_parser_read(config_parser_t *config)
                         config->mode = EXIT;
                         *command_pos_ptr = '\0';
                         *argument_pos_ptr = '\0';
+                        status = PARSER_OK;
                     } else {
                         config->mode = NEW_LINE;
                     }
@@ -319,6 +321,7 @@ void config_parser_read(config_parser_t *config)
                             config->command[0] = '\0';
                             config->argument_size = 0u;
                             config->mode = ERROR;
+                            status = PARSER_ERROR;
                             break;
 
                         default:
@@ -336,6 +339,7 @@ void config_parser_read(config_parser_t *config)
             }
         }
     }
+    return status;
 }
 
 const char* config_parser_get_command(config_parser_t *config)
