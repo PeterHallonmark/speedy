@@ -30,9 +30,16 @@
 int main(void)
 {
     config_parser_t *config = config_parser_open("test2.txt");
-    
+    char * arg;
+
     while (!config_parser_is_eof(config)) {
         config_parser_read(config);
+
+        printf("%s=",config_parser_get_command(config));
+        while ((arg = config_parser_get_next_argument(config)) != NULL) {
+            printf("%s ",arg);
+        }
+        printf("\n");
     }
 
     config_parser_close(config);
