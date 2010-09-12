@@ -268,6 +268,20 @@ void config_parser_read(config_parser_t *config)
                     config->buffer_pos++;
                     break;
 
+                case COMMENT:
+                    switch(*config->buffer_pos_ptr) {
+                        case '\n':
+                            config->mode = ADD_COMMAND;
+                            break;
+
+                        default:
+                            /* Do nothing. */
+                            break;
+                    }
+                    config->buffer_pos_ptr++;
+                    config->buffer_pos++;
+                    break;
+
                 case ADD_ARGUMENT:
                     if (argument_pos_ptr < (config->argument + MAX_ARGUMENT)) {
                         *argument_pos_ptr = '\0';
@@ -285,20 +299,6 @@ void config_parser_read(config_parser_t *config)
                     config->mode = PRE_ARGUMENT;
                     break;
 
-                case COMMENT:
-                    switch(*config->buffer_pos_ptr) {
-                        case '\n':
-                            config->mode = ADD_COMMAND;
-                            break;
-
-                        default:
-                            /* Do nothing. */
-                            break;
-                    }
-                    config->buffer_pos_ptr++;
-                    config->buffer_pos++;
-                    break;
-
                 case ADD_COMMAND:
                     if ((command_pos_ptr == NULL) ||
                         (argument_pos_ptr == NULL)) {
@@ -307,7 +307,6 @@ void config_parser_read(config_parser_t *config)
                         config->mode = EXIT;
                         *command_pos_ptr = '\0';
                         *argument_pos_ptr = '\0';
-                        printf("%s=%s %d\n",config->command, config->argument, config->argument_size);
                     } else {
                         config->mode = NEW_LINE;
                     }
