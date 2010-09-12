@@ -25,16 +25,17 @@ typedef enum {
     COMMENT,
     PRE_COMMAND,
     COMMAND,
+    ADD_COMMAND,
     PRE_ARGUMENT,
     ARGUMENT,
-    ADD_COMMAND,
+    ARGUMENT_TEXT,
+    ADD_ARGUMENT,
     EXIT,
     PRE_ERROR,
     ERROR
 } parser_mode_t;
 
 static void config_parser_readfile(config_parser_t *config);
-
 
 config_parser_t *config_parser_open(char* filename)
 {
@@ -68,8 +69,11 @@ void config_parser_read(config_parser_t *config)
 {
     char *command_pos_ptr = NULL;
     char *argument_pos_ptr = NULL;
+    bool argument_exist = false;
 
     config->mode = NEW_LINE;
+    config->argument_size = 0u;
+    config->next_argument_pos_ptr = config->argument;
 
     while ((config->mode != EXIT) && (config->mode != ERROR)) {
 
@@ -184,6 +188,12 @@ void config_parser_read(config_parser_t *config)
                             config->buffer_pos++;
                             break;
 
+                        case '"':
+                            config->mode = ARGUMENT_TEXT;
+                            config->buffer_pos_ptr++;
+                            config->buffer_pos++;
+                            break;
+
                         default:
                             config->mode = ARGUMENT;
                             break;
@@ -193,6 +203,11 @@ void config_parser_read(config_parser_t *config)
                 case ARGUMENT:
                     switch(*config->buffer_pos_ptr) {
                         case '\n':
+                            if (argument_exist) {
+                                argument_exist = false;
+                                config->argument_size++;
+                            }
+
                             config->mode = ADD_COMMAND;
                             break;
 
@@ -200,10 +215,20 @@ void config_parser_read(config_parser_t *config)
                             config->mode = COMMENT;
                             break;
 
+                        case '"':
+                            config->mode = PRE_ERROR;
+                            break;
+
+                        case ' ':
+                        case '\t':
+                            config->mode = ADD_ARGUMENT;
+                            break;
+
                         default:
                             if (argument_pos_ptr <
                                 (config->argument + MAX_ARGUMENT)) {
 
+                                argument_exist = true;
                                 *argument_pos_ptr = *config->buffer_pos_ptr;
                                 argument_pos_ptr++;
                             } else {
@@ -214,6 +239,50 @@ void config_parser_read(config_parser_t *config)
                     }
                     config->buffer_pos_ptr++;
                     config->buffer_pos++;
+                    break;
+
+                case ARGUMENT_TEXT:
+                        switch(*config->buffer_pos_ptr) {
+                        case '\n':
+                            config->mode = PRE_ERROR;
+                            break;
+
+                        case '"':
+                            config->mode = ADD_ARGUMENT;
+                            break;
+
+                        default:
+                            if (argument_pos_ptr <
+                                (config->argument + MAX_ARGUMENT)) {
+
+                                argument_exist = true;
+                                *argument_pos_ptr = *config->buffer_pos_ptr;
+                                argument_pos_ptr++;
+                            } else {
+                                //command_data->error_msg = "Argument to long.";
+                                config->mode = PRE_ERROR;
+                            }
+                            break;
+                    }
+                    config->buffer_pos_ptr++;
+                    config->buffer_pos++;
+                    break;
+
+                case ADD_ARGUMENT:
+                    if (argument_pos_ptr < (config->argument + MAX_ARGUMENT)) {
+                        *argument_pos_ptr = '\0';
+                        argument_pos_ptr++;
+
+                        if (argument_exist) {
+                            argument_exist = false;
+                            config->argument_size++;
+                        }
+                        config->mode = PRE_ARGUMENT;
+                    } else {
+                        //command_data->error_msg = "Argument to long.";
+                        config->mode = PRE_ERROR;
+                    }
+                    config->mode = PRE_ARGUMENT;
                     break;
 
                 case COMMENT:
@@ -238,7 +307,7 @@ void config_parser_read(config_parser_t *config)
                         config->mode = EXIT;
                         *command_pos_ptr = '\0';
                         *argument_pos_ptr = '\0';
-                        printf("%s=%s\n",config->command, config->argument);
+                        printf("%s=%s %d\n",config->command, config->argument, config->argument_size);
                     } else {
                         config->mode = NEW_LINE;
                     }
@@ -249,6 +318,7 @@ void config_parser_read(config_parser_t *config)
                         case '\n':
                             config->argument[0] = '\0';
                             config->command[0] = '\0';
+                            config->argument_size = 0u;
                             config->mode = ERROR;
                             break;
 
@@ -264,11 +334,32 @@ void config_parser_read(config_parser_t *config)
                     config->buffer_pos_ptr++;
                     config->buffer_pos++;
                     break;
-
             }
         }
     }
 }
+
+const char* config_parser_get_command(config_parser_t *config)
+{
+    return config->command;
+}
+
+const char* config_parser_get_next_argument(config_parser_t *config)
+{
+    char *argument = NULL;
+
+    if (config->argument_size > 0) {
+        config->argument_size--;
+
+        argument = config->next_argument_pos_ptr;
+        do {
+            config->next_argument_pos_ptr++;
+        } while (*(config->next_argument_pos_ptr) != '\0');
+        config->next_argument_pos_ptr++;
+    }
+    return argument;
+}
+
 
 bool config_parser_is_eof(config_parser_t *config)
 {

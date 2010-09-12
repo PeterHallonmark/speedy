@@ -31,6 +31,8 @@ typedef struct config_parser_t {
     size_t bytes_read;
     unsigned int line;
     unsigned int mode;
+    unsigned int argument_size;
+    char *next_argument_pos_ptr;
     bool eof;
 } config_parser_t;
 
@@ -40,3 +42,6 @@ void config_parser_close(config_parser_t *config);
 bool config_parser_is_eof(config_parser_t *config);
 
 void config_parser_read(config_parser_t *config);
+
+const char* config_parser_get_command(config_parser_t *config);
+const char* config_parser_get_next_argument(config_parser_t *config);
