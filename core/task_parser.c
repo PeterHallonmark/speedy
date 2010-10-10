@@ -47,10 +47,8 @@ task_parser_t* task_parser_create(task_handler_t *handler)
 {
     task_parser_t *task_parser = malloc(sizeof(task_parser_t));
     
-    //task_parser->config_parser = config_parser_open(filename);
-    task_parser->handler = handler;
-
     if (task_parser != NULL) {
+        task_parser->handler = handler;
         task_parser->thread_pool = thread_pool_create(4, task_parser_exec);
 
         if (task_parser->thread_pool == NULL) {
