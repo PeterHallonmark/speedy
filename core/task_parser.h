@@ -14,9 +14,6 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-#define TASK_HANDLER_SUCCESS 0
-#define TASK_HANDLER_FAIL -1
-
 struct thread_pool_t;
 struct task_handler_t;
 
