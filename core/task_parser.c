@@ -18,15 +18,23 @@
 #include "task_parser.h"
 #include "config_parser.h"
 #include "task_handler.h"
-
 #include "thread_pool.h"
 
 #include <stdlib.h>
 #include <stdio.h>
 
+/*! Successful return code for thread pool callback function. */
+#define TASK_PARSER_EXEC_SUCCESS 0
+
+/*!
+ * A simpler structure for tasks which doesn't have dependencies.
+ */
 typedef struct task_parser_task_t {
+    /*!< A pointer to the task parser handle. */
     task_parser_t *this_ptr;
+    /*! A pointer to the functional call for the task. */
     void (*task)(void *arg);
+    /*! Arguments for the task function. */
     void *arg;
 } task_parser_task_t;
 
@@ -103,17 +111,21 @@ void task_parser_destroy(task_parser_t *task_parser)
  *
  * \param task - A pointer to \c task_parser_task_t struct.
  *
- * \return
+ * \return \c TASK_PARSER_EXEC_SUCCESS if the task executed successfully.
  */
 static int task_parser_exec(void *task)
 {
     task_parser_task_t *task_parser_task = (task_parser_task_t*) task;
     task_parser_task->task(task_parser_task);
     free(task_parser_task);
-    return 0;
+    return TASK_PARSER_EXEC_SUCCESS;
 }
 
-
+/*!
+ * This is a task which reads a config file.
+ *
+ * \param arg - A pointer to the arguments that the task needs.
+ */
 static void task_parser_read_file(void *arg)
 {
     task_parser_task_t *task_parser_task = arg;
