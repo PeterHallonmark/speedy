@@ -17,7 +17,6 @@
 #include <stdbool.h>
 #include <pthread.h>
 
-//struct task_t;
 struct queue_t;
 
 typedef struct thread_pool_t {
@@ -29,13 +28,16 @@ typedef struct thread_pool_t {
     bool continue_thread_pool;
     int passive_threads;
     int tasks;
+    int (*task_exec)(void *task);
 } thread_pool_t;
 
-thread_pool_t *thread_pool_create(unsigned int threads);
+thread_pool_t *thread_pool_create(unsigned int threads,
+                                  int (*task_exec)(void *task));
 
 int thread_pool_wait(thread_pool_t *this_ptr);
 int thread_pool_exit(thread_pool_t *this_ptr);
 
-int thread_pool_add_task(thread_pool_t *this_ptr, struct task_t *task);
+int thread_pool_add_task(thread_pool_t *this_ptr, void *task);
+int thread_pool_task_size(thread_pool_t *this_ptr);
 
 void thread_pool_destroy(thread_pool_t *this_ptr);
