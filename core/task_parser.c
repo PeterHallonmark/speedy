@@ -86,41 +86,6 @@ void task_parser_wait(task_parser_t* this_ptr)
     thread_pool_wait(this_ptr->thread_pool);
 }
 
-
-#if 0
-    char * arg;
-
-    service->name = NULL;
-    service->dependency = NULL;
-    service->provides = NULL;
-    service->action = NULL;
-
-    config_parser_t *config = config_parser_open(filename);
-    config_parser_set_namespace(config, "default");
-
-    while (!config_parser_is_eof(config)) {
-
-        if (config_parser_read(config) == PARSER_OK) {
-            printf("[%s] ",config_parser_get_namespace(config));
-            printf("%s=",config_parser_get_command(config));
-            while ((arg = config_parser_get_next_argument(config)) != NULL) {
-                printf("%s ",arg);
-            }
-            printf("\n");
-        }
-    }
-    config_parser_close(config);
-
-    return service;
-
-
-void task_parser_read(task_parser_t *task_parser, const char * filename)
-{
-
-    thread_pool_wait(task_parser->thread_pool);
-}
-#endif
-
 /*!
  * Destroys and deallocates a task parser handle.
  *
