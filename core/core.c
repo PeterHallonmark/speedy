@@ -15,45 +15,38 @@
 */
 
 #include "core_type.h"
-#include "config_sysinit.h"
-#include "config_daemons.h"
-#include "config_tests.h"
-
 #include "hash_lookup.h"
 #include "queue.h"
 #include "task_handler.h"
-#include "config_parser.h"
+#include "task_parser.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 
-int main(void)
+
+/*!
+ * The main function for Speedy.
+ *
+ * \param argc - Number of parameters from the command line.
+ * \param argv - Array of parameters from the command line.
+ *
+ * \return success
+ */
+int main(int argc, char *argv[])
 {
-    config_parser_t *config = config_parser_open("test2.txt");
-    char * arg;
-
-    config_parser_set_namespace(config, "default");
-
-    while (!config_parser_is_eof(config)) {
-
-        if (config_parser_read(config) == PARSER_OK) {
-
-            printf("[%s] ",config_parser_get_namespace(config));
-            printf("%s=",config_parser_get_command(config));
-            while ((arg = config_parser_get_next_argument(config)) != NULL) {
-                printf("%s ",arg);
-            }
-            printf("\n");
-        }
-    }
-
-    config_parser_close(config);
-/*    unsigned int size = sizeof(tests) / sizeof(service_t);
     task_handler_t *task_handler = task_handler_create();
+    task_parser_t *task_parser = task_parser_create(task_handler);
 
-    task_handler_add_tasks(task_handler, tests, size);
+    /* Read which tasks that need to be executed and all the dependency
+       information from the configuration. */
+    task_parser_read(task_parser, "test2.txt");
+    task_parser_wait(task_parser);
+
+    /* Read the dependency from the configuration. */
     task_handler_calculate_dependency(task_handler);
     task_handler_wait(task_handler);
-    task_handler_destroy(task_handler);*/
+
+    task_parser_destroy(task_parser);
+    task_handler_destroy(task_handler);
     return 0;
 }
