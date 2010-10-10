@@ -17,8 +17,17 @@
 #define TASK_HANDLER_SUCCESS 0
 #define TASK_HANDLER_FAIL -1
 
-struct service_t;
+struct thread_pool_t;
+struct task_handler_t;
 
-struct service_t * task_parser_readfile(const char* filename);
+typedef struct task_parser_t {
+    struct thread_pool_t *thread_pool;
+    struct task_handler_t *handler;
+} task_parser_t;
 
-void task_parser_destroy_service(struct service_t *service);
+task_parser_t* task_parser_create(struct task_handler_t *handler);
+
+void task_parser_read(task_parser_t *this_ptr, const char * filename);
+void task_parser_wait(task_parser_t* this_ptr);
+
+void task_parser_destroy(task_parser_t *task_parser);

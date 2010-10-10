@@ -45,7 +45,7 @@ int task_handler_init(task_handler_t * this_ptr)
 {
     this_ptr->task_lookup = hash_lookup_create(64);
     this_ptr->tasks = queue_create();
-    this_ptr->thread_pool = thread_pool_create(12);
+    this_ptr->thread_pool = thread_pool_create(12, task_run_action);
 
     if ((this_ptr->tasks == NULL) || (this_ptr->tasks == NULL)) {
         task_handler_deinit(this_ptr);

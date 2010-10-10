@@ -94,18 +94,18 @@ task_t * task_create(struct service_t *service, struct task_handler_t *handler)
 }
 
 /*!
- * Executes the initialization function from the service which basically is
- * only run at startup.
+ * Executes the action function from the service.
  *
- * \param this_ptr - A pointer to the task.
+ * \param task - A pointer to the task.
  *
  * \return TASK_SUCCESS if it was possible to execute the initialization
  *         function or if it didn't exist. It returns a negative value if there
  *         was an error detected during the execution of the initialization
  *         function.
  */
-int task_run_initialization(task_t *this_ptr)
+int task_run_action(void *task)
 {
+    task_t *this_ptr = (task_t*) task;
     int status = TASK_SUCCESS;
 
     printf("%s\n",this_ptr->service->name());

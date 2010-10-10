@@ -51,7 +51,7 @@ typedef struct task_t {
 
 task_t * task_create(struct service_t *service, struct task_handler_t *handler);
 
-int task_run_initialization(task_t *task);
+int task_run_action(void *task);
 
 unsigned int task_get_id(task_t *this_ptr);
 unsigned int task_get_provides_id(task_t *this_ptr);
