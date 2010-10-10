@@ -22,9 +22,18 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 /*! Successful return code for thread pool callback function. */
 #define TASK_PARSER_EXEC_SUCCESS 0
+
+#define STR_OPTIONS "options"
+
+#define STR_DEFAULT "default"
+
+#define STR_DEPENDENCY "dependency"
+
+#define STR_PATH "path"
 
 /*!
  * A simpler structure for tasks which doesn't have dependencies.
@@ -36,11 +45,26 @@ typedef struct task_parser_task_t {
     void (*task)(void *arg);
     /*! Arguments for the task function. */
     void *arg;
+    /*! Default namespace for the configuration file. */
+    const char *str_namespace;
 } task_parser_task_t;
 
 
+typedef enum namespace_t {
+    NAMESPACE_OPTIONS,
+    NAMESPACE_CONFIG
+} namespace_t;
+
+typedef enum config_options_t {
+    CONFIG_OPTIONS_DEPENDENCY,
+    CONFIG_OPTIONS_PATH,
+    CONFIG_OPTIONS_UNKOWN
+} config_options_t;
+
 static int task_parser_exec(void *task);
 static void task_parser_read_file(void *arg);
+static namespace_t task_parser_get_namespace(const char *str_namespace);
+static config_options_t task_parser_get_config_options(const char* str_command);
 
 /*!
  * Creates a task parser handle.
@@ -80,6 +104,7 @@ void task_parser_read(task_parser_t *this_ptr, const char * filename)
     task_parser_task->task = task_parser_read_file;
     task_parser_task->this_ptr = this_ptr;
     task_parser_task->arg = (void*) filename;
+    task_parser_task->str_namespace = STR_DEFAULT;
 
     thread_pool_add_task(this_ptr->thread_pool, task_parser_task);
 }
@@ -131,18 +156,67 @@ static void task_parser_read_file(void *arg)
     task_parser_task_t *task_parser_task = arg;
 
     config_parser_t *config = config_parser_open(task_parser_task->arg);
-    config_parser_set_namespace(config, "default");
+    config_parser_set_namespace(config, task_parser_task->str_namespace);
 
     while (!config_parser_is_eof(config)) {
 
         if (config_parser_read(config) == PARSER_OK) {
-            printf("[%s] ",config_parser_get_namespace(config));
-            printf("%s=",config_parser_get_command(config));
-            while ((arg = config_parser_get_next_argument(config)) != NULL) {
-                printf("%s ",arg);
+            const char *str_namespace;
+            const char *str_command;
+            namespace_t i_namespace;
+            config_options_t options;
+
+            str_namespace = config_parser_get_namespace(config);
+            i_namespace = task_parser_get_namespace(str_namespace);
+
+            switch (i_namespace) {
+                case NAMESPACE_OPTIONS:
+
+                    str_command = config_parser_get_command(config);
+                    options = task_parser_get_config_options(str_command);
+
+                    switch (options) {
+                        case CONFIG_OPTIONS_DEPENDENCY:
+
+                            break;
+
+                        case CONFIG_OPTIONS_PATH:
+                            break;
+
+                        case CONFIG_OPTIONS_UNKOWN:
+                        default:
+                            break;
+                    }
+
+                    break;
+
+                case NAMESPACE_CONFIG:
+                default:
+
+                    break;
             }
-            printf("\n");
         }
     }
     config_parser_close(config);
+}
+
+
+static namespace_t task_parser_get_namespace(const char *str_namespace)
+{
+    if (strncmp(str_namespace, STR_OPTIONS, sizeof(STR_OPTIONS)) == 0) {
+        return NAMESPACE_OPTIONS;
+    } else {
+        return NAMESPACE_CONFIG;
+    }
+}
+
+static config_options_t task_parser_get_config_options(const char* str_command)
+{
+    if (strncmp(str_command, STR_DEPENDENCY, sizeof(STR_DEPENDENCY)) == 0) {
+        return CONFIG_OPTIONS_DEPENDENCY;
+    } else if (strncmp(str_command, STR_PATH, sizeof(STR_PATH)) == 0) {
+        return CONFIG_OPTIONS_PATH;
+    } else {
+        return CONFIG_OPTIONS_UNKOWN;
+    }
 }
