@@ -39,7 +39,7 @@ typedef enum {
 
 static void config_parser_readfile(config_parser_t *config);
 
-config_parser_t *config_parser_open(char* filename)
+config_parser_t *config_parser_open(const char* filename)
 {
     config_parser_t *config = malloc(sizeof(config_parser_t));
 

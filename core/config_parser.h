@@ -41,7 +41,7 @@ typedef struct config_parser_t {
     bool eof;
 } config_parser_t;
 
-config_parser_t *config_parser_open(char* filename);
+config_parser_t *config_parser_open(const char* filename);
 void config_parser_close(config_parser_t *config);
 
 bool config_parser_is_eof(config_parser_t *config);
