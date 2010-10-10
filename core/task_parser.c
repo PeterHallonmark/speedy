@@ -34,7 +34,15 @@ typedef struct task_parser_task_t {
 static int task_parser_exec(void *task);
 static void task_parser_read_file(void *arg);
 
-
+/*!
+ * Creates a task parser handle.
+ *
+ * \param this_ptr - A pointer to the task handler where all the tasks should
+ *                   be registered.
+ *
+ * \return A pointer to the task parser handle if it was successfully created,
+           \c NULL otherwise.
+ */
 task_parser_t* task_parser_create(task_handler_t *handler)
 {
     task_parser_t *task_parser = malloc(sizeof(task_parser_t));
@@ -53,6 +61,12 @@ task_parser_t* task_parser_create(task_handler_t *handler)
     return task_parser;
 }
 
+/*!
+ * Creates a task which reads a config file.
+ *
+ * \param this_ptr - A pointer to the task parser handle.
+ * \param filename - The config file.
+ */
 void task_parser_read(task_parser_t *this_ptr, const char * filename)
 {
     task_parser_task_t *task_parser_task = malloc(sizeof(task_parser_task_t));
@@ -64,6 +78,11 @@ void task_parser_read(task_parser_t *this_ptr, const char * filename)
     thread_pool_add_task(this_ptr->thread_pool, task_parser_task);
 }
 
+/*!
+ * Waits until the thread pool has executed all the tasks in the queue.
+ *
+ * \param this_ptr - A pointer to the task parser.
+ */
 void task_parser_wait(task_parser_t* this_ptr)
 {
     thread_pool_wait(this_ptr->thread_pool);
@@ -104,12 +123,25 @@ void task_parser_read(task_parser_t *task_parser, const char * filename)
 }
 #endif
 
+/*!
+ * Destroys and deallocates a task parser handle.
+ *
+ * \param this_ptr - A pointer to the task parser handle.
+ */
 void task_parser_destroy(task_parser_t *task_parser)
 {
     thread_pool_destroy(task_parser->thread_pool);
     free(task_parser);
 }
 
+/*!
+ * This is callback from the thread pool which sends the next task that should
+ * be executed as an argument.
+ *
+ * \param task - A pointer to \c task_parser_task_t struct.
+ *
+ * \return
+ */
 static int task_parser_exec(void *task)
 {
     task_parser_task_t *task_parser_task = (task_parser_task_t*) task;
@@ -117,6 +149,7 @@ static int task_parser_exec(void *task)
     free(task_parser_task);
     return 0;
 }
+
 
 static void task_parser_read_file(void *arg)
 {
