@@ -205,6 +205,7 @@ static namespace_t task_parser_get_namespace(const char *str_namespace)
 {
     if (strncmp(str_namespace, STR_OPTIONS, sizeof(STR_OPTIONS)) == 0) {
         return NAMESPACE_OPTIONS;
+
     } else {
         return NAMESPACE_CONFIG;
     }
@@ -214,8 +215,10 @@ static config_options_t task_parser_get_config_options(const char* str_command)
 {
     if (strncmp(str_command, STR_DEPENDENCY, sizeof(STR_DEPENDENCY)) == 0) {
         return CONFIG_OPTIONS_DEPENDENCY;
+
     } else if (strncmp(str_command, STR_PATH, sizeof(STR_PATH)) == 0) {
         return CONFIG_OPTIONS_PATH;
+
     } else {
         return CONFIG_OPTIONS_UNKOWN;
     }
