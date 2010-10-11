@@ -28,11 +28,8 @@
 #define TASK_PARSER_EXEC_SUCCESS 0
 
 #define STR_OPTIONS "options"
-
 #define STR_DEFAULT "default"
-
 #define STR_DEPENDENCY "dependency"
-
 #define STR_PATH "path"
 
 /*!
@@ -48,7 +45,6 @@ typedef struct task_parser_task_t {
     /*! Default namespace for the configuration file. */
     const char *str_namespace;
 } task_parser_task_t;
-
 
 typedef enum namespace_t {
     NAMESPACE_OPTIONS,
@@ -73,7 +69,7 @@ static config_options_t task_parser_get_config_options(const char* str_command);
  *                   be registered.
  *
  * \return A pointer to the task parser handle if it was successfully created,
-           \c NULL otherwise.
+ *         \c NULL otherwise.
  */
 task_parser_t* task_parser_create(task_handler_t *handler)
 {
