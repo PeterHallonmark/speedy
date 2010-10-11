@@ -177,7 +177,6 @@ static void task_parser_read_file(void *arg)
 
                     switch (options) {
                         case CONFIG_OPTIONS_DEPENDENCY:
-
                             break;
 
                         case CONFIG_OPTIONS_PATH:
@@ -200,7 +199,15 @@ static void task_parser_read_file(void *arg)
     config_parser_close(config);
 }
 
-
+/*!
+ * Gets the config namespace value from a string.
+ * \note This is separated here for readability.
+ *
+ * \param str_namespace - A string which needs to be transformed into an
+ *                        integer value.
+ *
+ * \return The string value represented as an integer value.
+ */
 static namespace_t task_parser_get_namespace(const char *str_namespace)
 {
     if (strncmp(str_namespace, STR_OPTIONS, sizeof(STR_OPTIONS)) == 0) {
@@ -211,6 +218,15 @@ static namespace_t task_parser_get_namespace(const char *str_namespace)
     }
 }
 
+/*!
+ * Gets the config option value from a string.
+ * \note This is separated here for readability.
+ *
+ * \param str_command - A string which needs to be transformed into an
+ *                      integer value.
+ *
+ * \return The string value represented as an integer value.
+ */
 static config_options_t task_parser_get_config_options(const char* str_command)
 {
     if (strncmp(str_command, STR_DEPENDENCY, sizeof(STR_DEPENDENCY)) == 0) {
