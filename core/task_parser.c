@@ -32,19 +32,6 @@
 #define STR_DEPENDENCY "dependency"
 #define STR_PATH "path"
 
-/*!
- * A simpler structure for tasks which doesn't have dependencies.
- */
-typedef struct task_parser_task_t {
-    /*!< A pointer to the task parser handle. */
-    task_parser_t *this_ptr;
-    /*! A pointer to the functional call for the task. */
-    void (*task)(void *arg);
-    /*! Arguments for the task function. */
-    void *arg;
-    /*! Default namespace for the configuration file. */
-    const char *str_namespace;
-} task_parser_task_t;
 
 typedef enum namespace_t {
     NAMESPACE_OPTIONS,
@@ -57,9 +44,30 @@ typedef enum config_options_t {
     CONFIG_OPTIONS_UNKOWN
 } config_options_t;
 
+/*!
+ * A simpler structure for tasks which doesn't have dependencies.
+ */
+typedef struct task_parser_config_t {
+    /*!< A pointer to the task parser handle. */
+    task_parser_t *task_parser;
+    /*! A pointer to the functional call for the task. */
+    void (*task)(void *argument);
+    /*! Filename for the configuration file. */
+    void *filename;
+    /*! Handle for the config file. */
+    config_parser_t *file;
+    /*! Default namespace for the configuration file. */
+    const char *default_namespace;
+    /*! Current namespace for the configuration task. */
+    const char *current_namespace;
+    /*! Extracted value for the current namespace. */
+    namespace_t current_namespace_value;
+} task_parser_config_t;
+
 static int task_parser_exec(void *task);
-static void task_parser_read_file(void *arg);
-static namespace_t task_parser_get_namespace(const char *str_namespace);
+static void task_parser_read_file(void *argument);
+static void task_parser_handle_options(task_parser_config_t *config);
+static namespace_t task_parser_get_namespace_value(const char *str_namespace);
 static config_options_t task_parser_get_config_options(const char* str_command);
 
 /*!
@@ -95,14 +103,14 @@ task_parser_t* task_parser_create(task_handler_t *handler)
  */
 void task_parser_read(task_parser_t *this_ptr, const char * filename)
 {
-    task_parser_task_t *task_parser_task = malloc(sizeof(task_parser_task_t));
+    task_parser_config_t *config = malloc(sizeof(task_parser_config_t));
 
-    task_parser_task->task = task_parser_read_file;
-    task_parser_task->this_ptr = this_ptr;
-    task_parser_task->arg = (void*) filename;
-    task_parser_task->str_namespace = STR_DEFAULT;
+    config->task = task_parser_read_file;
+    config->task_parser = this_ptr;
+    config->filename = (void*) filename;
+    config->default_namespace = STR_DEFAULT;
 
-    thread_pool_add_task(this_ptr->thread_pool, task_parser_task);
+    thread_pool_add_task(this_ptr->thread_pool, config);
 }
 
 /*!
@@ -136,9 +144,9 @@ void task_parser_destroy(task_parser_t *task_parser)
  */
 static int task_parser_exec(void *task)
 {
-    task_parser_task_t *task_parser_task = (task_parser_task_t*) task;
-    task_parser_task->task(task_parser_task);
-    free(task_parser_task);
+    task_parser_config_t *config = (task_parser_config_t*) task;
+    config->task(config);
+    free(config);
     return TASK_PARSER_EXEC_SUCCESS;
 }
 
@@ -149,50 +157,64 @@ static int task_parser_exec(void *task)
  */
 static void task_parser_read_file(void *arg)
 {
-    task_parser_task_t *task_parser_task = arg;
+    task_parser_config_t *config = arg;
 
-    config_parser_t *config = config_parser_open(task_parser_task->arg);
-    config_parser_set_namespace(config, task_parser_task->str_namespace);
+    config->file = config_parser_open(config->filename);
+    config_parser_set_namespace(config->file, config->default_namespace);
 
-    while (!config_parser_is_eof(config)) {
+    while (!config_parser_is_eof(config->file) &&
+           (config_parser_read(config->file) == PARSER_OK)) {
 
-        if (config_parser_read(config) == PARSER_OK) {
-            const char *str_namespace;
-            const char *str_command;
-            namespace_t i_namespace;
-            config_options_t options;
+        config->current_namespace = config_parser_get_namespace(config->file);
+        config->current_namespace_value = task_parser_get_namespace_value(
+                                              config->current_namespace);
 
-            str_namespace = config_parser_get_namespace(config);
-            i_namespace = task_parser_get_namespace(str_namespace);
+        switch (config->current_namespace_value) {
+            case NAMESPACE_OPTIONS:
+                task_parser_handle_options(config);
+                break;
 
-            switch (i_namespace) {
-                case NAMESPACE_OPTIONS:
+            case NAMESPACE_CONFIG:
+            default:
 
-                    str_command = config_parser_get_command(config);
-                    options = task_parser_get_config_options(str_command);
+                break;
 
-                    switch (options) {
-                        case CONFIG_OPTIONS_DEPENDENCY:
-                            break;
-
-                        case CONFIG_OPTIONS_PATH:
-                            break;
-
-                        case CONFIG_OPTIONS_UNKOWN:
-                        default:
-                            break;
-                    }
-
-                    break;
-
-                case NAMESPACE_CONFIG:
-                default:
-
-                    break;
-            }
         }
     }
-    config_parser_close(config);
+    config_parser_close(config->file);
+}
+
+
+static void task_parser_handle_options(task_parser_config_t *config)
+{
+    config_options_t options;
+    const char *command;
+    const char *arg;
+
+    command = config_parser_get_command(config->file);
+    options = task_parser_get_config_options(command);
+
+    switch (options) {
+        case CONFIG_OPTIONS_DEPENDENCY:
+            arg = config_parser_get_next_argument(config->file);
+            while (arg != NULL) {
+                printf("arg: %s\n", arg);
+                arg = config_parser_get_next_argument(config->file);
+            }
+            break;
+
+        case CONFIG_OPTIONS_PATH:
+            arg = config_parser_get_next_argument(config->file);
+            while (arg != NULL) {
+                printf("path: %s\n", arg);
+                arg = config_parser_get_next_argument(config->file);
+            }
+            break;
+
+        case CONFIG_OPTIONS_UNKOWN:
+        default:
+            break;
+    }
 }
 
 /*!
@@ -204,7 +226,7 @@ static void task_parser_read_file(void *arg)
  *
  * \return The string value represented as an integer value.
  */
-static namespace_t task_parser_get_namespace(const char *str_namespace)
+static namespace_t task_parser_get_namespace_value(const char *str_namespace)
 {
     if (strncmp(str_namespace, STR_OPTIONS, sizeof(STR_OPTIONS)) == 0) {
         return NAMESPACE_OPTIONS;
