@@ -166,21 +166,23 @@ void thread_pool_destroy(thread_pool_t *this_ptr)
 {
     int i;
 
-    if (this_ptr->continue_thread_pool) {
-        thread_pool_exit(this_ptr);
-    } 
+    if (this_ptr != NULL) {
+        if (this_ptr->continue_thread_pool) {
+            thread_pool_exit(this_ptr);
+        }
 
-    for(i = 0; i < this_ptr->thread_size; i++) {
-        pthread_join(this_ptr->threads[i], NULL);
-        pthread_detach(this_ptr->threads[i]);
+        for(i = 0; i < this_ptr->thread_size; i++) {
+            pthread_join(this_ptr->threads[i], NULL);
+            pthread_detach(this_ptr->threads[i]);
+        }
+
+        pthread_mutex_destroy(this_ptr->mutex);
+        pthread_cond_destroy(this_ptr->condititon);
+
+        free(this_ptr->mutex);
+        free(this_ptr->condititon);
+        queue_destroy(this_ptr->queue);
+        free(this_ptr->threads);
+        free(this_ptr);
     }
-
-    pthread_mutex_destroy(this_ptr->mutex);
-    pthread_cond_destroy(this_ptr->condititon);
-
-    free(this_ptr->mutex);
-    free(this_ptr->condititon);
-    queue_destroy(this_ptr->queue);
-    free(this_ptr->threads);
-    free(this_ptr);
 }
