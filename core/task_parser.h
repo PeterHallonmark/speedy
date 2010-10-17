@@ -14,9 +14,6 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-struct thread_pool_t;
-struct task_handler_t;
-
 typedef struct task_parser_t {
     struct thread_pool_t *thread_pool;
     struct task_handler_t *handler;

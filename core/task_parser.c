@@ -27,12 +27,6 @@
 /*! Successful return code for thread pool callback function. */
 #define TASK_PARSER_EXEC_SUCCESS 0
 
-#define STR_OPTIONS "options"
-#define STR_DEFAULT "default"
-#define STR_DEPENDENCY "dependency"
-#define STR_PATH "path"
-
-
 typedef enum namespace_t {
     NAMESPACE_OPTIONS,
     NAMESPACE_CONFIG
@@ -43,6 +37,13 @@ typedef enum config_options_t {
     CONFIG_OPTIONS_PATH,
     CONFIG_OPTIONS_UNKOWN
 } config_options_t;
+
+typedef enum task_options_t {
+    TASK_OPTIONS_NAME,
+    TASK_OPTIONS_PROVIDES,
+    TASK_OPTIONS_DEPENDENCY,
+    TASK_OPTIONS_UNKOWN
+} task_options_t;
 
 /*!
  * A simpler structure for tasks which doesn't have dependencies.
@@ -62,13 +63,17 @@ typedef struct task_parser_config_t {
     const char *current_namespace;
     /*! Extracted value for the current namespace. */
     namespace_t current_namespace_value;
+
+    service_t *current_task;
 } task_parser_config_t;
 
 static int task_parser_exec(void *task);
 static void task_parser_read_file(void *argument);
 static void task_parser_handle_options(task_parser_config_t *config);
+static void task_parser_handle_task(task_parser_config_t *config);
 static namespace_t task_parser_get_namespace_value(const char *str_namespace);
 static config_options_t task_parser_get_config_options(const char* str_command);
+static task_options_t task_parser_get_task_options(const char* str_command);
 
 /*!
  * Creates a task parser handle.
@@ -108,7 +113,13 @@ void task_parser_read(task_parser_t *this_ptr, const char * filename)
     config->task = task_parser_read_file;
     config->task_parser = this_ptr;
     config->filename = (void*) filename;
-    config->default_namespace = STR_DEFAULT;
+    config->default_namespace = "default";
+
+    config->current_task = malloc(sizeof(service_t));
+    config->current_task->name = NULL;
+    config->current_task->dependency = NULL;
+    config->current_task->provides = NULL;
+    config->current_task->action = NULL;
 
     thread_pool_add_task(this_ptr->thread_pool, config);
 }
@@ -175,43 +186,108 @@ static void task_parser_read_file(void *arg)
                 break;
 
             case NAMESPACE_CONFIG:
+                task_parser_handle_task(config);
             default:
 
                 break;
 
         }
     }
+
+    if (config->current_task->name != NULL) {
+        /* Add task. */
+    } else {
+        free(config->current_task);
+    }
+
     config_parser_close(config->file);
 }
 
-
+/*!
+ * Handles any options which has been parsed from the configuration.
+ *
+ * \param config - Contains the local settings for the current
+ *                 parser task.
+ */
 static void task_parser_handle_options(task_parser_config_t *config)
 {
     config_options_t options;
     const char *command;
-    const char *arg;
+    const char *argument;
 
     command = config_parser_get_command(config->file);
     options = task_parser_get_config_options(command);
 
     switch (options) {
         case CONFIG_OPTIONS_DEPENDENCY:
-            arg = config_parser_get_next_argument(config->file);
-            while (arg != NULL) {
-                printf("arg: %s\n", arg);
-                arg = config_parser_get_next_argument(config->file);
+            argument = config_parser_get_next_argument(config->file);
+            while (argument != NULL) {
+                printf("arg: %s\n", argument);
+                argument = config_parser_get_next_argument(config->file);
             }
             break;
 
         case CONFIG_OPTIONS_PATH:
-            arg = config_parser_get_next_argument(config->file);
-            while (arg != NULL) {
-                printf("path: %s\n", arg);
-                arg = config_parser_get_next_argument(config->file);
+            argument = config_parser_get_next_argument(config->file);
+            while (argument != NULL) {
+                printf("path: %s\n", argument);
+                argument = config_parser_get_next_argument(config->file);
             }
             break;
 
         case CONFIG_OPTIONS_UNKOWN:
+        default:
+            break;
+    }
+}
+
+/*!
+ * Handles a task which has been parsed from the configuration.
+ *
+ * \param config - Contains the local settings for the current
+ *                 parser task.
+ */
+static void task_parser_handle_task(task_parser_config_t *config)
+{
+    task_options_t options;
+    const char *command;
+    const char *argument;
+
+#if 0
+    if (strcmp(config->current_namespace, config->current_task->name) != 0) {
+        /* Add new task. */
+        free(config->current_task);
+
+        config->current_task = malloc(sizeof(service_t));
+        config->current_task->name = strdup(config->current_namespace);
+        config->current_task->dependency = NULL;
+        config->current_task->provides = NULL;
+        config->current_task->action = NULL;
+    }
+#endif
+    command = config_parser_get_command(config->file);
+    options = task_parser_get_task_options(command);
+
+    switch (options) {
+        case TASK_OPTIONS_DEPENDENCY:
+
+            break;
+
+
+        case TASK_OPTIONS_PROVIDES:
+            argument = config_parser_get_next_argument(config->file);
+            printf("provides: %s\n", argument);
+
+            if ((config->current_task->provides == NULL) &&
+                (argument != NULL)) {
+
+                config->current_task->provides = strdup(argument);
+            } else {
+                printf("some error...\n");
+            }
+            break;
+
+
         default:
             break;
     }
@@ -228,7 +304,7 @@ static void task_parser_handle_options(task_parser_config_t *config)
  */
 static namespace_t task_parser_get_namespace_value(const char *str_namespace)
 {
-    if (strncmp(str_namespace, STR_OPTIONS, sizeof(STR_OPTIONS)) == 0) {
+    if (strcmp(str_namespace, "options") == 0) {
         return NAMESPACE_OPTIONS;
 
     } else {
@@ -245,15 +321,37 @@ static namespace_t task_parser_get_namespace_value(const char *str_namespace)
  *
  * \return The string value represented as an integer value.
  */
-static config_options_t task_parser_get_config_options(const char* str_command)
+static config_options_t task_parser_get_config_options(const char* command)
 {
-    if (strncmp(str_command, STR_DEPENDENCY, sizeof(STR_DEPENDENCY)) == 0) {
+    if (strcmp(command, "dependency") == 0) {
         return CONFIG_OPTIONS_DEPENDENCY;
 
-    } else if (strncmp(str_command, STR_PATH, sizeof(STR_PATH)) == 0) {
+    } else if (strcmp(command, "path") == 0) {
         return CONFIG_OPTIONS_PATH;
 
     } else {
         return CONFIG_OPTIONS_UNKOWN;
+    }
+}
+
+/*!
+ * Gets the config option value from a string.
+ * \note This is separated here for readability.
+ *
+ * \param str_command - A string which needs to be transformed into an
+ *                      integer value.
+ *
+ * \return The string value represented as an integer value.
+ */
+static task_options_t task_parser_get_task_options(const char* command)
+{
+    if (strcmp(command, "dependency") == 0) {
+        return TASK_OPTIONS_DEPENDENCY;
+
+    } else if (strcmp(command, "provides") == 0) {
+        return TASK_OPTIONS_PROVIDES;
+
+    } else {
+        return TASK_OPTIONS_UNKOWN;
     }
 }
