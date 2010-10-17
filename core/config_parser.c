@@ -67,6 +67,22 @@ void config_parser_close(config_parser_t *config)
     config = NULL;
 }
 
+/*!
+ * Parse a file and exit when a command has been found.
+ *
+ * The implementation is made so it caches part of a file and checks the cached
+ * data for commands, arguments and namespaces. This function will not return
+ * until it has find a command and any eventually arguments for it.
+ *
+ * \param config - A pointer to its own config parser handle.
+ *
+ * \note This implementation has not been devided into smaller pieces mainly
+ *       because it is supposed to be run often and mainly to limit any
+ *       performance penalties that otherwise can happen because of 
+ *       sub functions.
+ *
+ * \return \c PARSER_OK if everything went well, otherwise return an error code.
+ */
 int config_parser_read(config_parser_t *config)
 {
     char *command_pos_ptr = NULL;
