@@ -23,11 +23,11 @@
 typedef struct service_t {
     /*! Contains a function pointer to a function which returns the name of
      *  the service/daemon. This is used for identify a service/daemon. */
-    const char* (*name)(void);
+    const char* name;
     /*! Contains a function pointer to a function which returns a common name
      *  for a service/daemon. Used when there are several services/daemons that
      *  provides the same functionality. */
-    const char* (*provides)(void);
+    const char* provides;
     /*! Contains a function pointer to a function which returns all the
      *  dependencies that needs to be started before the current service/daemon
      *  has started.
@@ -35,7 +35,7 @@ typedef struct service_t {
      *        mandatory or optional. This might be divided in future into
      *        two dependency lists where one is optional and the other is
      *        mandatory. */
-    const char** (*dependency)(void);
+    const char** dependency;
     /*! Contains a function pointer to a function which is used for
         executing a certain action. */
     int (*action)(void);

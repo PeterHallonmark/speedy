@@ -52,7 +52,7 @@ task_t * task_create(struct service_t *service, struct task_handler_t *handler)
         task_t * this_ptr = (task_t*) malloc(sizeof(task_t));
 
         if (this_ptr != NULL) {
-            this_ptr->task_id = hash_generate(service->name());
+            this_ptr->task_id = hash_generate(service->name);
             this_ptr->dependency_queue = NULL;
             this_ptr->service = service;
             this_ptr->task_handler = handler;
@@ -63,13 +63,13 @@ task_t * task_create(struct service_t *service, struct task_handler_t *handler)
             /* Check if there is a provides string, if there isn't any provides
              * string, use the task name instead for the generated id. */
             if (service->provides != NULL) {
-                this_ptr->provides_id = hash_generate(service->provides());
+                this_ptr->provides_id = hash_generate(service->provides);
             } else {
                 this_ptr->provides_id = this_ptr->task_id;
             }
 
             if (service->dependency != NULL) {
-                char **dependency_arg = (char**) service->dependency();
+                char **dependency_arg = (char**) service->dependency;
                 task_dependency_t *dependency;
 
                 this_ptr->dependency_queue = queue_create();
@@ -108,7 +108,7 @@ int task_run_action(void *task)
     task_t *this_ptr = (task_t*) task;
     int status = TASK_SUCCESS;
 
-    printf("%s\n",this_ptr->service->name());
+    printf("%s\n",this_ptr->service->name);
 
     if (this_ptr->service->action != NULL) {
         if (this_ptr->service->action() < 0) {

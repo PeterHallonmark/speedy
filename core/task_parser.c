@@ -19,6 +19,7 @@
 #include "config_parser.h"
 #include "task_handler.h"
 #include "thread_pool.h"
+#include "queue.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -65,12 +66,24 @@ typedef struct task_parser_config_t {
     namespace_t current_namespace_value;
 
     service_t *current_task;
+
+    queue_t paths;
+
+    queue_t tasks;
 } task_parser_config_t;
 
 static int task_parser_exec(void *task);
-static void task_parser_read_file(void *argument);
+
+static void task_parser_read_file_exec(void *argument);
+static void task_parser_read_file_init(task_parser_config_t *config);
+static void task_parser_read_file_deinit(task_parser_config_t *config);
+
+static void task_parser_add_task(task_parser_config_t *config);
+static void task_parser_create_task(task_parser_config_t *config);
+
 static void task_parser_handle_options(task_parser_config_t *config);
 static void task_parser_handle_task(task_parser_config_t *config);
+
 static namespace_t task_parser_get_namespace_value(const char *str_namespace);
 static config_options_t task_parser_get_config_options(const char* str_command);
 static task_options_t task_parser_get_task_options(const char* str_command);
@@ -110,17 +123,9 @@ void task_parser_read(task_parser_t *this_ptr, const char * filename)
 {
     task_parser_config_t *config = malloc(sizeof(task_parser_config_t));
 
-    config->task = task_parser_read_file;
+    task_parser_read_file_init(config);
     config->task_parser = this_ptr;
     config->filename = (void*) filename;
-    config->default_namespace = "default";
-
-    config->current_task = malloc(sizeof(service_t));
-    config->current_task->name = NULL;
-    config->current_task->dependency = NULL;
-    config->current_task->provides = NULL;
-    config->current_task->action = NULL;
-
     thread_pool_add_task(this_ptr->thread_pool, config);
 }
 
@@ -166,7 +171,7 @@ static int task_parser_exec(void *task)
  *
  * \param arg - A pointer to the arguments that the task needs.
  */
-static void task_parser_read_file(void *arg)
+static void task_parser_read_file_exec(void *arg)
 {
     task_parser_config_t *config = arg;
 
@@ -187,20 +192,71 @@ static void task_parser_read_file(void *arg)
 
             case NAMESPACE_CONFIG:
                 task_parser_handle_task(config);
-            default:
-
                 break;
 
+            default:
+                /* Do nothing. */
+                break;
         }
     }
 
-    if (config->current_task->name != NULL) {
-        /* Add task. */
-    } else {
-        free(config->current_task);
-    }
-
     config_parser_close(config->file);
+    task_parser_read_file_deinit(config);
+}
+
+static void task_parser_read_file_init(task_parser_config_t *config)
+{
+    config->task = task_parser_read_file_exec;
+    config->default_namespace = "default";
+
+    queue_init(&config->tasks);
+    queue_init(&config->paths);
+
+    task_parser_create_task(config);
+}
+
+static void task_parser_read_file_deinit(task_parser_config_t *config)
+{
+    char* path;
+    char* task;
+
+    if (config->current_task->name != NULL) {
+        task_parser_add_task(config);
+    }
+    free(config->current_task);
+
+    /* Free all the option paths. */
+    while((path = queue_pop(&config->paths)) != NULL) {
+        free(path);
+    }
+    queue_deinit(&config->paths);
+
+    /* Free all the remaining tasks and print an error since these were not
+       possible to find in either the current file or in the paths. */
+    while((task = queue_pop(&config->tasks)) != NULL) {
+        free(task);
+    }
+    queue_deinit(&config->tasks);
+}
+
+
+static void task_parser_add_task(task_parser_config_t *config)
+{
+    free(config->current_task->name);
+    free(config->current_task->dependency);
+    free(config->current_task->provides);
+    free(config->current_task->action);
+    free(config->current_task);
+    config->current_task = NULL;
+}
+
+static void task_parser_create_task(task_parser_config_t *config)
+{
+    /* Create a new task and initialize it. */
+    config->current_task = malloc(sizeof(service_t));
+    config->current_task->dependency = NULL;
+    config->current_task->provides = NULL;
+    config->current_task->action = NULL;
 }
 
 /*!
@@ -222,7 +278,7 @@ static void task_parser_handle_options(task_parser_config_t *config)
         case CONFIG_OPTIONS_DEPENDENCY:
             argument = config_parser_get_next_argument(config->file);
             while (argument != NULL) {
-                printf("arg: %s\n", argument);
+                queue_push(&config->tasks, strdup(argument));                
                 argument = config_parser_get_next_argument(config->file);
             }
             break;
@@ -230,7 +286,7 @@ static void task_parser_handle_options(task_parser_config_t *config)
         case CONFIG_OPTIONS_PATH:
             argument = config_parser_get_next_argument(config->file);
             while (argument != NULL) {
-                printf("path: %s\n", argument);
+                queue_push(&config->paths, strdup(argument));
                 argument = config_parser_get_next_argument(config->file);
             }
             break;
@@ -253,18 +309,20 @@ static void task_parser_handle_task(task_parser_config_t *config)
     const char *command;
     const char *argument;
 
-#if 0
-    if (strcmp(config->current_namespace, config->current_task->name) != 0) {
-        /* Add new task. */
-        free(config->current_task);
-
-        config->current_task = malloc(sizeof(service_t));
+    if (config->current_task->name == NULL) {
         config->current_task->name = strdup(config->current_namespace);
-        config->current_task->dependency = NULL;
-        config->current_task->provides = NULL;
-        config->current_task->action = NULL;
+
+    } else if (strcmp(config->current_namespace,
+                      config->current_task->name) != 0) {
+
+        /* Add the current task object. */
+        task_parser_add_task(config);
+
+        /* Create a new task object and name it according to the
+           new namespace. */
+        task_parser_create_task(config);
+        config->current_task->name = strdup(config->current_namespace);
     }
-#endif
     command = config_parser_get_command(config->file);
     options = task_parser_get_task_options(command);
 
@@ -272,7 +330,6 @@ static void task_parser_handle_task(task_parser_config_t *config)
         case TASK_OPTIONS_DEPENDENCY:
 
             break;
-
 
         case TASK_OPTIONS_PROVIDES:
             argument = config_parser_get_next_argument(config->file);
