@@ -100,7 +100,8 @@ int queue_push(queue_t *this_ptr, data_t* data)
             this_ptr->last->next = node;
             this_ptr->last = node;
         } else {
-            /* The queue was empty so make the node both the first and the last. */
+            /* The queue was empty so make the node both the first and
+               the last. */
             node->previous = NULL;
             this_ptr->first = node;
             this_ptr->last = node;
@@ -270,6 +271,7 @@ void queue_deinit(queue_t *this_ptr)
     while(queue_pop(this_ptr) != NULL) {
     }
 }
+
 /*!
  *  Remove the queue.
  *
@@ -277,6 +279,7 @@ void queue_deinit(queue_t *this_ptr)
  */
 void queue_destroy(queue_t *this_ptr)
 {
+    queue_deinit(this_ptr);
     free(this_ptr);
 }
 
