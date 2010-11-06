@@ -61,7 +61,7 @@ typedef struct task_parser_simple_task_t {
  * A simple structure for tasks which parse a single file.
  */
 typedef struct task_parser_config_reader_t {
-    /*! C inheritance of an simple task.*/
+    /*! C inheritance of a simple task.*/
     task_parser_simple_task_t task;
     /*! Filename for the configuration file. */
     void *filename;
@@ -85,7 +85,7 @@ typedef struct task_parser_config_reader_t {
  * A simple structure for tasks which scans directory.
  */
 typedef struct task_parser_directory_scanner_t {
-    /*! C inheritance of an simple task.*/
+    /*! C inheritance of a simple task.*/
     task_parser_simple_task_t task;
     /*! A path to where the directory scanner should scan. */
     char * path;
