@@ -190,6 +190,10 @@ static int task_parser_exec(void *task)
     return TASK_PARSER_EXEC_SUCCESS;
 }
 
+/*****************************************************************************/
+/* Functions to parse a configuration file.                                  */
+/*****************************************************************************/
+
 /*!
  * This is a task which reads a config file.
  *
@@ -228,7 +232,14 @@ static void task_parser_read_file_exec(void *arg)
     task_parser_read_file_deinit(config);
 }
 
-
+/*!
+ * Creates a simple task which will parse a file.
+ *
+ * \param this_ptr - A pointer to the task parser handle.
+ * \param filename - Filename of the file that needs to be parsed.
+ *
+ * \return A simple task which will read a file.
+ */
 static task_parser_config_reader_t* task_parser_read_file_create(
                                        task_parser_t *this_ptr,
                                        const char * filename)
@@ -251,6 +262,11 @@ static task_parser_config_reader_t* task_parser_read_file_create(
     return config;
 }
 
+/*!
+ * Deinitializes a read file task and starts up any directory scaning tasks.
+ *
+ * \param config - A pointer to the read file task.
+ */
 static void task_parser_read_file_deinit(task_parser_config_reader_t *config)
 {
     char* path;
@@ -367,7 +383,6 @@ static void task_parser_handle_task(task_parser_config_reader_t *config)
 
     switch (options) {
         case TASK_OPTIONS_DEPENDENCY:
-
             break;
 
         case TASK_OPTIONS_PROVIDES:
@@ -382,7 +397,6 @@ static void task_parser_handle_task(task_parser_config_reader_t *config)
                 printf("some error...\n");
             }
             break;
-
 
         default:
             break;
@@ -451,3 +465,8 @@ static task_options_t task_parser_get_task_options(const char* command)
         return TASK_OPTIONS_UNKOWN;
     }
 }
+
+/*****************************************************************************/
+/* Functions to scan a directory for configuration files.                    */
+/*****************************************************************************/
+
