@@ -49,11 +49,20 @@ typedef enum task_options_t {
 /*!
  * A simpler structure for tasks which doesn't have dependencies.
  */
-typedef struct task_parser_config_t {
+typedef struct task_parser_simple_task_t {
     /*!< A pointer to the task parser handle. */
     task_parser_t *task_parser;
     /*! A pointer to the functional call for the task. */
-    void (*task)(void *argument);
+    void (*task_exec)(void *argument);
+} task_parser_simple_task_t;
+
+
+/*!
+ * A simple structure for tasks which parse a single file.
+ */
+typedef struct task_parser_config_reader_t {
+    /*! C inheritance of an simple task.*/
+    task_parser_simple_task_t task;
     /*! Filename for the configuration file. */
     void *filename;
     /*! Handle for the config file. */
@@ -70,19 +79,34 @@ typedef struct task_parser_config_t {
     queue_t paths;
 
     queue_t tasks;
-} task_parser_config_t;
+} task_parser_config_reader_t;
+
+/*!
+ * A simple structure for tasks which scans directory.
+ */
+typedef struct task_parser_directory_scanner_t {
+    /*! C inheritance of an simple task.*/
+    task_parser_simple_task_t task;
+    /*! A path to where the directory scanner should scan. */
+    char * path;
+
+    queue_t tasks;
+} task_parser_directory_scanner_t;
+
 
 static int task_parser_exec(void *task);
 
 static void task_parser_read_file_exec(void *argument);
-static void task_parser_read_file_init(task_parser_config_t *config);
-static void task_parser_read_file_deinit(task_parser_config_t *config);
+static task_parser_config_reader_t* task_parser_read_file_create(
+                                       task_parser_t *this_ptr,
+                                       const char * filename);
+static void task_parser_read_file_deinit(task_parser_config_reader_t *config);
 
-static void task_parser_add_task(task_parser_config_t *config);
-static void task_parser_create_task(task_parser_config_t *config);
+static void task_parser_add_task(task_parser_config_reader_t *config);
+static void task_parser_create_task(task_parser_config_reader_t *config);
 
-static void task_parser_handle_options(task_parser_config_t *config);
-static void task_parser_handle_task(task_parser_config_t *config);
+static void task_parser_handle_options(task_parser_config_reader_t *config);
+static void task_parser_handle_task(task_parser_config_reader_t *config);
 
 static namespace_t task_parser_get_namespace_value(const char *str_namespace);
 static config_options_t task_parser_get_config_options(const char* str_command);
@@ -121,12 +145,12 @@ task_parser_t* task_parser_create(task_handler_t *handler)
  */
 void task_parser_read(task_parser_t *this_ptr, const char * filename)
 {
-    task_parser_config_t *config = malloc(sizeof(task_parser_config_t));
+    task_parser_config_reader_t *config;
+    config = task_parser_read_file_create(this_ptr, filename);
 
-    task_parser_read_file_init(config);
-    config->task_parser = this_ptr;
-    config->filename = (void*) filename;
-    thread_pool_add_task(this_ptr->thread_pool, config);
+    if (config != NULL) {
+        thread_pool_add_task(this_ptr->thread_pool, config);
+    }
 }
 
 /*!
@@ -154,15 +178,15 @@ void task_parser_destroy(task_parser_t *task_parser)
  * This is callback from the thread pool which sends the next task that should
  * be executed as an argument.
  *
- * \param task - A pointer to \c task_parser_task_t struct.
+ * \param task - A pointer to \c task_parser_simple_task_t struct.
  *
  * \return \c TASK_PARSER_EXEC_SUCCESS if the task executed successfully.
  */
 static int task_parser_exec(void *task)
 {
-    task_parser_config_t *config = (task_parser_config_t*) task;
-    config->task(config);
-    free(config);
+    task_parser_simple_task_t *simple_task = (task_parser_simple_task_t*) task;
+    simple_task->task_exec(simple_task);
+    free(simple_task);
     return TASK_PARSER_EXEC_SUCCESS;
 }
 
@@ -173,7 +197,7 @@ static int task_parser_exec(void *task)
  */
 static void task_parser_read_file_exec(void *arg)
 {
-    task_parser_config_t *config = arg;
+    task_parser_config_reader_t *config = arg;
 
     config->file = config_parser_open(config->filename);
     config_parser_set_namespace(config->file, config->default_namespace);
@@ -204,18 +228,30 @@ static void task_parser_read_file_exec(void *arg)
     task_parser_read_file_deinit(config);
 }
 
-static void task_parser_read_file_init(task_parser_config_t *config)
+
+static task_parser_config_reader_t* task_parser_read_file_create(
+                                       task_parser_t *this_ptr,
+                                       const char * filename)
 {
-    config->task = task_parser_read_file_exec;
-    config->default_namespace = "default";
+    task_parser_config_reader_t *config;
+    config = malloc(sizeof(task_parser_config_reader_t));
 
-    queue_init(&config->tasks);
-    queue_init(&config->paths);
+    if (config != NULL) {
+        config->task.task_parser = this_ptr;
+        config->filename = (void*) filename;
+        config->task.task_exec = task_parser_read_file_exec;
+        config->default_namespace = "default";
 
-    task_parser_create_task(config);
+        queue_init(&config->tasks);
+        queue_init(&config->paths);
+
+        task_parser_create_task(config);
+    }
+
+    return config;
 }
 
-static void task_parser_read_file_deinit(task_parser_config_t *config)
+static void task_parser_read_file_deinit(task_parser_config_reader_t *config)
 {
     char* path;
     char* task;
@@ -227,6 +263,7 @@ static void task_parser_read_file_deinit(task_parser_config_t *config)
 
     /* Free all the option paths. */
     while((path = queue_pop(&config->paths)) != NULL) {
+        printf("Path: %s\n",path);
         free(path);
     }
     queue_deinit(&config->paths);
@@ -234,26 +271,28 @@ static void task_parser_read_file_deinit(task_parser_config_t *config)
     /* Free all the remaining tasks and print an error since these were not
        possible to find in either the current file or in the paths. */
     while((task = queue_pop(&config->tasks)) != NULL) {
+        printf("Task: %s\n",task);
         free(task);
     }
     queue_deinit(&config->tasks);
 }
 
 
-static void task_parser_add_task(task_parser_config_t *config)
+static void task_parser_add_task(task_parser_config_reader_t *config)
 {
-    free(config->current_task->name);
+    free((char*) config->current_task->name);
     free(config->current_task->dependency);
-    free(config->current_task->provides);
+    free((char*) config->current_task->provides);
     free(config->current_task->action);
     free(config->current_task);
     config->current_task = NULL;
 }
 
-static void task_parser_create_task(task_parser_config_t *config)
+static void task_parser_create_task(task_parser_config_reader_t *config)
 {
     /* Create a new task and initialize it. */
     config->current_task = malloc(sizeof(service_t));
+    config->current_task->name = NULL;
     config->current_task->dependency = NULL;
     config->current_task->provides = NULL;
     config->current_task->action = NULL;
@@ -265,7 +304,7 @@ static void task_parser_create_task(task_parser_config_t *config)
  * \param config - Contains the local settings for the current
  *                 parser task.
  */
-static void task_parser_handle_options(task_parser_config_t *config)
+static void task_parser_handle_options(task_parser_config_reader_t *config)
 {
     config_options_t options;
     const char *command;
@@ -303,7 +342,7 @@ static void task_parser_handle_options(task_parser_config_t *config)
  * \param config - Contains the local settings for the current
  *                 parser task.
  */
-static void task_parser_handle_task(task_parser_config_t *config)
+static void task_parser_handle_task(task_parser_config_reader_t *config)
 {
     task_options_t options;
     const char *command;
