@@ -84,14 +84,14 @@ typedef struct task_parser_config_reader_t {
 /*!
  * A simple structure for tasks which scans directory.
  */
-typedef struct task_parser_directory_scanner_t {
+typedef struct task_parser_scan_dir_t {
     /*! C inheritance of a simple task.*/
     task_parser_simple_task_t task;
     /*! A path to where the directory scanner should scan. */
     char * path;
 
-    queue_t tasks;
-} task_parser_directory_scanner_t;
+    queue_t files;
+} task_parser_scan_dir_t;
 
 
 static int task_parser_exec(void *task);
@@ -111,6 +111,12 @@ static void task_parser_handle_task(task_parser_config_reader_t *config);
 static namespace_t task_parser_get_namespace_value(const char *str_namespace);
 static config_options_t task_parser_get_config_options(const char* str_command);
 static task_options_t task_parser_get_task_options(const char* str_command);
+
+static void task_parser_scan_dir_exec(void *arg);
+static task_parser_scan_dir_t* task_parser_scan_dir_create(
+                                       task_parser_t *this_ptr,
+                                       queue_t *file_queue,
+                                       const char *path);
 
 /*!
  * Creates a task parser handle.
@@ -279,7 +285,14 @@ static void task_parser_read_file_deinit(task_parser_config_reader_t *config)
 
     /* Free all the option paths. */
     while((path = queue_pop(&config->paths)) != NULL) {
-        printf("Path: %s\n",path);
+
+        task_parser_scan_dir_t *scanner;
+        scanner = task_parser_scan_dir_create(config->task.task_parser,
+                                                 &config->tasks,
+                                                 path);
+        if (scanner != NULL) {
+            thread_pool_add_task(config->task.task_parser->thread_pool, scanner);
+        }
         free(path);
     }
     queue_deinit(&config->paths);
@@ -469,4 +482,46 @@ static task_options_t task_parser_get_task_options(const char* command)
 /*****************************************************************************/
 /* Functions to scan a directory for configuration files.                    */
 /*****************************************************************************/
+
+/*!
+ * This is a task which scans a directory for configuration files.
+ *
+ * \param arg - A pointer to the arguments that the task needs.
+ */
+static void task_parser_scan_dir_exec(void *arg)
+{
+
+    task_parser_scan_dir_t *scan_dir = arg;
+
+    printf("Path: %s\n",scan_dir->path);
+    free(scan_dir->path);
+
+}
+
+/*!
+ * Creates a simple task which will scan a directory for configuration files.
+ *
+ * \param this_ptr - A pointer to the task parser handle.
+ * \param filename - Filename of the file that needs to be parsed.
+ *
+ * \return A simple task which will read a file.
+ */
+static task_parser_scan_dir_t* task_parser_scan_dir_create(
+                                       task_parser_t *this_ptr,
+                                       queue_t *file_queue,
+                                       const char *path)
+{
+    task_parser_scan_dir_t *scan_dir;
+    scan_dir = malloc(sizeof(task_parser_scan_dir_t));
+
+    if (scan_dir != NULL) {
+        scan_dir->task.task_parser = this_ptr;
+        scan_dir->path = strdup(path);
+        scan_dir->task.task_exec = task_parser_scan_dir_exec;
+
+        //queue_init(&scan_dir->files);
+    }
+
+    return scan_dir;
+}
 
