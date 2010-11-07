@@ -90,17 +90,17 @@ typedef struct task_parser_scan_dir_t {
     /*! A path to where the directory scanner should scan. */
     char * path;
 
-    queue_t files;
+    queue_t tasks;
 } task_parser_scan_dir_t;
 
 
 static int task_parser_exec(void *task);
 
 static void task_parser_read_file_exec(void *argument);
+static void task_parser_read_file_destroy(task_parser_config_reader_t *config);
 static task_parser_config_reader_t* task_parser_read_file_create(
                                        task_parser_t *this_ptr,
                                        const char * filename);
-static void task_parser_read_file_deinit(task_parser_config_reader_t *config);
 
 static void task_parser_add_task(task_parser_config_reader_t *config);
 static void task_parser_create_task(task_parser_config_reader_t *config);
@@ -113,6 +113,7 @@ static config_options_t task_parser_get_config_options(const char* str_command);
 static task_options_t task_parser_get_task_options(const char* str_command);
 
 static void task_parser_scan_dir_exec(void *arg);
+static void task_parser_scan_dir_destroy(task_parser_scan_dir_t *scan_dir);
 static task_parser_scan_dir_t* task_parser_scan_dir_create(
                                        task_parser_t *this_ptr,
                                        queue_t *file_queue,
@@ -192,7 +193,7 @@ static int task_parser_exec(void *task)
 {
     task_parser_simple_task_t *simple_task = (task_parser_simple_task_t*) task;
     simple_task->task_exec(simple_task);
-    free(simple_task);
+
     return TASK_PARSER_EXEC_SUCCESS;
 }
 
@@ -235,7 +236,7 @@ static void task_parser_read_file_exec(void *arg)
     }
 
     config_parser_close(config->file);
-    task_parser_read_file_deinit(config);
+    task_parser_read_file_destroy(config);
 }
 
 /*!
@@ -269,11 +270,13 @@ static task_parser_config_reader_t* task_parser_read_file_create(
 }
 
 /*!
- * Deinitializes a read file task and starts up any directory scaning tasks.
+ * Destroys and deallocates a read file task.
+ * If there were any paths detected in the configuration file it will now
+ * start up a task which will search for files in a directory.
  *
  * \param config - A pointer to the read file task.
  */
-static void task_parser_read_file_deinit(task_parser_config_reader_t *config)
+static void task_parser_read_file_destroy(task_parser_config_reader_t *config)
 {
     char* path;
     char* task;
@@ -304,6 +307,7 @@ static void task_parser_read_file_deinit(task_parser_config_reader_t *config)
         free(task);
     }
     queue_deinit(&config->tasks);
+    free(config);
 }
 
 
@@ -490,12 +494,12 @@ static task_options_t task_parser_get_task_options(const char* command)
  */
 static void task_parser_scan_dir_exec(void *arg)
 {
-
+    char* task;
     task_parser_scan_dir_t *scan_dir = arg;
 
     printf("Path: %s\n",scan_dir->path);
-    free(scan_dir->path);
 
+    task_parser_scan_dir_destroy(scan_dir);
 }
 
 /*!
@@ -508,9 +512,10 @@ static void task_parser_scan_dir_exec(void *arg)
  */
 static task_parser_scan_dir_t* task_parser_scan_dir_create(
                                        task_parser_t *this_ptr,
-                                       queue_t *file_queue,
+                                       queue_t *tasks,
                                        const char *path)
 {
+    char *task;
     task_parser_scan_dir_t *scan_dir;
     scan_dir = malloc(sizeof(task_parser_scan_dir_t));
 
@@ -519,9 +524,37 @@ static task_parser_scan_dir_t* task_parser_scan_dir_create(
         scan_dir->path = strdup(path);
         scan_dir->task.task_exec = task_parser_scan_dir_exec;
 
-        //queue_init(&scan_dir->files);
+        queue_init(&scan_dir->tasks);
+
+        /* Copy the task list just to know the expected name of the
+           configuration files. */
+        queue_first(tasks);
+        while((task = queue_get_current(tasks)) != NULL) {
+            queue_push(&scan_dir->tasks, strdup(task));
+            queue_next(tasks);
+        }
     }
 
     return scan_dir;
+}
+
+/*!
+ * Destroys and deallocates a directory scan task.
+ *
+ * \param config - A pointer to the directory scan task.
+ */
+static void task_parser_scan_dir_destroy(task_parser_scan_dir_t *scan_dir)
+{
+    char* task;
+
+    printf("\n");
+
+    while((task = queue_pop(&scan_dir->tasks)) != NULL) {
+        free(task);
+    }
+
+    queue_deinit(&scan_dir->tasks);
+    free(scan_dir->path);
+    free(scan_dir);
 }
 
