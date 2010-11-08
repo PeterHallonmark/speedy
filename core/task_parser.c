@@ -24,8 +24,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <dirent.h>
 
-/*! Successful return code for thread pool callback function. */
+/*! Successful return  code for thread pool callback function. */
 #define TASK_PARSER_EXEC_SUCCESS 0
 
 typedef enum namespace_t {
@@ -64,11 +65,11 @@ typedef struct task_parser_config_reader_t {
     /*! C inheritance of a simple task.*/
     task_parser_simple_task_t task;
     /*! Filename for the configuration file. */
-    void *filename;
+    char *filename;
     /*! Handle for the config file. */
     config_parser_t *file;
     /*! Default namespace for the configuration file. */
-    const char *default_namespace;
+    char *default_namespace;
     /*! Current namespace for the configuration task. */
     const char *current_namespace;
     /*! Extracted value for the current namespace. */
@@ -100,8 +101,10 @@ static void task_parser_read_file_exec(void *argument);
 static void task_parser_read_file_destroy(task_parser_config_reader_t *config);
 static task_parser_config_reader_t* task_parser_read_file_create(
                                        task_parser_t *this_ptr,
-                                       const char * filename);
+                                       char *filename,
+                                       char *default_namespace);
 
+static char* task_parser_check_dependency(task_parser_config_reader_t *config);
 static void task_parser_add_task(task_parser_config_reader_t *config);
 static void task_parser_create_task(task_parser_config_reader_t *config);
 
@@ -118,6 +121,11 @@ static task_parser_scan_dir_t* task_parser_scan_dir_create(
                                        task_parser_t *this_ptr,
                                        queue_t *file_queue,
                                        const char *path);
+
+static char* task_parser_scan_dir_find_file(task_parser_scan_dir_t *scan_dir,
+                                            char *filename);
+static void task_parser_scan_dir_read_file(task_parser_scan_dir_t *scan_dir,
+                                            char *task);
 
 /*!
  * Creates a task parser handle.
@@ -153,8 +161,8 @@ task_parser_t* task_parser_create(task_handler_t *handler)
 void task_parser_read(task_parser_t *this_ptr, const char * filename)
 {
     task_parser_config_reader_t *config;
-    config = task_parser_read_file_create(this_ptr, filename);
-
+    config = task_parser_read_file_create(this_ptr, strdup(filename),
+                                          strdup("default"));
     if (config != NULL) {
         thread_pool_add_task(this_ptr->thread_pool, config);
     }
@@ -211,6 +219,7 @@ static void task_parser_read_file_exec(void *arg)
     task_parser_config_reader_t *config = arg;
 
     config->file = config_parser_open(config->filename);
+    printf("Scanning: %s\n", config->filename);
     config_parser_set_namespace(config->file, config->default_namespace);
 
     while (!config_parser_is_eof(config->file) &&
@@ -249,21 +258,25 @@ static void task_parser_read_file_exec(void *arg)
  */
 static task_parser_config_reader_t* task_parser_read_file_create(
                                        task_parser_t *this_ptr,
-                                       const char * filename)
+                                       char *filename,
+                                       char *default_namespace)
 {
     task_parser_config_reader_t *config;
     config = malloc(sizeof(task_parser_config_reader_t));
 
     if (config != NULL) {
         config->task.task_parser = this_ptr;
-        config->filename = (void*) filename;
+        config->filename = filename;
         config->task.task_exec = task_parser_read_file_exec;
-        config->default_namespace = "default";
+        config->default_namespace = default_namespace;
 
         queue_init(&config->tasks);
         queue_init(&config->paths);
 
         task_parser_create_task(config);
+
+    } else {
+        free(filename);
     }
 
     return config;
@@ -280,6 +293,7 @@ static void task_parser_read_file_destroy(task_parser_config_reader_t *config)
 {
     char* path;
     char* task;
+    bool added_task = false;
 
     if (config->current_task->name != NULL) {
         task_parser_add_task(config);
@@ -295,6 +309,7 @@ static void task_parser_read_file_destroy(task_parser_config_reader_t *config)
                                                  path);
         if (scanner != NULL) {
             thread_pool_add_task(config->task.task_parser->thread_pool, scanner);
+            added_task = true;
         }
         free(path);
     }
@@ -303,16 +318,45 @@ static void task_parser_read_file_destroy(task_parser_config_reader_t *config)
     /* Free all the remaining tasks and print an error since these were not
        possible to find in either the current file or in the paths. */
     while((task = queue_pop(&config->tasks)) != NULL) {
-        printf("Task: %s\n",task);
+        if (added_task) {
+            printf("Task: %s\n",task);
+        } else {
+            printf("Missing task: %s\n",task);
+        }
         free(task);
     }
     queue_deinit(&config->tasks);
+
+    free(config->default_namespace);
+    free(config->filename);
     free(config);
 }
 
 
+static char* task_parser_check_dependency(task_parser_config_reader_t *config)
+{
+    char* current_task;
+
+    queue_first(&config->tasks);
+    while ((current_task = queue_get_current(&config->tasks)) != NULL) {
+        if (strcmp(config->current_task->name, current_task) == 0) {
+            queue_remove_current(&config->tasks);
+            return current_task;
+        }
+        queue_next(&config->tasks);
+    }
+    return NULL;
+}
+
 static void task_parser_add_task(task_parser_config_reader_t *config)
 {
+    char* dependency = task_parser_check_dependency(config);
+
+    if (dependency != NULL) {
+        /* Add task. */
+        free(dependency);
+    }
+
     free((char*) config->current_task->name);
     free(config->current_task->dependency);
     free((char*) config->current_task->provides);
@@ -494,11 +538,26 @@ static task_options_t task_parser_get_task_options(const char* command)
  */
 static void task_parser_scan_dir_exec(void *arg)
 {
-    char* task;
     task_parser_scan_dir_t *scan_dir = arg;
+    struct dirent *content;
+    char *task;
+    DIR *dir;
 
     printf("Path: %s\n",scan_dir->path);
 
+    dir = opendir(scan_dir->path);
+    if (dir) {
+        while ((content = readdir(dir)) != NULL) {
+
+            task = task_parser_scan_dir_find_file(scan_dir, content->d_name);
+
+            if (task != NULL) {
+                task_parser_scan_dir_read_file(scan_dir, task);
+            }
+            free(task);
+        }
+        closedir(dir);
+    }
     task_parser_scan_dir_destroy(scan_dir);
 }
 
@@ -516,6 +575,7 @@ static task_parser_scan_dir_t* task_parser_scan_dir_create(
                                        const char *path)
 {
     char *task;
+    char *task_dup;
     task_parser_scan_dir_t *scan_dir;
     scan_dir = malloc(sizeof(task_parser_scan_dir_t));
 
@@ -530,7 +590,8 @@ static task_parser_scan_dir_t* task_parser_scan_dir_create(
            configuration files. */
         queue_first(tasks);
         while((task = queue_get_current(tasks)) != NULL) {
-            queue_push(&scan_dir->tasks, strdup(task));
+            task_dup = strdup(task);
+            queue_push(&scan_dir->tasks, task_dup);
             queue_next(tasks);
         }
     }
@@ -547,14 +608,55 @@ static void task_parser_scan_dir_destroy(task_parser_scan_dir_t *scan_dir)
 {
     char* task;
 
-    printf("\n");
-
     while((task = queue_pop(&scan_dir->tasks)) != NULL) {
+        printf("Missing task: %s\n",task);
         free(task);
     }
 
     queue_deinit(&scan_dir->tasks);
+
     free(scan_dir->path);
     free(scan_dir);
 }
 
+
+static char* task_parser_scan_dir_find_file(task_parser_scan_dir_t *scan_dir,
+                                       char *filename)
+{
+    char *task;
+
+    queue_first(&scan_dir->tasks);
+    while ((task = queue_get_current(&scan_dir->tasks)) != NULL) {
+
+        if (strcmp(task, filename) == 0) {
+            queue_remove_current(&scan_dir->tasks);
+            return task;
+        }
+        queue_next(&scan_dir->tasks);
+    }
+    return NULL;
+}
+
+
+static void task_parser_scan_dir_read_file(task_parser_scan_dir_t *scan_dir,
+                                            char *task)
+{
+    task_parser_config_reader_t *config;
+    char *filename;
+    char *next;
+
+    /* Create path to file. */
+    filename = malloc(strlen(scan_dir->path) + strlen(task) + 2u);
+    filename[0] = '\0';
+    next = strcat(filename, scan_dir->path);
+    next = strcat(next, "/");
+    (void) strcat(next, task);
+
+    config = task_parser_read_file_create(scan_dir->task.task_parser, filename,
+                                          strdup(task));
+
+    if (config != NULL) {
+        queue_push(&config->tasks, strdup(task));
+        thread_pool_add_task(scan_dir->task.task_parser->thread_pool, config);
+    }
+}
