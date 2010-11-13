@@ -422,14 +422,28 @@ int config_parser_read(config_parser_t *config)
     return status;
 }
 
-const char* config_parser_get_command(config_parser_t *config)
+bool config_parser_is_eof(config_parser_t *config)
 {
-    return config->command;
+    if (config != NULL) {
+        return config->eof;
+    }
+    return true;
+}
+
+void config_parser_set_namespace(config_parser_t *config, const char *str)
+{
+    strcpy(config->name_space, str);
 }
 
 const char* config_parser_get_namespace(config_parser_t *config)
 {
     return config->name_space;
+}
+
+
+const char* config_parser_get_command(config_parser_t *config)
+{
+    return config->command;
 }
 
 const char* config_parser_get_next_argument(config_parser_t *config)
@@ -448,18 +462,37 @@ const char* config_parser_get_next_argument(config_parser_t *config)
     return argument;
 }
 
-
-bool config_parser_is_eof(config_parser_t *config)
+unsigned int config_parser_get_argument_size(config_parser_t *config)
 {
-    if (config != NULL) {
-        return config->eof;
-    }
-    return true;
+    return config->argument_size;
 }
 
-void config_parser_set_namespace(config_parser_t *config, const char *str)
+char** task_parser_create_arguments(config_parser_t *config)
 {
-    strcpy(config->name_space, str);
+    char **arguments = malloc(config->argument_size + 1);
+    unsigned int i;
+
+    if (arguments != NULL) {
+        arguments[config->argument_size] = NULL;
+
+        for (i = 0u; i < config->argument_size; i++) {
+            arguments[i] = strdup(config_parser_get_next_argument(config));
+        }
+    }
+    return arguments;
+}
+
+void task_parser_destroy_arguments(char* arguments[])
+{
+    unsigned int i = 0u;
+
+    if (arguments != NULL) {
+        while(arguments[i] != NULL) {
+            free(arguments[i]);
+            i++;
+        }
+        free(arguments);
+    }
 }
 
 static void config_parser_readfile(config_parser_t *config)
