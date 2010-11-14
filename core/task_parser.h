@@ -14,9 +14,12 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
+#include <pthread.h>
+
 typedef struct task_parser_t {
     struct thread_pool_t *thread_pool;
     struct task_handler_t *handler;
+    pthread_mutex_t *mutex;
 } task_parser_t;
 
 task_parser_t* task_parser_create(struct task_handler_t *handler);

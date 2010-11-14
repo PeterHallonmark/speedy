@@ -97,6 +97,8 @@ typedef struct task_parser_dir_t {
 
 static int task_parser_exec(void *task);
 
+static void task_parser_add_task(task_parser_t* this_ptr, service_t* task);
+
 static service_t* task_parser_create_task(void);
 static void task_parser_destroy_task(service_t *task);
 
@@ -144,6 +146,9 @@ task_parser_t* task_parser_create(task_handler_t *handler)
         task_parser->handler = handler;
         task_parser->thread_pool = thread_pool_create(4, task_parser_exec);
 
+        task_parser->mutex = malloc(sizeof(pthread_mutex_t));
+        pthread_mutex_init(task_parser->mutex, NULL);
+
         if (task_parser->thread_pool == NULL) {
             free(task_parser);
             task_parser = NULL;
@@ -186,6 +191,8 @@ void task_parser_wait(task_parser_t* this_ptr)
 void task_parser_destroy(task_parser_t *task_parser)
 {
     thread_pool_destroy(task_parser->thread_pool);
+    pthread_mutex_destroy(task_parser->mutex);
+    free(task_parser->mutex);
     free(task_parser);
 }
 
@@ -204,6 +211,15 @@ static int task_parser_exec(void *task)
 
     return TASK_PARSER_EXEC_SUCCESS;
 }
+
+static void task_parser_add_task(task_parser_t* this_ptr, service_t* task)
+{
+    pthread_mutex_lock(this_ptr->mutex);
+    task_handler_add_task(this_ptr->handler, task);
+    pthread_mutex_unlock(this_ptr->mutex);
+}
+
+
 
 /*****************************************************************************/
 /* Functions to parse a configuration file.                                  */
@@ -357,10 +373,11 @@ static void task_parser_file_add_task(task_parser_file_reader_t *read_file)
 
     if (dependency != NULL) {
         /* Add task. */
-
-
+        task_parser_add_task(read_file->task.task_parser,
+                             read_file->current_task);
         free(dependency);
-    } else {        
+        read_file->current_task = NULL;
+    } else {
         task_parser_destroy_task(read_file->current_task);
     }
 }
