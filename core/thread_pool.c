@@ -30,7 +30,7 @@ thread_pool_t *thread_pool_create(unsigned int threads,
 
     if ((this_ptr != NULL) && (task_exec != NULL)) {
         this_ptr->task_exec = task_exec;
-        this_ptr->threads = (pthread_t*) malloc(sizeof(pthread_t) * threads);
+        this_ptr->threads = (pthread_t*) malloc(sizeof(pthread_t) * threads - 1);
         this_ptr->condititon = (pthread_cond_t*) malloc(sizeof(pthread_cond_t));
         this_ptr->mutex = (pthread_mutex_t*) malloc(sizeof(pthread_mutex_t));
         this_ptr->queue = queue_create();
@@ -77,6 +77,7 @@ int thread_pool_wait(thread_pool_t *this_ptr)
 
         for (i = 0; i < this_ptr->thread_size; i++) {
             pthread_join(this_ptr->threads[i], NULL);
+            pthread_detach(this_ptr->threads[i]);
         }
     }
     return 0;
@@ -169,11 +170,11 @@ void thread_pool_destroy(thread_pool_t *this_ptr)
     if (this_ptr != NULL) {
         if (this_ptr->continue_thread_pool) {
             thread_pool_exit(this_ptr);
-        }
 
-        for(i = 0; i < this_ptr->thread_size; i++) {
-            pthread_join(this_ptr->threads[i], NULL);
-            pthread_detach(this_ptr->threads[i]);
+            for(i = 0; i < this_ptr->thread_size; i++) {
+                pthread_join(this_ptr->threads[i], NULL);
+                pthread_detach(this_ptr->threads[i]);
+            }
         }
 
         pthread_mutex_destroy(this_ptr->mutex);
