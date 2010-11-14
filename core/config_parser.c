@@ -464,25 +464,28 @@ const char* config_parser_get_next_argument(config_parser_t *config)
 
 unsigned int config_parser_get_argument_size(config_parser_t *config)
 {
-    return config->argument_size;
+    return config->argument_size + 1;
 }
 
-char** task_parser_create_arguments(config_parser_t *config)
+char** config_parser_create_arguments(config_parser_t *config)
 {
+#if 0
     char **arguments = malloc(config->argument_size + 1);
     unsigned int i;
 
     if (arguments != NULL) {
         arguments[config->argument_size] = NULL;
-
+        
         for (i = 0u; i < config->argument_size; i++) {
             arguments[i] = strdup(config_parser_get_next_argument(config));
         }
     }
     return arguments;
+#endif
+    return NULL;
 }
 
-void task_parser_destroy_arguments(char* arguments[])
+void config_parser_destroy_arguments(char* arguments[])
 {
     unsigned int i = 0u;
 
