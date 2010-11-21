@@ -44,12 +44,10 @@ $(build) :
 	mkdir -p $(build)
 
 release: init copy
-	$(MAKE) -j 1 -r -C $(build) init_release
 	$(MAKE) -j 4 -r -C $(build) release
 	
 debug: CFLAGS += -Wextra -g
 debug: init copy
-	$(MAKE) -j 1 -r -C $(build) init_debug
 	$(MAKE) -j 4 -r -C $(build) debug
 
 build_objects: copy
