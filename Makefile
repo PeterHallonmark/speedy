@@ -15,17 +15,7 @@
 
 override CFLAGS += -Wall
 
-# This is the array that simulates the rest of the rc.conf
-# So far it doesn't contain that much.
-sysinit :=  start #udev loopback fsck mount swap hwclock randomseed files \
-            #hostname locale end
-
 # This is the array that simulates the DAEMONS array in the rc.conf 
-daemons :=
-
-# Some test code just to be able to test that the core work as intended. 
-tests := test_thread1 test_thread2 test_thread3 \
-         test_thread4 test_thread5 test_thread6
 
 # Specifies the system and which predefined scripts and configs that are
 # going to be used. 
@@ -36,9 +26,6 @@ build := build
 
 # Variables that are going to be exported.
 export CFLAGS
-export sysinit
-export daemons
-export tests
 export system
 
 .DEFAULT: release
@@ -46,16 +33,12 @@ export system
 all: release
 
 init:
-	@./scripts/$(system)/init.sh        
+	@./scripts/$(system)/init.sh
 		
 copy: $(build)
 	cp scripts $(build) -r -u
 	cp scripts/Makefile $(build) -u
 	cp core $(build) -r -u
-	cp sysinit $(build) -r -u
-	cp daemons $(build) -r -u
-	cp tests $(build) -r -u
-	cp lib $(build) -r -u
     
 $(build) :
 	mkdir -p $(build)
