@@ -1,16 +1,9 @@
-This is going to be a binary version of Arch Linux initscripts.
-
-The code is developed to become a monolithic program but a main focus is to keep 
-the code modularized.
+The development focus has been shifted. It used to be a complete binary version 
+of Arch Linux initscripts, but the focus is now to create a program which can
+start up multiple executebles and scripts in parallell and handle dependencies. 
+Pretty much create a tool which can execute the current scripts in parallell in
+an easy and bash friendly manner. 
 
 Things that currently are on my TODO list:
 ------------------------------------------
-* Make it possible to lanch daemons that are not implemented in C. Pretty much
-  generate code to run anything from /etc/rc.d/* 
-
-
-Future improvements:
---------------------
-* Add init functionality so it can replace sysvinit 
-
-* Add support for LVM and other stuff that I don't use.
+* Make it work. :-)
