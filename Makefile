@@ -33,12 +33,10 @@ export system
 all: release
 
 init:
-	@./scripts/$(system)/init.sh
 		
 copy: $(build)
-	cp scripts $(build) -r -u
-	cp core/Makefile $(build) -u
-	cp core $(build) -r -u
+	cp src/Makefile $(build) -u
+	cp src $(build) -r -u
     
 $(build) :
 	mkdir -p $(build)

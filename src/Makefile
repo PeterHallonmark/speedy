@@ -13,15 +13,15 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 
-files := core/core.c core/queue.c core/observer.c core/subject.c \
-         core/hash.c core/hash_lookup.c core/task_handler.c core/task.c \
-         core/thread_pool.c core/task_parser.c core/config_parser.c
+files := src/core.c src/queue.c src/observer.c src/subject.c \
+         src/hash.c src/hash_lookup.c src/task_handler.c src/task.c \
+         src/thread_pool.c src/task_parser.c src/config_parser.c
     
 debug: speedy
 
 release: speedy
 		    
-core/%.o: core/%.c
+src/%.o: src/%.c
 	$(CC) $(CFLAGS) -I. -c $< -o $@
         
 speedy : $(files:.c=.o)
