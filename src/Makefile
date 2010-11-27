@@ -13,7 +13,7 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 
-files := src/core.c src/queue.c src/observer.c src/subject.c \
+files := src/speedy.c src/queue.c src/observer.c src/subject.c \
          src/hash.c src/hash_lookup.c src/task_handler.c src/task.c \
          src/thread_pool.c src/task_parser.c src/config_parser.c
     
