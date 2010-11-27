@@ -21,5 +21,7 @@ test_files := test/test_handler.c test/unity/unity.c
 unittest: $(test_files:.c=.o)
 	$(CC) -o unittest $(test_files:.c=.o)
 
+.PHONY: test
+
 .SILENT:
 .SUFFIXES:

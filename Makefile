@@ -15,12 +15,6 @@
 
 override CFLAGS += -Wall
 
-# This is the array that simulates the DAEMONS array in the rc.conf 
-
-# Specifies the system and which predefined scripts and configs that are
-# going to be used. 
-system := archlinux
-
 # The project is built inside a build directory. 
 build := build
 
@@ -30,13 +24,11 @@ export system
 
 .DEFAULT: release
 
-all: release
-
 init:
 	mkdir -p $(build)
 	mkdir -p $(build)/release
 	mkdir -p $(build)/debug
-	mkdir -p $(build)/test
+	mkdir -p $(build)/test	
 	
 copy: init
 	cp src/Makefile $(build)/$(target) -u
@@ -45,18 +37,24 @@ copy: init
 test_copy: init
 	cp test/Makefile $(build)/test -u
 	cp test $(build)/test -r -u
+	cp src $(build)/test -r -u
 	
 release: target := release
-release: build_$(target)
+release: copy build_$(target) 
 
 debug: target := debug
 debug: CFLAGS += -Wextra -g
-debug: build_$(target)
+debug: copy build_$(target)
 
 test: target := test
-test: test_copy build_$(target)
+test: test_copy build_$(target) 
 
-build_$(target): init copy
+all:
+	$(MAKE) -j 1 -r -C . release
+	$(MAKE) -j 1 -r -C . debug
+	$(MAKE) -j 1 -r -C . test
+
+build_$(target):
 	$(MAKE) -j 4 -r -C $(build)/$(target) $(target)
 
 clean : 
@@ -65,7 +63,7 @@ clean :
 loc : clean
 	cloc .
 
-.NOTPARALLEL: copy init clean $(build) $(build)/$(target)
+.NOTPARALLEL: copy init clean all
 
 .PHONY: init clean all release debug copy cloc build_$(target)
 
