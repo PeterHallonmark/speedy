@@ -1,0 +1,2 @@
+[init]
+exec = echo init

@@ -1,0 +1,3 @@
+[jack]
+dependency = init alsa
+exec = echo jack

@@ -1,0 +1,3 @@
+[samba]
+dependency = init network
+exec = echo samba

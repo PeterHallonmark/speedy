@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
 
     /* Read which tasks that need to be executed and all the dependency
        information from the configuration. */
-    task_parser_read(task_parser, "test2.txt");
+    task_parser_read(task_parser, "speedy.conf");
     task_parser_wait(task_parser);
 
     /* Read the dependency from the configuration. */

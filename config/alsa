@@ -1,0 +1,3 @@
+[alsa]
+dependency = init
+exec = echo alsa

@@ -1,0 +1,3 @@
+[net-profiles]
+dependency = init
+exec = echo net-profiles

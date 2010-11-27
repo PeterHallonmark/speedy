@@ -1,0 +1,3 @@
+[tftpd]
+dependency = init network samba
+exec = echo tftpd
