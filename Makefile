@@ -33,32 +33,32 @@ export system
 all: release
 
 init:
-		
-copy: $(build)
-	cp src/Makefile $(build) -u
-	cp src $(build) -r -u
-    
-$(build) :
 	mkdir -p $(build)
-
-release: init copy
-	$(MAKE) -j 4 -r -C $(build) release
+	mkdir -p $(build)/release
+	mkdir -p $(build)/debug
 	
+copy: init
+	cp src/Makefile $(build)/$(target) -u
+	cp src $(build)/$(target) -r -u
+
+release: target := release
+release: build_$(target) 
+
+debug: target := debug
 debug: CFLAGS += -Wextra -g
-debug: init copy
-	$(MAKE) -j 4 -r -C $(build) debug
-
-build_objects: copy
-	$(MAKE) -r -C $(build) build_objects
+debug: build_$(target)
 	
+build_$(target): init copy
+	$(MAKE) -j 4 -r -C $(build)/$(target) $(target)
+
 clean : 
 	rm -rf $(build)
 
 loc : clean
 	cloc .
 
-.NOTPARALLEL: $(build) copy init clean
+.NOTPARALLEL: copy init clean $(build) $(build)/$(target)
 
-.PHONY: init clean all release debug copy cloc build_objects
+.PHONY: init clean all release debug copy cloc build_$(target)
 
 .SUFFIXES:
