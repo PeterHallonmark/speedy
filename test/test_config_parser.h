@@ -14,47 +14,4 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-#include "test_handler.h"
-
-#include <stdlib.h>
-
-void test_handler_run_test(test_case_t *test_case)
-{
-    Unity.CurrentTestName = test_case->name;
-    Unity.CurrentTestLineNumber = test_case->line;
-
-    Unity.NumberOfTests++;
-
-    if (TEST_PROTECT()) {
-        if (test_case->init != NULL) {
-            test_case->init();
-        }
-        if (test_case->test != NULL) {
-            test_case->test();
-        }
-    }
-    if (TEST_PROTECT() && !TEST_IS_IGNORED) {
-        if (test_case->clean != NULL) {
-            test_case->clean();
-        }
-    }
-    UnityConcludeTest();
-}
-
-void setUp(void)
-{
-}
-
-void tearDown(void)
-{
-}
-
-void test_handler_init(void)
-{
-    UnityBegin();
-}
-
-void test_handler_deinit(void)
-{
-    UnityEnd();
-}
+void test_config_parser(void);

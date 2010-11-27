@@ -15,46 +15,22 @@
 */
 
 #include "test_handler.h"
-
 #include <stdlib.h>
 
-void test_handler_run_test(test_case_t *test_case)
+static void run(void)
 {
-    Unity.CurrentTestName = test_case->name;
-    Unity.CurrentTestLineNumber = test_case->line;
-
-    Unity.NumberOfTests++;
-
-    if (TEST_PROTECT()) {
-        if (test_case->init != NULL) {
-            test_case->init();
-        }
-        if (test_case->test != NULL) {
-            test_case->test();
-        }
-    }
-    if (TEST_PROTECT() && !TEST_IS_IGNORED) {
-        if (test_case->clean != NULL) {
-            test_case->clean();
-        }
-    }
-    UnityConcludeTest();
+    TEST_ASSERT(0);
+    TEST_ASSERT_EQUAL(0, 1);
 }
 
-void setUp(void)
+static void run2(void)
 {
 }
 
-void tearDown(void)
+void test_config_parser(void)
 {
-}
-
-void test_handler_init(void)
-{
-    UnityBegin();
-}
-
-void test_handler_deinit(void)
-{
-    UnityEnd();
+    TEST_CASE_START();
+    TEST_CASE_RUN(NULL, NULL, run);
+    TEST_CASE_RUN(NULL, NULL, run2);
+    TEST_CASE_END();
 }

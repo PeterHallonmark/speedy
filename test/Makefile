@@ -13,7 +13,8 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 
-test_files := test/test_handler.c test/unity/unity.c
+test_files := test/test_handler.c test/unity/unity.c test/unittest.c \
+              test/test_config_parser.c
 
 %.o: %.c
 	$(CC) $(CFLAGS) -I. -c $< -o $@
@@ -23,5 +24,4 @@ unittest: $(test_files:.c=.o)
 
 .PHONY: test
 
-.SILENT:
 .SUFFIXES:
