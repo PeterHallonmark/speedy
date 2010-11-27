@@ -28,16 +28,16 @@ init:
 	mkdir -p $(build)
 	mkdir -p $(build)/release
 	mkdir -p $(build)/debug
-	mkdir -p $(build)/test	
+	mkdir -p $(build)/unittest	
 	
 copy: init
 	cp src/Makefile $(build)/$(target) -u
 	cp src $(build)/$(target) -r -u
 
 test_copy: init
-	cp test/Makefile $(build)/test -u
-	cp test $(build)/test -r -u
-	cp src $(build)/test -r -u
+	cp test/Makefile $(build)/unittest -u
+	cp test $(build)/unittest -r -u
+	cp src $(build)/unittest -r -u
 	
 release: target := release
 release: copy build_$(target) 
@@ -46,7 +46,7 @@ debug: target := debug
 debug: CFLAGS += -Wextra -g
 debug: copy build_$(target)
 
-test: target := test
+test: target := unittest
 test: test_copy build_$(target) 
 
 all:
