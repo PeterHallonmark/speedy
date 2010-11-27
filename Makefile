@@ -36,18 +36,26 @@ init:
 	mkdir -p $(build)
 	mkdir -p $(build)/release
 	mkdir -p $(build)/debug
+	mkdir -p $(build)/test
 	
 copy: init
 	cp src/Makefile $(build)/$(target) -u
 	cp src $(build)/$(target) -r -u
 
+test_copy: init
+	cp test/Makefile $(build)/test -u
+	cp test $(build)/test -r -u
+	
 release: target := release
-release: build_$(target) 
+release: build_$(target)
 
 debug: target := debug
 debug: CFLAGS += -Wextra -g
 debug: build_$(target)
-	
+
+test: target := test
+test: test_copy build_$(target)
+
 build_$(target): init copy
 	$(MAKE) -j 4 -r -C $(build)/$(target) $(target)
 
