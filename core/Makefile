@@ -30,5 +30,4 @@ speedy : $(files:.c=.o)
 .PHONY: debug release clean build
 
 .SILENT:
-
 .SUFFIXES:

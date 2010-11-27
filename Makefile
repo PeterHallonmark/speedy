@@ -37,7 +37,7 @@ init:
 		
 copy: $(build)
 	cp scripts $(build) -r -u
-	cp scripts/Makefile $(build) -u
+	cp core/Makefile $(build) -u
 	cp core $(build) -r -u
     
 $(build) :
