@@ -12,6 +12,7 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
+include src/Makefile
 
 test_files := test/test_handler.c test/unity/unity.c test/unittest.c \
               test/test_config_parser.c
@@ -19,8 +20,8 @@ test_files := test/test_handler.c test/unity/unity.c test/unittest.c \
 %.o: %.c
 	$(CC) $(CFLAGS) -I. -c $< -o $@
         
-unittest: $(test_files:.c=.o)
-	$(CC) -o unittest $(test_files:.c=.o)
+unittest: $(test_files:.c=.o)  $(files:.c=.o)
+	$(CC) -o unittest -lpthread $(test_files:.c=.o) $(files:.c=.o)
 
 .PHONY: test
 
