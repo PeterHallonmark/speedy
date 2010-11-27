@@ -62,9 +62,11 @@ config_parser_t *config_parser_open(const char* filename)
 
 void config_parser_close(config_parser_t *config)
 {
-    fclose(config->file);
-    free(config);
-    config = NULL;
+    if (config != NULL) {
+        fclose(config->file);
+        free(config);
+        config = NULL;
+    }
 }
 
 /*!
@@ -469,8 +471,7 @@ unsigned int config_parser_get_argument_size(config_parser_t *config)
 
 char** config_parser_create_arguments(config_parser_t *config)
 {
-#if 0
-    char **arguments = malloc(config->argument_size + 1);
+    char **arguments = malloc(sizeof(char*) * (config->argument_size + 1));
     unsigned int i;
 
     if (arguments != NULL) {
@@ -481,8 +482,6 @@ char** config_parser_create_arguments(config_parser_t *config)
         }
     }
     return arguments;
-#endif
-    return NULL;
 }
 
 void config_parser_destroy_arguments(char* arguments[])
