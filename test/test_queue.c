@@ -29,6 +29,7 @@ static void test_queue_null_init(void)
 
 static void test_queue_null_cleanup(void)
 {
+    queue_destroy(priv_test_queue);
 }
 
 static void test_queue_empty_init(void)
@@ -54,31 +55,46 @@ static void test_queue_one_item_cleanup(void)
 
 static void test_queue_null(void)
 {
-    TEST_ASSERT_EQUAL(queue_first(priv_test_queue), QUEUE_ERROR);
-    TEST_ASSERT_EQUAL(queue_next(priv_test_queue), QUEUE_ERROR);
-    TEST_ASSERT_EQUAL(queue_last(priv_test_queue), QUEUE_ERROR);
-    TEST_ASSERT_EQUAL(queue_previous(priv_test_queue), QUEUE_ERROR);
+    TEST_ASSERT_EQUAL(QUEUE_NULL, queue_first(priv_test_queue));
+    TEST_ASSERT_EQUAL(QUEUE_NULL, queue_next(priv_test_queue));
+    TEST_ASSERT_EQUAL(QUEUE_NULL, queue_last(priv_test_queue));
+    TEST_ASSERT_EQUAL(QUEUE_NULL, queue_previous(priv_test_queue));
+    TEST_ASSERT_EQUAL(QUEUE_NULL, queue_push(priv_test_queue, (void*) 1000));
+    TEST_ASSERT_EQUAL(NULL, queue_pop(priv_test_queue));
+    TEST_ASSERT_EQUAL(NULL, queue_get_current(priv_test_queue));
+    TEST_ASSERT_EQUAL(QUEUE_NULL, queue_remove_current(priv_test_queue));
 }
 
 static void test_queue_empty(void)
 {
-    TEST_ASSERT_EQUAL(queue_first(priv_test_queue), QUEUE_EMPTY);
-    TEST_ASSERT_EQUAL(queue_next(priv_test_queue), QUEUE_LAST);
-    TEST_ASSERT_EQUAL(queue_last(priv_test_queue), QUEUE_EMPTY);
-    TEST_ASSERT_EQUAL(queue_previous(priv_test_queue), QUEUE_LAST);
+    TEST_ASSERT_EQUAL(QUEUE_EMPTY, queue_first(priv_test_queue));
+    TEST_ASSERT_EQUAL(QUEUE_LAST, queue_next(priv_test_queue));
+    TEST_ASSERT_EQUAL(QUEUE_EMPTY, queue_last(priv_test_queue));
+    TEST_ASSERT_EQUAL(QUEUE_LAST, queue_previous(priv_test_queue));
+}
+
+static void test_queue_not_null(void)
+{
+    TEST_ASSERT_NOT_EQUAL(QUEUE_NULL, queue_first(priv_test_queue));
+    TEST_ASSERT_NOT_EQUAL(QUEUE_NULL, queue_next(priv_test_queue));
+    TEST_ASSERT_NOT_EQUAL(QUEUE_NULL, queue_last(priv_test_queue));
+    TEST_ASSERT_NOT_EQUAL(QUEUE_NULL, queue_previous(priv_test_queue));
 }
 
 static void test_queue_not_empty(void)
 {
-    TEST_ASSERT_NOT_EQUAL(queue_first(priv_test_queue), QUEUE_EMPTY);
-    TEST_ASSERT_NOT_EQUAL(queue_next(priv_test_queue), QUEUE_LAST);
-    TEST_ASSERT_NOT_EQUAL(queue_last(priv_test_queue), QUEUE_EMPTY);
-    TEST_ASSERT_NOT_EQUAL(queue_previous(priv_test_queue), QUEUE_LAST);
+    TEST_ASSERT_NOT_EQUAL(QUEUE_EMPTY, queue_first(priv_test_queue));
+    TEST_ASSERT_NOT_EQUAL(QUEUE_LAST, queue_next(priv_test_queue));
+    TEST_ASSERT_NOT_EQUAL(QUEUE_EMPTY, queue_last(priv_test_queue));
+    TEST_ASSERT_NOT_EQUAL(QUEUE_LAST, queue_previous(priv_test_queue));
+}
 
-    TEST_ASSERT_NOT_EQUAL(queue_first(priv_test_queue), QUEUE_ERROR);
-    TEST_ASSERT_NOT_EQUAL(queue_next(priv_test_queue), QUEUE_ERROR);
-    TEST_ASSERT_NOT_EQUAL(queue_last(priv_test_queue), QUEUE_ERROR);
-    TEST_ASSERT_NOT_EQUAL(queue_previous(priv_test_queue), QUEUE_ERROR);
+static void test_queue_one_item(void)
+{
+    TEST_ASSERT_EQUAL(QUEUE_EMPTY, queue_first(priv_test_queue));
+    TEST_ASSERT_EQUAL(QUEUE_SUCESS, queue_push(priv_test_queue, (void*) 1000));
+    TEST_ASSERT_EQUAL(QUEUE_SUCESS, queue_first(priv_test_queue));
+    TEST_ASSERT_EQUAL(1000, queue_get_current(priv_test_queue));
 }
 
 void test_queue(void)
@@ -98,7 +114,16 @@ void test_queue(void)
     /* Test when the queue is not empty. */
     TEST_CASE_RUN(test_queue_one_item_init,
                   test_queue_one_item_cleanup,
+                  test_queue_not_null);
+
+    TEST_CASE_RUN(test_queue_one_item_init,
+                  test_queue_one_item_cleanup,
                   test_queue_not_empty);
+
+    /* Test to put one item into a queue. */
+    TEST_CASE_RUN(test_queue_empty_init,
+                  test_queue_empty_cleanup,
+                  test_queue_one_item);
 
     TEST_CASE_END();
 }

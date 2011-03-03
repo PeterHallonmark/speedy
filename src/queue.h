@@ -25,6 +25,8 @@
 #define QUEUE_LAST -2
 /*! Error code for when the queue is empty. */
 #define QUEUE_EMPTY -3
+/*! Error code for when the queue doesn't exist. */
+#define QUEUE_NULL -4
 
 /*! A definition of the data pointer type. */
 typedef void data_t;

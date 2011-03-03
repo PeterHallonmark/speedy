@@ -25,6 +25,7 @@ int main(void)
     test_handler_init();
 
     test_queue();
+    //test_config_parser();
 
     test_handler_deinit();
     return 0;
