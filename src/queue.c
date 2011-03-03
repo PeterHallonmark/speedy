@@ -121,14 +121,17 @@ int queue_push(queue_t *this_ptr, data_t* data)
  */
 int queue_first(queue_t *this_ptr)
 {
-    this_ptr->iterator.current = NULL;
-    this_ptr->iterator.direction_next = true;
+    if (this_ptr != NULL) {
+        this_ptr->iterator.current = NULL;
+        this_ptr->iterator.direction_next = true;
 
-    if (this_ptr->first != NULL) {
-        this_ptr->iterator.current = this_ptr->first;
-        return QUEUE_SUCESS;
+        if (this_ptr->first != NULL) {
+            this_ptr->iterator.current = this_ptr->first;
+            return QUEUE_SUCESS;
+        }
+        return QUEUE_EMPTY;
     }
-    return QUEUE_EMPTY;
+    return QUEUE_ERROR;
 }
 
 /*!
@@ -141,14 +144,17 @@ int queue_first(queue_t *this_ptr)
  */
 int queue_last(queue_t *this_ptr)
 {
-    this_ptr->iterator.current = NULL;
-    this_ptr->iterator.direction_next = false;
+    if (this_ptr != NULL) {
+        this_ptr->iterator.current = NULL;
+        this_ptr->iterator.direction_next = false;
 
-    if (this_ptr->last != NULL) {
-        this_ptr->iterator.current = this_ptr->last;
-        return QUEUE_SUCESS;
+        if (this_ptr->last != NULL) {
+            this_ptr->iterator.current = this_ptr->last;
+            return QUEUE_SUCESS;
+        }
+        return QUEUE_EMPTY;
     }
-    return QUEUE_EMPTY;
+    return QUEUE_ERROR;
 }
 
 /*!
@@ -163,13 +169,16 @@ int queue_last(queue_t *this_ptr)
  */
 int queue_next(queue_t *this_ptr)
 {
-    this_ptr->iterator.direction_next = true;
+    if (this_ptr != NULL) {
+        this_ptr->iterator.direction_next = true;
 
-    if (this_ptr->iterator.current != NULL) {
-        this_ptr->iterator.current = this_ptr->iterator.current->next;
-        return QUEUE_SUCESS;
+        if (this_ptr->iterator.current != NULL) {
+            this_ptr->iterator.current = this_ptr->iterator.current->next;
+            return QUEUE_SUCESS;
+        }
+        return QUEUE_LAST;
     }
-    return QUEUE_LAST;
+    return QUEUE_ERROR;
 }
 
 /*!
@@ -184,13 +193,16 @@ int queue_next(queue_t *this_ptr)
  */
 int queue_previous(queue_t *this_ptr)
 {
-    this_ptr->iterator.direction_next = false;
+    if (this_ptr != NULL) {
+        this_ptr->iterator.direction_next = false;
 
-    if (this_ptr->iterator.current != NULL) {
-        this_ptr->iterator.current = this_ptr->iterator.current->previous;
-        return QUEUE_SUCESS;
+        if (this_ptr->iterator.current != NULL) {
+            this_ptr->iterator.current = this_ptr->iterator.current->previous;
+            return QUEUE_SUCESS;
+        }
+        return QUEUE_LAST;
     }
-    return QUEUE_LAST;
+    return QUEUE_ERROR;
 }
 
 /*!

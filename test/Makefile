@@ -14,8 +14,10 @@
 
 include src/Makefile
 
+CFLAGS+=-DFILE_TEST_CONF=\"test.conf\"
+
 test_files := test/test_handler.c test/unity/unity.c test/unittest.c \
-              test/test_config_parser.c
+              test/test_config_parser.c test/test_queue.c
 
 %.o: %.c
 	$(CC) $(CFLAGS) -I. -c $< -o $@

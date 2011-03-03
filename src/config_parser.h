@@ -55,5 +55,5 @@ const char* config_parser_get_command(config_parser_t *config);
 
 const char* config_parser_get_next_argument(config_parser_t *config);
 unsigned int config_parser_get_argument_size(config_parser_t *config);
-char** task_parser_create_arguments(config_parser_t *config);
-void task_parser_destroy_arguments(char* arguments[]);
+char** config_parser_create_arguments(config_parser_t *config);
+void config_parser_destroy_arguments(char* arguments[]);

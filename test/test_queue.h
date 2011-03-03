@@ -14,37 +14,4 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-#include "test_handler.h"
-#include "../src/config_parser.h"
-
-#include <stdlib.h>
-
-config_parser_t *priv_test_config;
-
-static void test_init(void)
-{
-    priv_test_config = config_parser_open(FILE_TEST_CONF);
-}
-
-static void test_cleanup(void)
-{
-    config_parser_close(priv_test_config);
-}
-
-static void test_run(void)
-{
-    TEST_ASSERT_NOT_EQUAL(priv_test_config, NULL);
-    TEST_ASSERT_EQUAL(0, 1);
-}
-
-static void run2(void)
-{
-}
-
-void test_config_parser(void)
-{
-    TEST_CASE_START();
-    TEST_CASE_RUN(test_init, test_cleanup, test_run);
-    TEST_CASE_RUN(NULL, NULL, run2);
-    TEST_CASE_END();
-}
+void test_queue(void);

@@ -26,6 +26,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define NOT_USED(var) (void) var
+
 /*!
  * A struct which keeps track of the depencies.
  */
@@ -74,7 +76,9 @@ task_t * task_create(struct service_t *service, struct task_handler_t *handler)
 
                 this_ptr->dependency_queue = queue_create();
 
-                while (*dependency_arg != NULL) {
+/*                while (*dependency_arg != NULL) {
+
+                    printf("%s dep: %s\n",service->name, *dependency_arg);
                     dependency = (task_dependency_t*) malloc(sizeof(
                                   task_dependency_t));
 
@@ -85,7 +89,7 @@ task_t * task_create(struct service_t *service, struct task_handler_t *handler)
                     queue_push(this_ptr->dependency_queue, dependency);
 
                     dependency_arg++;
-                }
+                }*/
             }
         }
         return this_ptr;
@@ -198,6 +202,7 @@ void task_destroy(task_t *this_ptr)
             queue_destroy(this_ptr->dependency_queue);
         }
 
+
         subject_deinit((subject_t*) this_ptr);
         free(this_ptr);
     }
@@ -213,6 +218,9 @@ void task_destroy(task_t *this_ptr)
 void task_notify(observer_t * observer, struct subject_t *from, void *msg)
 {
     task_t *this_ptr = (task_t*) observer;
+
+    NOT_USED(from);
+    NOT_USED(msg);
 
     this_ptr->counter--;
 

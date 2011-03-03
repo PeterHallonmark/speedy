@@ -45,7 +45,7 @@ int task_handler_init(task_handler_t * this_ptr)
 {
     this_ptr->task_lookup = hash_lookup_create(64);
     this_ptr->tasks = queue_create();
-    this_ptr->thread_pool = thread_pool_create(4, task_run_action);
+    this_ptr->thread_pool = thread_pool_create(1, task_run_action);
 
     if ((this_ptr->tasks == NULL) || (this_ptr->tasks == NULL)) {
         task_handler_deinit(this_ptr);
@@ -73,8 +73,9 @@ int task_handler_add_tasks(task_handler_t * this_ptr,
         struct service_t *services, unsigned int services_size)
 {
     task_t *task = NULL;
-    int tasks = 0;
-    int i;
+    unsigned int tasks = 0;
+    unsigned int i;
+
     for (i = 0; i < services_size; i++) {
         task = task_create(&services[i], this_ptr);
 

@@ -16,13 +16,15 @@
 
 #include "test_handler.h"
 
+#include "test_queue.h"
 #include "test_config_parser.h"
+
 
 int main(void)
 {
     test_handler_init();
 
-    test_config_parser();
+    test_queue();
 
     test_handler_deinit();
     return 0;

@@ -22,7 +22,8 @@ build := build
 export CFLAGS
 export system
 
-.DEFAULT: release
+release: target := release
+release: copy build_$(target)
 
 init:
 	mkdir -p $(build)
@@ -38,9 +39,6 @@ test_copy: init
 	cp test/Makefile $(build)/unittest -u
 	cp test $(build)/unittest -r -u
 	cp src $(build)/unittest -r -u
-	
-release: target := release
-release: copy build_$(target) 
 
 debug: target := debug
 debug: CFLAGS += -Wextra -g

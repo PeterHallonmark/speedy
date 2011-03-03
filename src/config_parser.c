@@ -434,18 +434,28 @@ bool config_parser_is_eof(config_parser_t *config)
 
 void config_parser_set_namespace(config_parser_t *config, const char *str)
 {
-    strcpy(config->name_space, str);
+    if (config != NULL) {
+        strcpy(config->name_space, str);
+    }
 }
 
 const char* config_parser_get_namespace(config_parser_t *config)
 {
-    return config->name_space;
+    if (config != NULL) {
+        return config->name_space;
+    } else {
+        return NULL;
+    }
 }
 
 
 const char* config_parser_get_command(config_parser_t *config)
 {
-    return config->command;
+    if (config != NULL) {
+        return config->command;
+    } else {
+        return NULL;
+    }
 }
 
 const char* config_parser_get_next_argument(config_parser_t *config)

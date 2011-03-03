@@ -144,7 +144,7 @@ task_parser_t* task_parser_create(task_handler_t *handler)
     
     if (task_parser != NULL) {
         task_parser->handler = handler;
-        task_parser->thread_pool = thread_pool_create(10, task_parser_exec);
+        task_parser->thread_pool = thread_pool_create(1, task_parser_exec);
 
         task_parser->mutex = malloc(sizeof(pthread_mutex_t));
         pthread_mutex_init(task_parser->mutex, NULL);
@@ -480,7 +480,7 @@ static void task_parser_file_handle_task(task_parser_file_reader_t *read_file)
         case TASK_OPTIONS_DEPENDENCY:
             config_parser_destroy_arguments(read_file->current_task->dependency);
             read_file->current_task->dependency = config_parser_create_arguments(
-                                               read_file->file);
+                                                  read_file->file);
             break;
 
         case TASK_OPTIONS_PROVIDES:

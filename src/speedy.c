@@ -24,6 +24,8 @@
 #include <stdlib.h>
 
 
+#define NOT_USED(var) (void) var
+
 /*!
  * The main function for Speedy.
  *
@@ -37,9 +39,12 @@ int main(int argc, char *argv[])
     task_handler_t *task_handler = task_handler_create();
     task_parser_t *task_parser = task_parser_create(task_handler);
 
+    NOT_USED(argc);
+    NOT_USED(argv);
+
     /* Read which tasks that need to be executed and all the dependency
        information from the configuration. */
-    task_parser_read(task_parser, "speedy.conf");
+    task_parser_read(task_parser, "config/speedy.conf");
     task_parser_wait(task_parser);
 
     /* Read the dependency from the configuration. */
