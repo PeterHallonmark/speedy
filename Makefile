@@ -63,6 +63,7 @@ loc : clean
 	cloc .
 
 lcov: test
+	lcov -d build/unittest -z
 	build/unittest/unittest
 	lcov -d build/unittest -b build/unittest -c -o build/lcov/unittest.info
 	genhtml -o build/lcov build/lcov/unittest.info
