@@ -45,7 +45,7 @@ static void test_queue_empty_cleanup(void)
 static void test_queue_one_item_init(void)
 {
     priv_test_queue = queue_create();
-    queue_push(priv_test_queue, (void*) 1000);
+    queue_push(priv_test_queue, (void*) 1000u);
 }
 
 static void test_queue_one_item_cleanup(void)
@@ -59,7 +59,7 @@ static void test_queue_null(void)
     TEST_ASSERT_EQUAL(QUEUE_NULL, queue_next(priv_test_queue));
     TEST_ASSERT_EQUAL(QUEUE_NULL, queue_last(priv_test_queue));
     TEST_ASSERT_EQUAL(QUEUE_NULL, queue_previous(priv_test_queue));
-    TEST_ASSERT_EQUAL(QUEUE_NULL, queue_push(priv_test_queue, (void*) 1000));
+    TEST_ASSERT_EQUAL(QUEUE_NULL, queue_push(priv_test_queue, (void*) 1001u));
     TEST_ASSERT_EQUAL(NULL, queue_pop(priv_test_queue));
     TEST_ASSERT_EQUAL(NULL, queue_get_current(priv_test_queue));
     TEST_ASSERT_EQUAL(QUEUE_NULL, queue_remove_current(priv_test_queue));
@@ -92,10 +92,49 @@ static void test_queue_not_empty(void)
 static void test_queue_one_item(void)
 {
     TEST_ASSERT_EQUAL(QUEUE_EMPTY, queue_first(priv_test_queue));
-    TEST_ASSERT_EQUAL(QUEUE_SUCESS, queue_push(priv_test_queue, (void*) 1000));
+    TEST_ASSERT_EQUAL(QUEUE_SUCESS, queue_push(priv_test_queue, (void*) 1002u));
     TEST_ASSERT_EQUAL(QUEUE_SUCESS, queue_first(priv_test_queue));
-    TEST_ASSERT_EQUAL(1000, queue_get_current(priv_test_queue));
+    TEST_ASSERT_EQUAL(1002u, queue_get_current(priv_test_queue));
+    TEST_ASSERT_EQUAL(QUEUE_SUCESS, queue_next(priv_test_queue));
+    TEST_ASSERT_EQUAL(NULL, queue_get_current(priv_test_queue));
+    TEST_ASSERT_EQUAL(QUEUE_LAST, queue_next(priv_test_queue));
 }
+
+static void test_queue_1000_items(void)
+{
+    unsigned int i;
+
+    for (i=0u; i < 1000u; i++) {
+        TEST_ASSERT_EQUAL(QUEUE_SUCESS,
+                          queue_push(priv_test_queue, (void*) 2000u + i));
+    }
+    for (i=0u; i < 1000u; i++) {
+        TEST_ASSERT_EQUAL(2000u + i, queue_pop(priv_test_queue));
+    }
+    TEST_ASSERT_EQUAL(NULL, queue_pop(priv_test_queue));
+}
+
+static void test_queue_1000_items_v2(void)
+{
+    unsigned int i;
+
+    for (i=0u; i < 500u; i++) {
+        TEST_ASSERT_EQUAL(QUEUE_SUCESS,
+                          queue_push(priv_test_queue, (void*) 3000u + i));
+    }
+    for (i=0u; i < 200u; i++) {
+        TEST_ASSERT_EQUAL(3000u + i, queue_pop(priv_test_queue));
+    }
+    for (i=0u; i < 500u; i++) {
+        TEST_ASSERT_EQUAL(QUEUE_SUCESS,
+                          queue_push(priv_test_queue, (void*) 3500u + i));
+    }
+    for (i=0u; i < 800u; i++) {
+        TEST_ASSERT_EQUAL(3200u + i, queue_pop(priv_test_queue));
+    }
+    TEST_ASSERT_EQUAL(NULL, queue_pop(priv_test_queue));
+}
+
 
 void test_queue(void)
 {
@@ -124,6 +163,15 @@ void test_queue(void)
     TEST_CASE_RUN(test_queue_empty_init,
                   test_queue_empty_cleanup,
                   test_queue_one_item);
+
+    /* Test to put 1000 items into a queue. */
+    TEST_CASE_RUN(test_queue_empty_init,
+                  test_queue_empty_cleanup,
+                  test_queue_1000_items);
+
+    TEST_CASE_RUN(test_queue_empty_init,
+                  test_queue_empty_cleanup,
+                  test_queue_1000_items_v2);
 
     TEST_CASE_END();
 }

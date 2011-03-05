@@ -14,7 +14,7 @@
 
 include src/Makefile
 
-CFLAGS+=-DFILE_TEST_CONF=\"test.conf\"
+CFLAGS+=-DFILE_TEST_CONF=\"test.conf\" -fprofile-arcs -ftest-coverage
 
 test_files := test/test_handler.c test/unity/unity.c test/unittest.c \
               test/test_config_parser.c test/test_queue.c
@@ -23,8 +23,13 @@ test_files := test/test_handler.c test/unity/unity.c test/unittest.c \
 	$(CC) $(CFLAGS) -I. -c $< -o $@
         
 unittest: $(test_files:.c=.o)  $(files:.c=.o)
-	$(CC) -o unittest -lpthread $(test_files:.c=.o) $(files:.c=.o)
+	$(CC) -fprofile-arcs -lgcov -o unittest -lpthread $(test_files:.c=.o) $(files:.c=.o)
 
-.PHONY: test
+lcov: unittest
+	./unittest
+	lcov -d . -b . -c -o unittest.info
+	genhtml -o . unittest.info 
+
+.PHONY: test lcov
 
 .SUFFIXES:
