@@ -25,11 +25,6 @@ test_files := test/test_handler.c test/unity/unity.c test/unittest.c \
 unittest: $(test_files:.c=.o)  $(files:.c=.o)
 	$(CC) -fprofile-arcs -lgcov -o unittest -lpthread $(test_files:.c=.o) $(files:.c=.o)
 
-lcov: unittest
-	./unittest
-	lcov -d . -b . -c -o unittest.info
-	genhtml -o . unittest.info 
-
-.PHONY: test lcov
+.PHONY: test
 
 .SUFFIXES:

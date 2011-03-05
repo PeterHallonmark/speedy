@@ -29,7 +29,8 @@ init:
 	mkdir -p $(build)
 	mkdir -p $(build)/release
 	mkdir -p $(build)/debug
-	mkdir -p $(build)/unittest	
+	mkdir -p $(build)/unittest
+	mkdir -p $(build)/lcov
 	
 copy: init
 	cp src/Makefile $(build)/$(target) -u
@@ -61,8 +62,13 @@ clean :
 loc : clean
 	cloc .
 
+lcov: test
+	build/unittest/unittest
+	lcov -d build/unittest -b build/unittest -c -o build/lcov/unittest.info
+	genhtml -o build/lcov build/lcov/unittest.info
+
 .NOTPARALLEL: copy init clean all
 
-.PHONY: init clean all release debug copy cloc build_$(target)
+.PHONY: init clean all release debug copy loc lcov build_$(target)
 
 .SUFFIXES:
