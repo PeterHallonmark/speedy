@@ -31,6 +31,7 @@ init:
 	mkdir -p $(build)/debug
 	mkdir -p $(build)/unittest
 	mkdir -p $(build)/lcov
+	mkdir -p $(build)/trucov
 	
 copy: init
 	cp src/Makefile $(build)/$(target) -u
@@ -67,6 +68,11 @@ lcov: test
 	build/unittest/unittest
 	lcov -d build/unittest -b build/unittest -c -o build/lcov/unittest.info
 	genhtml -o build/lcov build/lcov/unittest.info
+
+trucov: test
+	find build/unittest -name "*.gcda" -exec rm {} \;
+	build/unittest/unittest
+	trucov report --chdir build/unittest --output ../trucov
 
 .NOTPARALLEL: copy init clean all
 
