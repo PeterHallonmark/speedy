@@ -92,6 +92,8 @@ data_t * queue_pop(queue_t *this_ptr)
  */
 int queue_push(queue_t *this_ptr, data_t* data)
 {
+    int status = QUEUE_ERROR;
+
     if (this_ptr != NULL) {
         node_t * node = (node_t*) malloc(sizeof(node_t));
 
@@ -112,11 +114,14 @@ int queue_push(queue_t *this_ptr, data_t* data)
                 this_ptr->first = node;
                 this_ptr->last = node;
             }
-            return QUEUE_SUCESS;
+            status = QUEUE_SUCESS;
         }
-        return QUEUE_ERROR;
+
+    } else {
+        status = QUEUE_NULL;
     }
-    return QUEUE_NULL;
+
+    return status;
 }
 
 /*!
@@ -130,17 +135,22 @@ int queue_push(queue_t *this_ptr, data_t* data)
  */
 int queue_first(queue_t *this_ptr)
 {
+    int status = QUEUE_EMPTY;
+
     if (this_ptr != NULL) {
         this_ptr->iterator.current = NULL;
         this_ptr->iterator.direction_next = true;
 
         if (this_ptr->first != NULL) {
             this_ptr->iterator.current = this_ptr->first;
-            return QUEUE_SUCESS;
+            status = QUEUE_SUCESS;
         }
-        return QUEUE_EMPTY;
+
+    } else {
+        status = QUEUE_NULL;
     }
-    return QUEUE_NULL;
+
+    return status;
 }
 
 /*!
@@ -154,17 +164,22 @@ int queue_first(queue_t *this_ptr)
  */
 int queue_last(queue_t *this_ptr)
 {
+    int status = QUEUE_EMPTY;
+
     if (this_ptr != NULL) {
         this_ptr->iterator.current = NULL;
         this_ptr->iterator.direction_next = false;
 
         if (this_ptr->last != NULL) {
             this_ptr->iterator.current = this_ptr->last;
-            return QUEUE_SUCESS;
+            status = QUEUE_SUCESS;
         }
-        return QUEUE_EMPTY;
+
+    } else {
+        status = QUEUE_NULL;
     }
-    return QUEUE_NULL;
+
+    return status;
 }
 
 /*!
@@ -180,16 +195,21 @@ int queue_last(queue_t *this_ptr)
  */
 int queue_next(queue_t *this_ptr)
 {
+    int status = QUEUE_LAST;
+
     if (this_ptr != NULL) {
         this_ptr->iterator.direction_next = true;
 
         if (this_ptr->iterator.current != NULL) {
             this_ptr->iterator.current = this_ptr->iterator.current->next;
-            return QUEUE_SUCESS;
+            status = QUEUE_SUCESS;
         }
-        return QUEUE_LAST;
+
+    } else {
+        status = QUEUE_NULL;
     }
-    return QUEUE_NULL;
+
+    return status;
 }
 
 /*!
@@ -205,16 +225,22 @@ int queue_next(queue_t *this_ptr)
  */
 int queue_previous(queue_t *this_ptr)
 {
+    int status = QUEUE_LAST;
+
     if (this_ptr != NULL) {
         this_ptr->iterator.direction_next = false;
 
         if (this_ptr->iterator.current != NULL) {
             this_ptr->iterator.current = this_ptr->iterator.current->previous;
-            return QUEUE_SUCESS;
+            status = QUEUE_SUCESS;
         }
-        return QUEUE_LAST;
+
+    } else {
+        status = QUEUE_NULL;
     }
-    return QUEUE_NULL;
+
+
+    return status;
 }
 
 /*!
@@ -245,6 +271,7 @@ data_t * queue_get_current(queue_t * this_ptr)
  */
 int queue_remove_current(queue_t *this_ptr)
 {
+    int status = QUEUE_EMPTY;
     node_t *node;
 
     if (this_ptr != NULL) {
@@ -282,10 +309,14 @@ int queue_remove_current(queue_t *this_ptr)
                 this_ptr->iterator.current = node->next;
             }
             free(node);
+            status = QUEUE_SUCESS;
         }
-        return QUEUE_SUCESS;
+
+    } else {
+        status = QUEUE_NULL;
     }
-    return QUEUE_NULL;
+
+    return status;
 }
 
 /*!

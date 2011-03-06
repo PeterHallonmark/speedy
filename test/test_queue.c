@@ -25,6 +25,7 @@ static queue_t *priv_test_queue;
 static void test_queue_null_init(void)
 {
     priv_test_queue = NULL;
+    queue_init(priv_test_queue);
 }
 
 static void test_queue_null_cleanup(void)
@@ -49,6 +50,31 @@ static void test_queue_one_item_init(void)
 }
 
 static void test_queue_one_item_cleanup(void)
+{
+    queue_destroy(priv_test_queue);
+}
+
+static void test_queue_two_items_init(void)
+{
+    priv_test_queue = queue_create();
+    queue_push(priv_test_queue, (void*) 4001u);
+    queue_push(priv_test_queue, (void*) 4002u);
+}
+
+static void test_queue_two_items_cleanup(void)
+{
+    queue_destroy(priv_test_queue);
+}
+
+static void test_queue_three_items_init(void)
+{
+    priv_test_queue = queue_create();
+    queue_push(priv_test_queue, (void*) 5001u);
+    queue_push(priv_test_queue, (void*) 5002u);
+    queue_push(priv_test_queue, (void*) 5003u);
+}
+
+static void test_queue_three_items_cleanup(void)
 {
     queue_destroy(priv_test_queue);
 }
@@ -135,6 +161,44 @@ static void test_queue_1000_items_v2(void)
     TEST_ASSERT_EQUAL(NULL, queue_pop(priv_test_queue));
 }
 
+static void test_queue_remove_first_item(void)
+{
+    TEST_ASSERT_EQUAL(QUEUE_SUCESS, queue_first(priv_test_queue));
+    TEST_ASSERT_EQUAL(QUEUE_SUCESS, queue_remove_current(priv_test_queue));
+    TEST_ASSERT_EQUAL(QUEUE_EMPTY, queue_first(priv_test_queue));
+    TEST_ASSERT_EQUAL(QUEUE_EMPTY, queue_remove_current(priv_test_queue));
+}
+
+static void test_queue_remove_last_item(void)
+{
+    TEST_ASSERT_EQUAL(QUEUE_SUCESS, queue_last(priv_test_queue));
+    TEST_ASSERT_EQUAL(QUEUE_SUCESS, queue_remove_current(priv_test_queue));
+    TEST_ASSERT_EQUAL(QUEUE_EMPTY, queue_last(priv_test_queue));
+    TEST_ASSERT_EQUAL(QUEUE_EMPTY, queue_remove_current(priv_test_queue));
+}
+
+static void test_queue_remove_first_item_v2(void)
+{
+    TEST_ASSERT_EQUAL(QUEUE_SUCESS, queue_first(priv_test_queue));
+    TEST_ASSERT_EQUAL(QUEUE_SUCESS, queue_remove_current(priv_test_queue));
+    test_queue_remove_first_item();
+}
+
+static void test_queue_remove_last_item_v2(void)
+{
+    TEST_ASSERT_EQUAL(QUEUE_SUCESS, queue_last(priv_test_queue));
+    TEST_ASSERT_EQUAL(QUEUE_SUCESS, queue_remove_current(priv_test_queue));
+    test_queue_remove_last_item();
+}
+
+static void test_queue_remove_middle_item(void)
+{
+    TEST_ASSERT_EQUAL(QUEUE_SUCESS, queue_first(priv_test_queue));
+    TEST_ASSERT_EQUAL(QUEUE_SUCESS, queue_next(priv_test_queue));
+    TEST_ASSERT_EQUAL(QUEUE_SUCESS, queue_remove_current(priv_test_queue));
+    TEST_ASSERT_EQUAL(QUEUE_SUCESS, queue_next(priv_test_queue));
+    test_queue_remove_last_item_v2();
+}
 
 void test_queue(void)
 {
@@ -172,6 +236,31 @@ void test_queue(void)
     TEST_CASE_RUN(test_queue_empty_init,
                   test_queue_empty_cleanup,
                   test_queue_1000_items_v2);
+
+    /* Remove first item. */
+    TEST_CASE_RUN(test_queue_one_item_init,
+                  test_queue_one_item_cleanup,
+                  test_queue_remove_first_item);
+
+    /* Remove last item. */
+    TEST_CASE_RUN(test_queue_one_item_init,
+                  test_queue_one_item_cleanup,
+                  test_queue_remove_last_item);
+
+    /* Remove first item. */
+    TEST_CASE_RUN(test_queue_two_items_init,
+                  test_queue_two_items_cleanup,
+                  test_queue_remove_first_item_v2);
+
+    /* Remove last item. */
+    TEST_CASE_RUN(test_queue_two_items_init,
+                  test_queue_two_items_cleanup,
+                  test_queue_remove_last_item_v2);
+
+    /* Remove middle item. */
+    TEST_CASE_RUN(test_queue_three_items_init,
+                  test_queue_three_items_cleanup,
+                  test_queue_remove_middle_item);
 
     TEST_CASE_END();
 }
