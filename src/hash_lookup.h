@@ -23,6 +23,8 @@ struct hash_slot_t;
 /*! At this point the hash lookup does not support multiple data items with the
  *  same key, if that happens this error is returned. */
 #define HASH_LOOKUP_MULTIPLE_KEY_ERROR -2
+/*! The hash lookup hasn't been created yet. */
+#define HASH_LOOKUP_EMPTY -1
 
 typedef struct hash_lookup_t {
     struct hash_slot_t * slots;
