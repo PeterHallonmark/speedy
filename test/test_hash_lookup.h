@@ -14,22 +14,4 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-#include "test_handler.h"
-
-#include "test_queue.h"
-#include "test_hash_lookup.h"
-#include "test_config_parser.h"
-
-
-int main(void)
-{
-    test_handler_init();
-
-    test_queue();
-    test_hash_lookup();
-    //test_config_parser();
-
-    test_handler_deinit();
-
-    return 0;
-}
+void test_hash_lookup(void);
