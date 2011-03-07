@@ -214,11 +214,12 @@ void test_queue(void)
                   test_queue_empty_cleanup,
                   test_queue_empty);
 
-    /* Test when the queue is not empty. */
+    /* Test when the queue is not null. */
     TEST_CASE_RUN(test_queue_one_item_init,
                   test_queue_one_item_cleanup,
                   test_queue_not_null);
 
+    /* Test when the queue is not empty. */
     TEST_CASE_RUN(test_queue_one_item_init,
                   test_queue_one_item_cleanup,
                   test_queue_not_empty);
@@ -233,26 +234,28 @@ void test_queue(void)
                   test_queue_empty_cleanup,
                   test_queue_1000_items);
 
+    /* Test to put 1000 items to the queue but pop 200 before the queue has
+       reached 1000 items. */
     TEST_CASE_RUN(test_queue_empty_init,
                   test_queue_empty_cleanup,
                   test_queue_1000_items_v2);
 
-    /* Remove first item. */
+    /* Remove first and only item. */
     TEST_CASE_RUN(test_queue_one_item_init,
                   test_queue_one_item_cleanup,
                   test_queue_remove_first_item);
 
-    /* Remove last item. */
+    /* Remove last and only item. */
     TEST_CASE_RUN(test_queue_one_item_init,
                   test_queue_one_item_cleanup,
                   test_queue_remove_last_item);
 
-    /* Remove first item. */
+    /* Remove first item when the queue contains 2 items. */
     TEST_CASE_RUN(test_queue_two_items_init,
                   test_queue_two_items_cleanup,
                   test_queue_remove_first_item_v2);
 
-    /* Remove last item. */
+    /* Remove last item when the queue contains 2 items. */
     TEST_CASE_RUN(test_queue_two_items_init,
                   test_queue_two_items_cleanup,
                   test_queue_remove_last_item_v2);
