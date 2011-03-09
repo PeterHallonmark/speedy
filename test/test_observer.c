@@ -47,10 +47,20 @@ static void test_observer_null_cleanup(void)
 
 static void test_observer_notify_init(void)
 {
-    observer_create(test_notify);
+    priv_test_observer = observer_create(test_notify);
 }
 
 static void test_observer_notify_cleanup(void)
+{
+    observer_destroy(priv_test_observer);
+}
+
+static void test_observer_notify_null_init(void)
+{
+    priv_test_observer = observer_create(NULL);
+}
+
+static void test_observer_notify_null_cleanup(void)
 {
     observer_destroy(priv_test_observer);
 }
@@ -70,6 +80,18 @@ static void test_observer_notify(void)
     TEST_ASSERT_EQUAL(5, priv_test_notify_msg);
 }
 
+static void test_observer_notify_null(void)
+{
+    priv_test_notify_observer = (observer_t*) 10;
+    priv_test_notify_subject = (subject_t*) 11;
+    priv_test_notify_msg = (void*) 12;
+
+    observer_notify(priv_test_observer, (subject_t*) 4, (void*) 6);
+    TEST_ASSERT_EQUAL(10, priv_test_notify_observer);
+    TEST_ASSERT_EQUAL(11, priv_test_notify_subject);
+    TEST_ASSERT_EQUAL(12, priv_test_notify_msg);
+}
+
 void test_observer(void)
 {
     TEST_CASE_START();
@@ -78,9 +100,15 @@ void test_observer(void)
                   test_observer_null_cleanup,
                   test_observer_null);
 
+    /* Test when the notify callback is registered. */
     TEST_CASE_RUN(test_observer_notify_init,
                   test_observer_notify_cleanup,
                   test_observer_notify);
+
+    /* Test when the notify callback is not registered. */
+    TEST_CASE_RUN(test_observer_notify_null_init,
+                  test_observer_notify_null_cleanup,
+                  test_observer_notify_null);
 
     TEST_CASE_END();
 }
