@@ -78,9 +78,7 @@ void observer_deinit(observer_t *this_ptr)
 
 void observer_destroy(observer_t *this_ptr)
 {
-    if (this_ptr != NULL) {
-        observer_deinit(this_ptr);
-        free(this_ptr);
-        this_ptr = NULL;
-    }
+    observer_deinit(this_ptr);
+    free(this_ptr);
+    this_ptr = NULL;
 }
