@@ -39,23 +39,30 @@ observer_t * observer_create(
 void observer_init(observer_t *this_ptr,
         void (*notify)(observer_t *this_ptr, struct subject_t *from, void *msg))
 {
-    observer_set_notify(this_ptr, notify);
-    pthread_mutex_init(&this_ptr->mutex, NULL);
+    if (this_ptr != NULL) {
+        observer_set_notify(this_ptr, notify);
+        pthread_mutex_init(&this_ptr->mutex, NULL);
+    }
 }
 
 void observer_notify(observer_t *this_ptr, struct subject_t *from, void *msg)
 {
-    pthread_mutex_lock(&this_ptr->mutex);
-    if (this_ptr->notify != NULL) {
-        this_ptr->notify(this_ptr, from, msg);
+    if (this_ptr != NULL) {
+
+        pthread_mutex_lock(&this_ptr->mutex);
+        if (this_ptr->notify != NULL) {
+            this_ptr->notify(this_ptr, from, msg);
+        }
+        pthread_mutex_unlock(&this_ptr->mutex);
     }
-    pthread_mutex_unlock(&this_ptr->mutex);
 }
 
 void observer_set_notify(observer_t *this_ptr,
         void (*notify)(observer_t *this_ptr, struct subject_t *from, void *msg))
 {
-    this_ptr->notify = notify;
+    if (this_ptr != NULL) {
+        this_ptr->notify = notify;
+    }
 }
 
 /*!
@@ -63,13 +70,17 @@ void observer_set_notify(observer_t *this_ptr,
  */
 void observer_deinit(observer_t *this_ptr)
 {
-    pthread_mutex_destroy(&this_ptr->mutex);
+    if (this_ptr != NULL) {
+        pthread_mutex_destroy(&this_ptr->mutex);
+    }
 }
 
 
 void observer_destroy(observer_t *this_ptr)
 {
-    observer_deinit(this_ptr);
-    free(this_ptr);
-    this_ptr = NULL;
+    if (this_ptr != NULL) {
+        observer_deinit(this_ptr);
+        free(this_ptr);
+        this_ptr = NULL;
+    }
 }
