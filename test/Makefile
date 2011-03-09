@@ -17,7 +17,9 @@ include src/Makefile
 CFLAGS+=-DFILE_TEST_CONF=\"test.conf\" -fprofile-arcs -ftest-coverage
 
 test_files := test/test_handler.c test/unity/unity.c test/unittest.c \
-              test/test_config_parser.c test/test_queue.c test/test_hash_lookup.c 
+              test/test_config_parser.c test/test_queue.c test/test_hash_lookup.c \
+              test/test_hash.c
+
 
 %.o: %.c
 	$(CC) $(CFLAGS) -I. -c $< -o $@
