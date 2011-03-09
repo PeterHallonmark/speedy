@@ -24,6 +24,8 @@ struct queue_t;
 /*! General error which mostly likely happens during malloc. */
 #define SUBJECT_ERROR -1
 
+#define SUBJECT_NULL -2
+
 /*!
  * \note The current implementation of the subject doesn't support multiple
  *       attach/detach from different observers at the same time.
@@ -42,7 +44,7 @@ void subject_init(subject_t *this_ptr);
 int subject_attach(subject_t *this_ptr, struct observer_t *observer);
 int subject_detach(subject_t *this_ptr, struct observer_t *observer);
 
-void subject_notify(subject_t *this_ptr, void *arg);
+int subject_notify(subject_t *this_ptr, void *arg);
 
 void subject_deinit(subject_t *this_ptr);
 void subject_destroy(subject_t *this_ptr);
