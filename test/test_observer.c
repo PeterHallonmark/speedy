@@ -68,13 +68,16 @@ static void test_observer_notify_null_cleanup(void)
 static void test_observer_null(void)
 {
     observer_init(priv_test_observer, NULL);
-    observer_set_notify(priv_test_observer, NULL);
-    observer_notify(priv_test_observer, NULL, NULL);
+    TEST_ASSERT_EQUAL(OBSERVER_NULL, observer_set_notify(priv_test_observer,
+                      NULL));
+    TEST_ASSERT_EQUAL(OBSERVER_NULL, observer_notify(priv_test_observer,
+                      NULL, NULL));
 }
 
 static void test_observer_notify(void)
 {
-    observer_notify(priv_test_observer, (subject_t*) 2, (void*) 5);
+    TEST_ASSERT_EQUAL(OBSERVER_SUCESS, observer_notify(priv_test_observer,
+                      (subject_t*) 2, (void*) 5));
     TEST_ASSERT_EQUAL(priv_test_observer, priv_test_notify_observer);
     TEST_ASSERT_EQUAL(2, priv_test_notify_subject);
     TEST_ASSERT_EQUAL(5, priv_test_notify_msg);
@@ -86,7 +89,9 @@ static void test_observer_notify_null(void)
     priv_test_notify_subject = (subject_t*) 11;
     priv_test_notify_msg = (void*) 12;
 
-    observer_notify(priv_test_observer, (subject_t*) 4, (void*) 6);
+    TEST_ASSERT_EQUAL(OBSERVER_CALLBACK_NULL,
+                      observer_notify(priv_test_observer,
+                      (subject_t*) 4, (void*) 6));
     TEST_ASSERT_EQUAL(10, priv_test_notify_observer);
     TEST_ASSERT_EQUAL(11, priv_test_notify_subject);
     TEST_ASSERT_EQUAL(12, priv_test_notify_msg);

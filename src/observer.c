@@ -23,18 +23,23 @@
 /*!
  * Creates and initializes an observer.
  *
+ * \param notify - A pointer to the callback function.
+ *
  * \return A newly created observer.
  */
 observer_t * observer_create(
         void (*notify)(observer_t *this_ptr, struct subject_t *from, void *msg))
 {
     observer_t * this_ptr = (observer_t*) malloc(sizeof(observer_t));
-    observer_init(this_ptr, notify);
+    (void) observer_init(this_ptr, notify);
     return this_ptr;
 }
 
 /*!
  * Initializes an observer.
+ *
+ * \param this_ptr - A pointer to the observer.
+ * \param notify - A pointer to the callback function.
  */
 void observer_init(observer_t *this_ptr,
         void (*notify)(observer_t *this_ptr, struct subject_t *from, void *msg))
@@ -45,28 +50,67 @@ void observer_init(observer_t *this_ptr,
     }
 }
 
-void observer_notify(observer_t *this_ptr, struct subject_t *from, void *msg)
+
+/*!
+ * Sends a notify message to an observer.
+ *
+ * \param this_ptr - A pointer to the observer.
+ * \param from - A pointer to where the message was sent from.
+ * \param msg - The message that was sent.
+ *
+ * \return \c OBSERVER_SUCESS if it was possible to notify the observer.
+ * \return \c OBSERVER_NULL if the observer doesn't exist.
+ * \return \c OBSERVER_CALLBACK_NULL if the callback function doesn't exist.
+ */
+int observer_notify(observer_t *this_ptr, struct subject_t *from, void *msg)
 {
+    int status = OBSERVER_SUCESS;
+
     if (this_ptr != NULL) {
 
         pthread_mutex_lock(&this_ptr->mutex);
         if (this_ptr->notify != NULL) {
             this_ptr->notify(this_ptr, from, msg);
+        } else {
+            status = OBSERVER_CALLBACK_NULL;
         }
+
         pthread_mutex_unlock(&this_ptr->mutex);
+
+    } else {
+        status = OBSERVER_NULL;
     }
+    return status;
 }
 
-void observer_set_notify(observer_t *this_ptr,
+/*!
+ * Sets the callback function for the observer.
+ *
+ * \param this_ptr - A pointer to the observer.
+ * \param notify - A pointer to the callback function.
+ *
+ * \return \c OBSERVER_SUCESS if it was possible to setup the notify
+                              callback function.
+ * \return \c OBSERVER_NULL if the observer doesn't exist.
+ */
+int observer_set_notify(observer_t *this_ptr,
         void (*notify)(observer_t *this_ptr, struct subject_t *from, void *msg))
 {
+    int status = OBSERVER_SUCESS;
+
     if (this_ptr != NULL) {
         this_ptr->notify = notify;
+    } else {
+        status = OBSERVER_NULL;
     }
+
+    return status;
 }
 
 /*!
  * Deinitializes an observer.
+ *
+ * \param this_ptr - A pointer to the observer.
  */
 void observer_deinit(observer_t *this_ptr)
 {
@@ -75,7 +119,11 @@ void observer_deinit(observer_t *this_ptr)
     }
 }
 
-
+/*!
+ * Deallocates and deinitializes an observer.
+ *
+ * \param this_ptr - A pointer to the observer.
+ */
 void observer_destroy(observer_t *this_ptr)
 {
     observer_deinit(this_ptr);

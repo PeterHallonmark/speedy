@@ -18,6 +18,13 @@
 
 struct subject_t;
 
+/*! The operation was successfully executed. */
+#define OBSERVER_SUCESS 0
+/*! Error code for when the observer doesn't exist. */
+#define OBSERVER_NULL -1
+/*! Error code for when the callback function is null. */
+#define OBSERVER_CALLBACK_NULL -2
+
 /*!
  * A type definition of an observer object which is used to keep track of the
  * internal state of a specific observer.
@@ -26,6 +33,8 @@ typedef struct observer_t {
     /*! A mutex which makes sure that only one subject is dealing with an
      *  observer. */
     pthread_mutex_t mutex;
+    /*! A callback function which is exectuted when something has been
+     *  observed. */
     void (*notify)(struct observer_t *this_ptr, struct subject_t *from,
                    void *msg);
 } observer_t;
@@ -35,8 +44,8 @@ observer_t * observer_create(
 void observer_init(observer_t *this_ptr,
        void (*notify)(observer_t *this_ptr, struct subject_t *from, void *msg));
 
-void observer_notify(observer_t *this_ptr, struct subject_t *from, void *msg);
-void observer_set_notify(observer_t *this_ptr,
+int observer_notify(observer_t *this_ptr, struct subject_t *from, void *msg);
+int observer_set_notify(observer_t *this_ptr,
      void (*notify)(observer_t *this_ptr, struct subject_t *from, void *msg));
 
 void observer_deinit(observer_t *this_ptr);
