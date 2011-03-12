@@ -21,7 +21,7 @@ debug: speedy
 release: speedy
 
 %.dep: %.c $(files)
-	@$(CC) -MM -MF $@ $<
+	$(CC) -MM $< -MF $@
 
 %.o: %.c
 	$(CC) $(CFLAGS) -I. -c $< -o $@
