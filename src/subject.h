@@ -21,10 +21,12 @@ struct queue_t;
 
 /*! The operation was successfully executed. */
 #define SUBJECT_SUCESS 0
-/*! General error which mostly likely happens during malloc. */
+/*! General error which most likely happens during malloc. */
 #define SUBJECT_ERROR -1
-
+/*! Error code for when the subject doesn't exist. */
 #define SUBJECT_NULL -2
+/*! Error code for when an observer is missing. */
+#define SUBJECT_MISSING_OBSERVER -3
 
 /*!
  * \note The current implementation of the subject doesn't support multiple

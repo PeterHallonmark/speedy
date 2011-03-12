@@ -51,18 +51,25 @@ void subject_init(subject_t *this_ptr)
  * \param observer - A pointer to the observer that is attached to the subject.
  *
  * \return \c SUBJECT_SUCESS if it was possible to attach the observer,
- *            SUBJECT_ERROR otherwise.
+ * \return \c SUBJECT_ERROR if it wasn't possible to push the observer on to
+ *                          the queue.
+ * \return \c SUBJECT_MISSING_OBSERVER if the observer is \c NULL.
+ * \return \c SUBJECT_NULL if the subject is \c NULL.
  */
 int subject_attach(subject_t *this_ptr, observer_t *observer)
 {
-    int status = SUBJECT_ERROR;
+    int status = SUBJECT_SUCESS;
 
     if (this_ptr != NULL) {
+        if (observer != NULL) {
+            if (queue_push(&this_ptr->queue,
+                           (void*) observer) != QUEUE_SUCESS) {
 
-        if (queue_push(&this_ptr->queue, (void*) observer) == QUEUE_SUCESS) {
-            status = SUBJECT_SUCESS;
+                status = SUBJECT_ERROR;
+            }
+        } else {
+            status = SUBJECT_MISSING_OBSERVER;
         }
-
     } else {
         status = SUBJECT_NULL;
     }
@@ -77,8 +84,11 @@ int subject_attach(subject_t *this_ptr, observer_t *observer)
  * \param observer - A pointer to the observer that is detached from
  *                   the subject.
  *
- * \return \c SUBJECT_SUCESS is always returned since it is not possible to
- *         fail at this point.
+ * \return \c SUBJECT_SUCESS if it was possible to detach the observer,
+ * \return \c SUBJECT_ERROR if it wasn't possible to remove the observer from
+ *                          the queue.
+ * \return \c SUBJECT_MISSING_OBSERVER if the observer is \c NULL.
+ * \return \c SUBJECT_NULL if the subject is \c NULL.
  */
 int subject_detach(subject_t *this_ptr, observer_t *observer)
 {
@@ -86,15 +96,23 @@ int subject_detach(subject_t *this_ptr, observer_t *observer)
     observer_t *current;
 
     if (this_ptr != NULL) {
+        if (observer != NULL) {
 
-        queue_first(&this_ptr->queue);
-        while((current = queue_get_current(&this_ptr->queue)) != NULL) {
-            if (current == observer) {
-                queue_remove_current(&this_ptr->queue);
+            queue_first(&this_ptr->queue);
+            while((current = queue_get_current(&this_ptr->queue)) != NULL) {
+                if (current == observer) {
+                    if (queue_remove_current(
+                        &this_ptr->queue) != QUEUE_SUCESS) {
+
+                        status = SUBJECT_ERROR;
+                    }
+                }
+                queue_next(&this_ptr->queue);
             }
-            queue_next(&this_ptr->queue);
-        }
 
+        } else {
+            status = SUBJECT_MISSING_OBSERVER;
+        }
     } else {
         status = SUBJECT_NULL;
     }
@@ -116,7 +134,9 @@ int subject_notify(subject_t *this_ptr, void *msg)
 
         queue_first(&this_ptr->queue);
         while((current = queue_get_current(&this_ptr->queue)) != NULL) {
-            observer_notify(current, this_ptr, msg);
+            if (observer_notify(current, this_ptr, msg) != OBSERVER_SUCESS) {
+                status = SUBJECT_MISSING_OBSERVER;
+            }
             queue_next(&this_ptr->queue);
         }
 
