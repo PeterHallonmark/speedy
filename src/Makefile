@@ -20,8 +20,9 @@ debug: speedy
 
 release: speedy
 
-%.dep: %.c $(files)
-	$(CC) -MM $< -MF $@
+%.dep: %.c
+	$(CC) -MM -MT $(subst .c,.o,$<) $< -MF $@ 
+	@sed "s/\.o/\.dep/g" $@ >> $@
 
 %.o: %.c
 	$(CC) $(CFLAGS) -I. -c $< -o $@
