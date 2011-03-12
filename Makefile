@@ -12,6 +12,8 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
+CC := colorgcc
+export CC
 
 override CFLAGS += -Wall
 
@@ -47,6 +49,7 @@ debug: CFLAGS += -Wextra -g
 debug: copy build_$(target)
 
 test: target := unittest
+test: CFLAGS += -Wextra -g -DFILE_TEST_CONF=\"test.conf\" -fprofile-arcs -ftest-coverage
 test: test_copy build_$(target) 
 
 all:

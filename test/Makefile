@@ -13,19 +13,18 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 include src/Makefile
+-include $(test_files:.c=.d)
 
-CFLAGS+=-DFILE_TEST_CONF=\"test.conf\" -fprofile-arcs -ftest-coverage
 
 test_files:=$(wildcard test/*.c) $(wildcard test/unity/*.c)
 
 # This is neccessary just to be able to compile since speedy.c also contains a main function.
 app_files:=$(filter-out src/speedy.c,$(files))
 
--include $(test_files:.c=.dep)
         
 unittest: $(test_files:.c=.o) $(app_files:.c=.o)
 	$(CC) -fprofile-arcs -lgcov -o unittest -lpthread $(test_files:.c=.o) $(app_files:.c=.o)
 
-.PHONY: test
+.PHONY: unittest
 
 .SUFFIXES:

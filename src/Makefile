@@ -14,22 +14,24 @@
 
 files:=$(wildcard src/*.c)
 
--include $(files:.c=.dep)
+-include $(files:.c=.d)
 
-debug: speedy
 
-release: speedy
-
-%.dep: %.c
+%.d: %.c
 	$(CC) -MM -MT $(subst .c,.o,$<) $< -MF $@ 
 	@sed "s/\.o/\.dep/g" $@ >> $@
 
 %.o: %.c
 	$(CC) $(CFLAGS) -I. -c $< -o $@
+
+
+debug: speedy
+
+release: speedy
         
 speedy : $(files:.c=.o)
 	$(CC) -o speedy -lpthread $(files:.c=.o)
 
-.PHONY: debug release clean build
+.PHONY: debug release clean
 
 .SUFFIXES:
