@@ -16,16 +16,15 @@ include src/Makefile
 
 CFLAGS+=-DFILE_TEST_CONF=\"test.conf\" -fprofile-arcs -ftest-coverage
 
-test_files := test/test_handler.c test/unity/unity.c test/unittest.c \
-              test/test_config_parser.c test/test_queue.c test/test_hash_lookup.c \
-              test/test_hash.c test/test_observer.c test/test_subject.c
+test_files:=$(wildcard test/*.c) $(wildcard test/unity/*.c)
 
+# This is neccessary just to be able to compile since speedy.c also contains a main function.
+app_files:=$(filter-out src/speedy.c,$(files))
 
-%.o: %.c
-	$(CC) $(CFLAGS) -I. -c $< -o $@
+-include $(test_files:.c=.dep)
         
-unittest: $(test_files:.c=.o)  $(files:.c=.o)
-	$(CC) -fprofile-arcs -lgcov -o unittest -lpthread $(test_files:.c=.o) $(files:.c=.o)
+unittest: $(test_files:.c=.o) $(app_files:.c=.o)
+	$(CC) -fprofile-arcs -lgcov -o unittest -lpthread $(test_files:.c=.o) $(app_files:.c=.o)
 
 .PHONY: test
 

@@ -12,21 +12,23 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
+files:=$(wildcard src/*.c)
 
-files := src/queue.c src/observer.c src/subject.c \
-         src/hash.c src/hash_lookup.c src/task_handler.c src/task.c \
-         src/thread_pool.c src/task_parser.c src/config_parser.c
-    
+-include $(files:.c=.dep)
+
 debug: speedy
 
 release: speedy
-		    
-src/%.o: src/%.c
+
+%.dep: %.c $(files)
+	@$(CC) -MM -MF $@ $<
+
+%.o: %.c
 	$(CC) $(CFLAGS) -I. -c $< -o $@
         
-speedy : $(files:.c=.o) src/speedy.o
-	$(CC) -o speedy -lpthread $(files:.c=.o) src/speedy.o
-	
+speedy : $(files:.c=.o)
+	$(CC) -o speedy -lpthread $(files:.c=.o)
+
 .PHONY: debug release clean build
 
 .SUFFIXES:
