@@ -2,7 +2,7 @@ build
 .cproject
 .project
 *.config
+*.creator.*
 *.creator
-*.creator.user
 *.files
 *.includes
