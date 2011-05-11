@@ -76,7 +76,7 @@ task_t * task_create(struct service_t *service, struct task_handler_t *handler)
 
                 this_ptr->dependency_queue = queue_create();
 
-/*                while (*dependency_arg != NULL) {
+                while (*dependency_arg != NULL) {
 
                     printf("%s dep: %s\n",service->name, *dependency_arg);
                     dependency = (task_dependency_t*) malloc(sizeof(
@@ -89,7 +89,7 @@ task_t * task_create(struct service_t *service, struct task_handler_t *handler)
                     queue_push(this_ptr->dependency_queue, dependency);
 
                     dependency_arg++;
-                }*/
+                }
             }
         }
         return this_ptr;

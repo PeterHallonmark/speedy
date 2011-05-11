@@ -132,7 +132,7 @@ static void test_queue_1000_items(void)
 
     for (i=0u; i < 1000u; i++) {
         TEST_ASSERT_EQUAL(QUEUE_SUCESS,
-                          queue_push(priv_test_queue, (void*) 2000u + i));
+                          queue_push(priv_test_queue, (void*) (2000u + i)));
     }
     for (i=0u; i < 1000u; i++) {
         TEST_ASSERT_EQUAL(2000u + i, queue_pop(priv_test_queue));
@@ -146,14 +146,14 @@ static void test_queue_1000_items_v2(void)
 
     for (i=0u; i < 500u; i++) {
         TEST_ASSERT_EQUAL(QUEUE_SUCESS,
-                          queue_push(priv_test_queue, (void*) 3000u + i));
+                          queue_push(priv_test_queue, (void*) (3000u + i)));
     }
     for (i=0u; i < 200u; i++) {
         TEST_ASSERT_EQUAL(3000u + i, queue_pop(priv_test_queue));
     }
     for (i=0u; i < 500u; i++) {
         TEST_ASSERT_EQUAL(QUEUE_SUCESS,
-                          queue_push(priv_test_queue, (void*) 3500u + i));
+                          queue_push(priv_test_queue, (void*) (3500u + i)));
     }
     for (i=0u; i < 800u; i++) {
         TEST_ASSERT_EQUAL(3200u + i, queue_pop(priv_test_queue));

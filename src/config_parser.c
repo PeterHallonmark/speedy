@@ -15,6 +15,7 @@
 */
 
 #include "config_parser.h"
+#include "str_ext.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -150,7 +151,7 @@ int config_parser_read(config_parser_t *config)
                             if (command_pos_ptr != config->command) {
                                 config->mode = PRE_ARGUMENT;
                             } else {
-                                //command_data->error_msg = "Missing command.";
+                                /* "Missing command */
                                 config->mode = PRE_ERROR;
                             }
                             break;
@@ -167,7 +168,7 @@ int config_parser_read(config_parser_t *config)
                                 *command_pos_ptr = *config->buffer_pos_ptr;
                                 command_pos_ptr++;
                             } else {
-                                //command_data->error_msg = "Command to long.";
+                                /* Command to long. */
                                 config->mode = PRE_ERROR;
                             }
                             break;
@@ -186,7 +187,7 @@ int config_parser_read(config_parser_t *config)
                             if (command_pos_ptr != config->command) {
                                 config->mode = PRE_ARGUMENT;
                             } else {
-                                //command_data->error_msg = "Missing command.";
+                                /* Missing command */
                                 config->mode = PRE_ERROR;
                             }
                             break;
@@ -201,7 +202,7 @@ int config_parser_read(config_parser_t *config)
                             break;
 
                         default:
-                            //command_data->error_msg = "Space is not supported in a command.";
+                            /* Space is not supported in a command */
                             config->mode = PRE_ERROR;
                             break;
                     }
@@ -261,7 +262,7 @@ int config_parser_read(config_parser_t *config)
                                 *argument_pos_ptr = *config->buffer_pos_ptr;
                                 argument_pos_ptr++;
                             } else {
-                                //command_data->error_msg = "Argument to long.";
+                                /* Argument to long */
                                 config->mode = PRE_ERROR;
                             }
                             break;
@@ -288,7 +289,7 @@ int config_parser_read(config_parser_t *config)
                                 *argument_pos_ptr = *config->buffer_pos_ptr;
                                 argument_pos_ptr++;
                             } else {
-                                //command_data->error_msg = "Argument to long.";
+                                /* Argument to long. */
                                 config->mode = PRE_ERROR;
                             }
                             break;
@@ -307,7 +308,7 @@ int config_parser_read(config_parser_t *config)
                                 namespace_pos_ptr++;
                                 config->mode = POST_NAMESPACE;
                             } else {
-                                //command_data->error_msg = "Command to long.";
+                                /* Command to long. */
                                 config->mode = PRE_ERROR;
                             }
                             break;
@@ -319,7 +320,7 @@ int config_parser_read(config_parser_t *config)
                                 *namespace_pos_ptr = *config->buffer_pos_ptr;
                                 namespace_pos_ptr++;
                             } else {
-                                //command_data->error_msg = "Command to long.";
+                                /* Command to long */
                                 config->mode = PRE_ERROR;
                             }
                             break;
@@ -376,7 +377,7 @@ int config_parser_read(config_parser_t *config)
                         }
                         config->mode = PRE_ARGUMENT;
                     } else {
-                        //command_data->error_msg = "Argument to long.";
+                        /* Argument to long. */
                         config->mode = PRE_ERROR;
                     }
                     config->mode = PRE_ARGUMENT;
@@ -488,7 +489,7 @@ char** config_parser_create_arguments(config_parser_t *config)
         arguments[config->argument_size] = NULL;
         
         for (i = 0u; i < config->argument_size; i++) {
-            arguments[i] = strdup(config_parser_get_next_argument(config));
+            arguments[i] = strdup_ext(config_parser_get_next_argument(config));
         }
     }
     return arguments;

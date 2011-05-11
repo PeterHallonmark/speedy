@@ -15,7 +15,7 @@
 CC := colorgcc
 export CC
 
-override CFLAGS += -Wall
+override CFLAGS += -Wall -pedantic -std=c99
 
 # The project is built inside a build directory. 
 build := build

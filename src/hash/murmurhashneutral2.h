@@ -1,8 +1,8 @@
-//-----------------------------------------------------------------------------
-// MurmurHashNeutral2, by Austin Appleby
+/*-----------------------------------------------------------------------------
+ MurmurHashNeutral2, by Austin Appleby
 
-// Same as MurmurHash2, but endian- and alignment-neutral.
-// Half the speed though, alas.
+ Same as MurmurHash2, but endian- and alignment-neutral.
+ Half the speed though, alas. */
 
 static inline unsigned int MurmurHashNeutral2 ( const void * key, int len, unsigned int seed )
 {

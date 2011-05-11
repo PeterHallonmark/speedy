@@ -126,5 +126,6 @@ void test_subject(void)
                   test_hash_subject_one_observer_cleanup,
                   test_hash_subject_one_observer);
 
+
     TEST_CASE_END();
 }
