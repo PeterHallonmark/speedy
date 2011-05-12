@@ -20,7 +20,6 @@
 #include "task_handler.h"
 #include "thread_pool.h"
 #include "queue.h"
-#include "str_ext.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -167,8 +166,8 @@ task_parser_t* task_parser_create(task_handler_t *handler)
 void task_parser_read(task_parser_t *this_ptr, const char * filename)
 {
     task_parser_file_reader_t *read_file;
-    read_file = task_parser_file_create(this_ptr, strdup_ext(filename),
-                                          strdup_ext("default"));
+    read_file = task_parser_file_create(this_ptr, strdup(filename),
+                                          strdup("default"));
     if (read_file != NULL) {
         thread_pool_add_task(this_ptr->thread_pool, read_file);
     }
@@ -429,7 +428,7 @@ static void task_parser_file_handle_options(
         case CONFIG_OPTIONS_DEPENDENCY:
             argument = config_parser_get_next_argument(read_file->file);
             while (argument != NULL) {
-                queue_push(&read_file->tasks, strdup_ext(argument));
+                queue_push(&read_file->tasks, strdup(argument));
                 argument = config_parser_get_next_argument(read_file->file);
             }
             break;
@@ -437,7 +436,7 @@ static void task_parser_file_handle_options(
         case CONFIG_OPTIONS_PATH:
             argument = config_parser_get_next_argument(read_file->file);
             while (argument != NULL) {
-                queue_push(&read_file->paths, strdup_ext(argument));
+                queue_push(&read_file->paths, strdup(argument));
                 argument = config_parser_get_next_argument(read_file->file);
             }
             break;
@@ -461,7 +460,7 @@ static void task_parser_file_handle_task(task_parser_file_reader_t *read_file)
     const char *argument;
 
     if (read_file->current_task->name == NULL) {
-        read_file->current_task->name = strdup_ext(read_file->current_namespace);
+        read_file->current_task->name = strdup(read_file->current_namespace);
 
     } else if (strcmp(read_file->current_namespace,
                       read_file->current_task->name) != 0) {
@@ -472,7 +471,7 @@ static void task_parser_file_handle_task(task_parser_file_reader_t *read_file)
         /* Create a new task object and name it according to the
            new namespace. */
         read_file->current_task = task_parser_create_task();
-        read_file->current_task->name = strdup_ext(read_file->current_namespace);
+        read_file->current_task->name = strdup(read_file->current_namespace);
     }
     command = config_parser_get_command(read_file->file);
     options = task_parser_get_task_options(command);
@@ -491,7 +490,7 @@ static void task_parser_file_handle_task(task_parser_file_reader_t *read_file)
             if ((read_file->current_task->provides == NULL) &&
                 (argument != NULL)) {
 
-                read_file->current_task->provides = strdup_ext(argument);
+                read_file->current_task->provides = strdup(argument);
             } else {
                 printf("some error...\n");
             }
@@ -619,7 +618,7 @@ static task_parser_dir_t* task_parser_dir_create(
 
     if (scan_dir != NULL) {
         scan_dir->task.task_parser = this_ptr;
-        scan_dir->path = strdup_ext(path);
+        scan_dir->path = strdup(path);
         scan_dir->task.task_exec = task_parser_dir_exec;
 
         queue_init(&scan_dir->tasks);
@@ -628,7 +627,7 @@ static task_parser_dir_t* task_parser_dir_create(
            configuration files. */
         queue_first(tasks);
         while((task = queue_get_current(tasks)) != NULL) {
-            task_dup = strdup_ext(task);
+            task_dup = strdup(task);
             queue_push(&scan_dir->tasks, task_dup);
             queue_next(tasks);
         }
@@ -691,10 +690,10 @@ static void task_parser_dir_read_file(task_parser_dir_t *scan_dir,
     (void) strcat(next, task);
 
     read_file = task_parser_file_create(scan_dir->task.task_parser, filename,
-                                          strdup_ext(task));
+                                          strdup(task));
 
     if (read_file != NULL) {
-        queue_push(&read_file->tasks, strdup_ext(task));
+        queue_push(&read_file->tasks, strdup(task));
         thread_pool_add_task(scan_dir->task.task_parser->thread_pool,
                              read_file);
     }

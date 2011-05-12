@@ -15,7 +15,6 @@
 */
 
 #include "config_parser.h"
-#include "str_ext.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -489,7 +488,7 @@ char** config_parser_create_arguments(config_parser_t *config)
         arguments[config->argument_size] = NULL;
         
         for (i = 0u; i < config->argument_size; i++) {
-            arguments[i] = strdup_ext(config_parser_get_next_argument(config));
+            arguments[i] = strdup(config_parser_get_next_argument(config));
         }
     }
     return arguments;

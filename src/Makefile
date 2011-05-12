@@ -22,7 +22,7 @@ files:=$(wildcard src/*.c)
 	@sed "s/\.o/\.dep/g" $@ >> $@
 
 %.o: %.c
-	$(CC) $(CFLAGS) -I. -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 
 debug: speedy
