@@ -31,6 +31,7 @@ subject_t *subject_create(void)
     subject_init(this_ptr);
     return this_ptr;
 }
+
 /*!
  * Initializes a subject.
  *
