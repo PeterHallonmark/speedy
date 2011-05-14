@@ -14,6 +14,9 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
+#ifndef _SPEEDY_TASK_PARSER_H_
+#define _SPEEDY_TASK_PARSER_H_
+
 #include <pthread.h>
 
 typedef struct task_parser_t {
@@ -28,3 +31,5 @@ void task_parser_read(task_parser_t *this_ptr, const char * filename);
 void task_parser_wait(task_parser_t* this_ptr);
 
 void task_parser_destroy(task_parser_t *task_parser);
+
+#endif /* _SPEEDY_TASK_PARSER_H_ */

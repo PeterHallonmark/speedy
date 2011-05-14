@@ -14,6 +14,9 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
+#ifndef _SPEEDY_HASH_LOOKUP_H_
+#define _SPEEDY_HASH_LOOKUP_H_
+
 struct hash_slot_t;
 
 /*! The operation was successfully executed. */
@@ -38,3 +41,5 @@ void * hash_lookup_remove(hash_lookup_t *this_ptr, unsigned int key);
 void * hash_lookup_find(hash_lookup_t *this_ptr, unsigned int key);
 
 void hash_lookup_destroy(hash_lookup_t *this_ptr);
+
+#endif /* _SPEEDY_HASH_LOOKUP_H_ */

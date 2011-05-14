@@ -14,6 +14,9 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
+#ifndef _SPEEDY_CONFIG_PARSER_H_
+#define _SPEEDY_CONFIG_PARSER_H_
+
 #include <stdio.h>
 #include <stdbool.h>
 
@@ -57,3 +60,5 @@ const char* config_parser_get_next_argument(config_parser_t *config);
 unsigned int config_parser_get_argument_size(config_parser_t *config);
 char** config_parser_create_arguments(config_parser_t *config);
 void config_parser_destroy_arguments(char* arguments[]);
+
+#endif /* _SPEEDY_CONFIG_PARSER_H_ */

@@ -14,6 +14,9 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
+#ifndef _SPEEDY_TASK_HANDLER_H_
+#define _SPEEDY_TASK_HANDLER_H_
+
 #define TASK_HANDLER_SUCCESS 0
 #define TASK_HANDLER_FAIL -1
 
@@ -42,3 +45,6 @@ void task_handler_run_add_task(task_handler_t *this_ptr, struct task_t *task);
 
 void task_handler_deinit(task_handler_t * this_ptr);
 void task_handler_destroy(task_handler_t * this_ptr);
+
+
+#endif /* _SPEEDY_TASK_HANDLER_H_ */

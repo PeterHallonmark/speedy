@@ -14,6 +14,9 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
+#ifndef _SPEEDY_QUEUE_H_
+#define _SPEEDY_QUEUE_H_
+
 #include <stdbool.h>
 
 /*! The operation was successfully executed. */
@@ -66,3 +69,5 @@ int queue_remove_current(queue_t *this_ptr);
 
 void queue_deinit(queue_t *this_ptr);
 void queue_destroy(queue_t *this_ptr);
+
+#endif /* _SPEEDY_QUEUE_H_ */

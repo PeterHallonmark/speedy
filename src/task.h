@@ -14,6 +14,9 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
+#ifndef _SPEEDY_TASK_H_
+#define _SPEEDY_TASK_H_
+
 /*! An error code if everything was successfully executed. */
 #define TASK_SUCCESS 0
 #define TASK_FAIL -1
@@ -59,3 +62,5 @@ unsigned int task_get_provides_id(task_t *this_ptr);
 int task_build_dependency(task_t *this_ptr, struct hash_lookup_t *lookup);
 
 void task_destroy(task_t *task);
+
+#endif /* _SPEEDY_TASK_H_ */

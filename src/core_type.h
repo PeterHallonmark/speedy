@@ -14,6 +14,9 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
+#ifndef _SPEEDY_CORE_TYPE_H_
+#define _SPEEDY_CORE_TYPE_H_
+
 /*!
  * Specifies the interface for each service/daemon that is going to be
  * started during system initialization or stopped during system shutdown.
@@ -38,3 +41,5 @@ typedef struct service_t {
         executing a certain action. */
     int (*action)(void);
 } service_t;
+
+#endif /* _SPEEDY_CORE_TYPE_H_ */

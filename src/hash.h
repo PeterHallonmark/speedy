@@ -14,4 +14,9 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
+#ifndef _SPEEDY_HASH_H_
+#define _SPEEDY_HASH_H_
+
 unsigned int hash_generate(const char *key);
+
+#endif /* _SPEEDY_HASH_H_ */

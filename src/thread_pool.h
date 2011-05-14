@@ -14,6 +14,9 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
+#ifndef _SPEEDY_THREAD_POOL_H_
+#define _SPEEDY_THREAD_POOL_H_
+
 #include <stdbool.h>
 #include <pthread.h>
 
@@ -41,3 +44,5 @@ int thread_pool_add_task(thread_pool_t *this_ptr, void *task);
 int thread_pool_task_size(thread_pool_t *this_ptr);
 
 void thread_pool_destroy(thread_pool_t *this_ptr);
+
+#endif /* _SPEEDY_THREAD_POOL_H_ */

@@ -14,6 +14,9 @@
     OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
+#ifndef _SPEEDY_OBSERVER_H_
+#define _SPEEDY_OBSERVER_H_
+
 #include <pthread.h>
 
 struct subject_t;
@@ -50,3 +53,5 @@ int observer_set_notify(observer_t *this_ptr,
 
 void observer_deinit(observer_t *this_ptr);
 void observer_destroy(observer_t *this_ptr);
+
+#endif /* _SPEEDY_OBSERVER_H_ */
