@@ -19,7 +19,7 @@ files:=$(wildcard src/*.c)
 
 %.d: %.c
 	$(CC) -MM -MT $(subst .c,.o,$<) $< -MF $@ 
-	@sed "s/\.o/\.dep/g" $@ >> $@
+	@sed "s/\.o/\.d/g" $@ >> $@
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
