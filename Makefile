@@ -15,7 +15,7 @@
 CC := colorgcc
 export CC
 
-override CFLAGS += -Wall -pedantic -ansi -std=c99 -D_POSIX_C_SOURCE=200809L
+override CFLAGS += -Wall -Wextra -pedantic -ansi -std=c99 -D_POSIX_C_SOURCE=200809L
 
 # The project is built inside a build directory. 
 build := build
@@ -45,11 +45,11 @@ test_copy: init
 	cp src $(build)/unittest -r -u
 
 debug: target := debug
-debug: CFLAGS += -Wextra -g
+debug: CFLAGS += -g
 debug: copy build_$(target)
 
 test: target := unittest
-test: CFLAGS += -Wextra -g -DFILE_TEST_CONF=\"test.conf\" -fprofile-arcs -ftest-coverage
+test: CFLAGS += -g -DFILE_TEST_CONF=\"test.conf\" -fprofile-arcs -ftest-coverage
 test: test_copy build_$(target) 
 
 all:
