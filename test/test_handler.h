@@ -24,10 +24,12 @@ typedef struct test_case_t {
     void (*test)(void);
 } test_case_t;
 
-void test_handler_init(void);
+void test_handler_init(int argc, char *argv[]);
 void test_handler_deinit(void);
 
 void test_handler_run_test(test_case_t *test_case);
+
+const char* test_handler_get_current_path(void);
 
 #define TEST_CASE_RUN(init_exec, clean_exec, test_exec) \
             do { \
@@ -48,3 +50,4 @@ void test_handler_run_test(test_case_t *test_case);
 
 #define TEST_CASE_END() UNITY_OUTPUT_CHAR('\n')
 
+#define TEST_CASE_CURRENT_PATH() test_handler_get_current_path()

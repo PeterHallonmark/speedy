@@ -23,17 +23,16 @@
 #include "test_subject.h"
 #include "test_config_parser.h"
 
-
-int main(void)
+int main(int argc, char *argv[])
 {
-    test_handler_init();
+    test_handler_init(argc, argv);
 
     test_queue();
     test_hash();
     test_hash_lookup();
     test_observer();
     test_subject();
-    //test_config_parser();
+    test_config_parser();
 
     test_handler_deinit();
 

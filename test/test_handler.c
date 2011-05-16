@@ -17,6 +17,10 @@
 #include "test_handler.h"
 
 #include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+
+static char *priv_path = NULL;
 
 void test_handler_run_test(test_case_t *test_case)
 {
@@ -49,12 +53,37 @@ void tearDown(void)
 {
 }
 
-void test_handler_init(void)
+const char* test_handler_get_current_path(void)
 {
+    return priv_path;
+}
+
+void test_handler_init(int argc, char *argv[])
+{
+    char *path = strdup(argv[0]);
+    size_t size;
+    char *ptr;
+
+    (void) argc;
+
+    /* Change path to where this executable is located and strip the name
+       of this executable from the path. */
+    ptr = strrchr(path,'/');
+    *ptr = '\0';
+    chdir(path);
+    *ptr = '/';
+    free(path);
+
+    size = pathconf(".", _PC_PATH_MAX);
+
+    if ((priv_path = (char *)malloc(size)) != NULL) {
+        ptr = getcwd(priv_path, size);
+    }
     UnityBegin();
 }
 
 void test_handler_deinit(void)
 {
     UnityEnd();
+    free(priv_path);
 }

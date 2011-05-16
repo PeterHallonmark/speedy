@@ -23,7 +23,8 @@ config_parser_t *priv_test_config;
 
 static void test_init(void)
 {
-    priv_test_config = config_parser_open(FILE_TEST_CONF);
+    priv_test_config = config_parser_open("./apa");
+    printf("PATH: %s\n",TEST_CASE_CURRENT_PATH());
 }
 
 static void test_cleanup(void)
@@ -34,7 +35,6 @@ static void test_cleanup(void)
 static void test_run(void)
 {
     TEST_ASSERT_NOT_EQUAL(priv_test_config, NULL);
-    TEST_ASSERT_EQUAL(0, 1);
 }
 
 static void run2(void)
