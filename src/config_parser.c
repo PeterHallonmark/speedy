@@ -19,6 +19,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define MSG_MISSING_COMMAND     "Missing command"
+#define MSG_COMMAND_TO_LONG     "Command to long."
+#define MSG_SPACE_NOT_SUPPORTED "Space is not supported in a command"
+#define MSG_ARGUMENT_TO_LONG    "Argument to long."
+
 typedef enum {
     NEW_LINE,
     SPACE,
@@ -93,6 +98,7 @@ int config_parser_read(config_parser_t *config)
     bool argument_exist = false;
     int status = PARSER_NO_DATA;
 
+    config->error_msg = NULL;
     config->mode = NEW_LINE;
     config->argument_size = 0u;
     config->next_argument_pos_ptr = config->argument;
@@ -150,7 +156,7 @@ int config_parser_read(config_parser_t *config)
                             if (command_pos_ptr != config->command) {
                                 config->mode = PRE_ARGUMENT;
                             } else {
-                                /* "Missing command */
+                                config->error_msg = MSG_MISSING_COMMAND;
                                 config->mode = PRE_ERROR;
                             }
                             break;
@@ -167,7 +173,7 @@ int config_parser_read(config_parser_t *config)
                                 *command_pos_ptr = *config->buffer_pos_ptr;
                                 command_pos_ptr++;
                             } else {
-                                /* Command to long. */
+                                config->error_msg = MSG_COMMAND_TO_LONG;
                                 config->mode = PRE_ERROR;
                             }
                             break;
@@ -186,7 +192,7 @@ int config_parser_read(config_parser_t *config)
                             if (command_pos_ptr != config->command) {
                                 config->mode = PRE_ARGUMENT;
                             } else {
-                                /* Missing command */
+                                config->error_msg = MSG_MISSING_COMMAND;
                                 config->mode = PRE_ERROR;
                             }
                             break;
@@ -201,7 +207,7 @@ int config_parser_read(config_parser_t *config)
                             break;
 
                         default:
-                            /* Space is not supported in a command */
+                            config->error_msg = MSG_SPACE_NOT_SUPPORTED;
                             config->mode = PRE_ERROR;
                             break;
                     }
@@ -261,7 +267,7 @@ int config_parser_read(config_parser_t *config)
                                 *argument_pos_ptr = *config->buffer_pos_ptr;
                                 argument_pos_ptr++;
                             } else {
-                                /* Argument to long */
+                                config->error_msg = MSG_ARGUMENT_TO_LONG;
                                 config->mode = PRE_ERROR;
                             }
                             break;
@@ -288,7 +294,7 @@ int config_parser_read(config_parser_t *config)
                                 *argument_pos_ptr = *config->buffer_pos_ptr;
                                 argument_pos_ptr++;
                             } else {
-                                /* Argument to long. */
+                                config->error_msg = MSG_ARGUMENT_TO_LONG;
                                 config->mode = PRE_ERROR;
                             }
                             break;
@@ -307,7 +313,7 @@ int config_parser_read(config_parser_t *config)
                                 namespace_pos_ptr++;
                                 config->mode = POST_NAMESPACE;
                             } else {
-                                /* Command to long. */
+                                config->error_msg = MSG_COMMAND_TO_LONG;
                                 config->mode = PRE_ERROR;
                             }
                             break;
@@ -319,7 +325,7 @@ int config_parser_read(config_parser_t *config)
                                 *namespace_pos_ptr = *config->buffer_pos_ptr;
                                 namespace_pos_ptr++;
                             } else {
-                                /* Command to long */
+                                config->error_msg = MSG_COMMAND_TO_LONG;
                                 config->mode = PRE_ERROR;
                             }
                             break;
@@ -376,7 +382,7 @@ int config_parser_read(config_parser_t *config)
                         }
                         config->mode = PRE_ARGUMENT;
                     } else {
-                        /* Argument to long. */
+                        config->error_msg = MSG_COMMAND_TO_LONG;
                         config->mode = PRE_ERROR;
                     }
                     config->mode = PRE_ARGUMENT;
@@ -456,6 +462,11 @@ const char* config_parser_get_command(config_parser_t *config)
     } else {
         return NULL;
     }
+}
+
+const char *config_parser_get_error_msg(config_parser_t *config)
+{
+    return config->error_msg;
 }
 
 const char* config_parser_get_next_argument(config_parser_t *config)

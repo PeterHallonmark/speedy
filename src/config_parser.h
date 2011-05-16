@@ -33,6 +33,7 @@ typedef struct config_parser_t {
     char command[MAX_COMMAND];
     char name_space[MAX_COMMAND];
     char argument[MAX_ARGUMENT];
+    char *error_msg;
     char *buffer_pos_ptr;
     FILE* file;
     size_t buffer_pos;
@@ -55,6 +56,8 @@ void config_parser_set_namespace(config_parser_t *config, const char *str);
 const char* config_parser_get_namespace(config_parser_t *config);
 
 const char* config_parser_get_command(config_parser_t *config);
+
+const char *config_parser_get_error_msg(config_parser_t *config);
 
 const char* config_parser_get_next_argument(config_parser_t *config);
 unsigned int config_parser_get_argument_size(config_parser_t *config);
