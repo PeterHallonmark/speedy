@@ -61,24 +61,23 @@ const char* test_handler_get_current_path(void)
 void test_handler_init(int argc, char *argv[])
 {
     char *path = strdup(argv[0]);
-    size_t size;
-    char *ptr;
+    size_t size = pathconf(".", _PC_PATH_MAX);
+    char *str_ptr;
 
     (void) argc;
 
-    /* Change path to where this executable is located and strip the name
-       of this executable from the path. */
-    ptr = strrchr(path,'/');
-    *ptr = '\0';
+    /* Change directory to where the current executable is located. */
+    str_ptr = strrchr(path,'/');
+    *str_ptr = '\0';
     chdir(path);
-    *ptr = '/';
+    *str_ptr = '/';
     free(path);
 
-    size = pathconf(".", _PC_PATH_MAX);
-
-    if ((priv_path = (char *)malloc(size)) != NULL) {
-        ptr = getcwd(priv_path, size);
+    /* Get the path to where the current executable is located. */
+    if ((priv_path = malloc(size)) != NULL) {
+        str_ptr = getcwd(priv_path, size);
     }
+
     UnityBegin();
 }
 
