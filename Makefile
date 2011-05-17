@@ -15,14 +15,17 @@
 CC := colorgcc
 export CC
 
-override CFLAGS += -Wall -Wextra -pedantic -ansi -std=c99 -D_POSIX_C_SOURCE=200809L
+# Check if the CFLAGS has already been overrided.
+ifndef CFLAGS_OVERRIDE
+    override CFLAGS += -Wall -Wextra -pedantic -ansi -std=c99 -D_POSIX_C_SOURCE=200809L
+    export CFLAGS_OVERRIDE := CFLAGS
+endif
 
 # The project is built inside a build directory. 
 build := build
 
 # Variables that are going to be exported.
 export CFLAGS
-export system
 
 release: target := release
 release: copy build_$(target)
@@ -53,9 +56,12 @@ test: CFLAGS += -g -DFILE_TEST_CONF=\"test.conf\" -fprofile-arcs -ftest-coverage
 test: test_copy build_$(target) 
 
 all:
+	$(MAKE) -j 1 -r -C . loc
+	$(MAKE) -j 1 -r -C . clean
 	$(MAKE) -j 1 -r -C . release
 	$(MAKE) -j 1 -r -C . debug
 	$(MAKE) -j 1 -r -C . test
+	$(MAKE) -j 1 -r -C . lcov
 
 build_$(target):
 	$(MAKE) -j 4 -r -C $(build)/$(target) $(target)
