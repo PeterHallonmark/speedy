@@ -15,6 +15,9 @@
 */
 
 #include "unity/unity.h"
+#include <string.h>
+
+#define TEST_CASE_PATH "./test/test-case/"
 
 typedef struct test_case_t {
     const char* name;
@@ -43,11 +46,9 @@ const char* test_handler_get_current_path(void);
             } while(0)
 
 #define TEST_CASE_START() \
-                do { \
-                     UnityPrint(__FILE__); \
-                     UNITY_OUTPUT_CHAR('\n'); \
-                 } while(0)
+            do { \
+                UnityPrint(__FILE__); \
+                UNITY_OUTPUT_CHAR('\n'); \
+            } while(0)
 
 #define TEST_CASE_END() UNITY_OUTPUT_CHAR('\n')
-
-#define TEST_CASE_CURRENT_PATH() test_handler_get_current_path()

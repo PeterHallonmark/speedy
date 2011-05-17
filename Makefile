@@ -52,7 +52,7 @@ debug: CFLAGS += -g
 debug: copy build_$(target)
 
 test: target := unittest
-test: CFLAGS += -g -DFILE_TEST_CONF=\"test.conf\" -fprofile-arcs -ftest-coverage
+test: CFLAGS += -g -fprofile-arcs -ftest-coverage
 test: test_copy build_$(target) 
 
 all:

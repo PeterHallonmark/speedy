@@ -20,16 +20,17 @@
 #include <stdlib.h>
 
 config_parser_t *priv_test_config;
+char *priv_file = NULL;
 
 static void test_init(void)
 {
-    priv_test_config = config_parser_open("./apa");
-    printf("PATH: %s\n",TEST_CASE_CURRENT_PATH());
+    priv_test_config = config_parser_open(TEST_CASE_PATH "config_parser_1.txt");
 }
 
 static void test_cleanup(void)
 {
     config_parser_close(priv_test_config);
+    free(priv_file);
 }
 
 static void test_run(void)
