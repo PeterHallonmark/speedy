@@ -19,18 +19,20 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MSG_MISSING_COMMAND     "Missing command"
+#define MSG_MISSING_COMMAND     "Missing command."
 #define MSG_COMMAND_TO_LONG     "Command to long."
-#define MSG_SPACE_NOT_SUPPORTED "Space is not supported in a command"
+#define MSG_SPACE_NOT_SUPPORTED "Space is not supported in a command."
 #define MSG_ARGUMENT_TO_LONG    "Argument to long."
 #define MSG_EXPECTING_NEW_LINE  "Expecting a new line."
 
 typedef enum {
     NEW_LINE,
-    SPACE,
     COMMENT,
+    COMMENT_COMMAND,
     PRE_COMMAND,
+    CHECK_COMMAND,
     COMMAND,
+    POST_COMMAND,
     ADD_COMMAND,
     PRE_ARGUMENT,
     ARGUMENT_NEW_LINE,
@@ -40,8 +42,7 @@ typedef enum {
     NAMESPACE,
     POST_NAMESPACE,
     EXIT,
-    PRE_ERROR,
-    ERROR
+    PRE_ERROR
 } parser_mode_t;
 
 static void config_parser_readfile(config_parser_t *config);
@@ -87,40 +88,42 @@ void config_parser_close(config_parser_t *config)
  *
  * \param config - A pointer to its own config parser handle.
  *
- * \note This implementation has not been devided into smaller pieces mainly
- *       because it is supposed to be run often and mainly to limit any
- *       performance penalties that otherwise can happen because of 
- *       sub functions.
- *
  * \return \c PARSER_OK if everything went well, otherwise return an error code.
  */
 int config_parser_read(config_parser_t *config)
 {
-    char *command_pos_ptr = NULL;
-    char *argument_pos_ptr = NULL;
-    char *namespace_pos_ptr = NULL;
-    bool argument_exist = false;
+    char *command_pos_ptr;
+    char *argument_pos_ptr;
+    char *namespace_pos_ptr;
     int status = PARSER_NO_DATA;
+    bool next_char = true;
 
     if (config == NULL) {
         return PARSER_MISSING_FILE;
+    } else {
+        command_pos_ptr = config->command;
+        argument_pos_ptr = config->argument;
+        namespace_pos_ptr = config->name_space;
+        *command_pos_ptr = '\0';
+        *argument_pos_ptr = '\0';
     }
 
+    config->eof = false;
     config->error_msg = NULL;
     config->mode = NEW_LINE;
     config->argument_size = 0u;
     config->next_argument_pos_ptr = config->argument;
 
-    while ((config->mode != EXIT) && (config->mode != ERROR)) {
+    while ((config->mode != EXIT) && (config->eof == false)) {
 
         config_parser_readfile(config);
 
         while (((config->buffer_pos < config->bytes_read) &&
-               (config->mode != EXIT) && (config->mode != ERROR)) ||
-               (config->mode == ADD_COMMAND)) {
+               (config->mode != EXIT)) || (config->mode == ADD_COMMAND)) {
 
             switch(config->mode) {
                 case NEW_LINE:
+                    next_char = false;
                     command_pos_ptr = config->command;
                     argument_pos_ptr = config->argument;
                     namespace_pos_ptr = config->name_space;
@@ -132,19 +135,34 @@ int config_parser_read(config_parser_t *config)
 
                 case PRE_COMMAND:
                     switch(*config->buffer_pos_ptr) {
+                        case '\n':
+                            config->mode = NEW_LINE;
+                            break;
                         case ' ':
                         case '\t':
-                            config->buffer_pos_ptr++;
-                            config->buffer_pos++;
+                            /* Do nothing. */
                             break;
-
                         case '[':
                             config->mode = NAMESPACE;
-                            config->buffer_pos_ptr++;
-                            config->buffer_pos++;
                             break;
-
+                        case '#':
+                            config->mode = COMMENT;
+                            break;
                         default:
+                            next_char = false;
+                            config->mode = CHECK_COMMAND;
+                            break;
+                    }
+                    break;
+
+                case CHECK_COMMAND:
+                    switch(*config->buffer_pos_ptr) {
+                        case '=':
+                            config->error_msg = MSG_MISSING_COMMAND;
+                            config->mode = PRE_ERROR;
+                            break;
+                        default:
+                            next_char = false;
                             config->mode = COMMAND;
                             break;
                     }
@@ -155,25 +173,16 @@ int config_parser_read(config_parser_t *config)
                         case '\n':
                             config->mode = ADD_COMMAND;
                             break;
-
                         case '#':
-                            config->mode = COMMENT;
+                            config->mode = COMMENT_COMMAND;
                             break;
-
                         case '=':
-                            if (command_pos_ptr != config->command) {
-                                config->mode = PRE_ARGUMENT;
-                            } else {
-                                config->error_msg = MSG_MISSING_COMMAND;
-                                config->mode = PRE_ERROR;
-                            }
+                            config->mode = PRE_ARGUMENT;
                             break;
-
                         case ' ':
                         case '\t':
-                            config->mode = SPACE;
+                            config->mode = POST_COMMAND;
                             break;
-
                         default:
                             if (command_pos_ptr <
                                 (config->command + MAX_COMMAND)) {
@@ -186,64 +195,51 @@ int config_parser_read(config_parser_t *config)
                             }
                             break;
                     }
-                    config->buffer_pos_ptr++;
-                    config->buffer_pos++;
                     break;
 
-                case SPACE:
+                case POST_COMMAND:
                     switch(*config->buffer_pos_ptr) {
                         case '\n':
                             config->mode = ADD_COMMAND;
                             break;
-
                         case '=':
-                            if (command_pos_ptr != config->command) {
-                                config->mode = PRE_ARGUMENT;
-                            } else {
-                                config->error_msg = MSG_MISSING_COMMAND;
-                                config->mode = PRE_ERROR;
-                            }
+                            config->mode = PRE_ARGUMENT;
                             break;
-
                         case '#':
-                            config->mode = COMMENT;
+                            config->mode = COMMENT_COMMAND;
                             break;
-
                         case ' ':
                         case '\t':
                             /* Do nothing. */
                             break;
-
                         default:
                             config->error_msg = MSG_SPACE_NOT_SUPPORTED;
                             config->mode = PRE_ERROR;
                             break;
                     }
-                    config->buffer_pos_ptr++;
-                    config->buffer_pos++;
                     break;
 
                 case PRE_ARGUMENT:
                     switch(*config->buffer_pos_ptr) {
+                        case '\n':
+                            config->mode = ADD_COMMAND;
+                            break;
                         case ' ':
                         case '\t':
-                            config->buffer_pos_ptr++;
-                            config->buffer_pos++;
+                            /* Do nothing. */
                             break;
-
                         case '\\':
                             config->mode = ARGUMENT_NEW_LINE;
-                            config->buffer_pos_ptr++;
-                            config->buffer_pos++;
                             break;
-
+                        case '#':
+                            config->mode = COMMENT_COMMAND;
+                            break;
                         case '"':
                             config->mode = ARGUMENT_TEXT;
-                            config->buffer_pos_ptr++;
-                            config->buffer_pos++;
                             break;
 
                         default:
+                            next_char = false;
                             config->mode = ARGUMENT;
                             break;
                     }
@@ -252,12 +248,9 @@ int config_parser_read(config_parser_t *config)
                 case ARGUMENT_NEW_LINE:
                     switch(*config->buffer_pos_ptr) {
                         case '\n':
-                            config->line++;
-                            config->buffer_pos_ptr++;
-                            config->buffer_pos++;
                             config->mode = PRE_ARGUMENT;
+                            config->line++;
                             break;
-
                         default:
                             config->error_msg = MSG_EXPECTING_NEW_LINE;
                             config->mode = PRE_ERROR;
@@ -267,33 +260,22 @@ int config_parser_read(config_parser_t *config)
 
                 case ARGUMENT:
                     switch(*config->buffer_pos_ptr) {
-                        case '\n':
-                            if (argument_exist) {
-                                argument_exist = false;
-                                config->argument_size++;
-                            }
-
-                            config->mode = ADD_COMMAND;
-                            break;
-
                         case '#':
-                            config->mode = COMMENT;
+                        case '\n':
+                            next_char = false;
+                            config->mode = ADD_ARGUMENT;
                             break;
-
                         case '"':
                             config->mode = PRE_ERROR;
                             break;
-
                         case ' ':
                         case '\t':
                             config->mode = ADD_ARGUMENT;
                             break;
-
                         default:
                             if (argument_pos_ptr <
                                 (config->argument + MAX_ARGUMENT)) {
 
-                                argument_exist = true;
                                 *argument_pos_ptr = *config->buffer_pos_ptr;
                                 argument_pos_ptr++;
                             } else {
@@ -302,8 +284,6 @@ int config_parser_read(config_parser_t *config)
                             }
                             break;
                     }
-                    config->buffer_pos_ptr++;
-                    config->buffer_pos++;
                     break;
 
                 case ARGUMENT_TEXT:
@@ -311,16 +291,13 @@ int config_parser_read(config_parser_t *config)
                         case '\n':
                             config->mode = PRE_ERROR;
                             break;
-
                         case '"':
                             config->mode = ADD_ARGUMENT;
                             break;
-
                         default:
                             if (argument_pos_ptr <
                                 (config->argument + MAX_ARGUMENT)) {
 
-                                argument_exist = true;
                                 *argument_pos_ptr = *config->buffer_pos_ptr;
                                 argument_pos_ptr++;
                             } else {
@@ -329,8 +306,6 @@ int config_parser_read(config_parser_t *config)
                             }
                             break;
                     }
-                    config->buffer_pos_ptr++;
-                    config->buffer_pos++;
                     break;
 
                 case NAMESPACE:
@@ -347,7 +322,6 @@ int config_parser_read(config_parser_t *config)
                                 config->mode = PRE_ERROR;
                             }
                             break;
-
                         default:
                             if (namespace_pos_ptr <
                                 (config->name_space + MAX_COMMAND)) {
@@ -360,56 +334,54 @@ int config_parser_read(config_parser_t *config)
                             }
                             break;
                     }
-                    config->buffer_pos_ptr++;
-                    config->buffer_pos++;
                     break;
 
                 case POST_NAMESPACE:
                     switch(*config->buffer_pos_ptr) {
                         case '\n':
-                            config->mode = ADD_COMMAND;
+                            config->mode = NEW_LINE;
                             break;
-
                         case ' ':
                         case '\t':
                             /* Do nothing. */
                             break;
-
                         case '#':
                             config->mode = COMMENT;
                             break;
-
                         default:
                             config->mode = PRE_ERROR;
                             break;
                     }
-                    config->buffer_pos_ptr++;
-                    config->buffer_pos++;
                     break;
 
                 case COMMENT:
                     switch(*config->buffer_pos_ptr) {
                         case '\n':
-                            config->mode = ADD_COMMAND;
+                            config->mode = NEW_LINE;
                             break;
-
                         default:
                             /* Do nothing. */
                             break;
                     }
-                    config->buffer_pos_ptr++;
-                    config->buffer_pos++;
+                    break;
+
+                case COMMENT_COMMAND:
+                    switch(*config->buffer_pos_ptr) {
+                        case '\n':
+                            config->mode = ADD_COMMAND;
+                            break;
+                        default:
+                            /* Do nothing. */
+                            break;
+                    }
                     break;
 
                 case ADD_ARGUMENT:
+                    next_char = false;
                     if (argument_pos_ptr < (config->argument + MAX_ARGUMENT)) {
                         *argument_pos_ptr = '\0';
                         argument_pos_ptr++;
-
-                        if (argument_exist) {
-                            argument_exist = false;
-                            config->argument_size++;
-                        }
+                        config->argument_size++;
                         config->mode = PRE_ARGUMENT;
                     } else {
                         config->error_msg = MSG_COMMAND_TO_LONG;
@@ -419,42 +391,38 @@ int config_parser_read(config_parser_t *config)
                     break;
 
                 case ADD_COMMAND:
-                    if ((command_pos_ptr == NULL) ||
-                        (argument_pos_ptr == NULL)) {
-                        config->mode = EXIT;
-                    } else if (command_pos_ptr != config->command) {
-                        config->mode = EXIT;
+                    next_char = false;
+                    if (command_pos_ptr != config->command) {
                         *command_pos_ptr = '\0';
                         *argument_pos_ptr = '\0';
                         status = PARSER_OK;
-                    } else {
-                        config->mode = NEW_LINE;
                     }
+                    config->mode = EXIT;
                     break;
 
                 case PRE_ERROR:
+                default:
                     switch(*config->buffer_pos_ptr) {
                         case '\n':
                             config->argument[0] = '\0';
                             config->command[0] = '\0';
                             config->argument_size = 0u;
-                            config->mode = ERROR;
+                            config->mode = EXIT;
                             status = PARSER_ERROR;
                             break;
-
                         default:
                             /* Do nothing. */
                             break;
                     }
-                    config->buffer_pos_ptr++;
-                    config->buffer_pos++;
-                    break;
-
-                default:
-                    config->buffer_pos_ptr++;
-                    config->buffer_pos++;
                     break;
             }
+
+            if (next_char) {
+                config->buffer_pos_ptr++;
+                config->buffer_pos++;
+            }
+            next_char = true;
+
         }
     }
     return status;
@@ -568,7 +536,7 @@ static void config_parser_readfile(config_parser_t *config)
             config->buffer_pos = 0u;
         } else {
             if (config->mode == PRE_ERROR) {
-                config->mode = ERROR;
+                config->mode = EXIT;
             } else {
                 config->mode = ADD_COMMAND;
             }

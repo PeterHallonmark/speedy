@@ -9,7 +9,7 @@ command1 = test1
 command2 = test2 test3
 
 	[example2]		# A comment
-	command3	=	test4
+    command3	=	test4# A comment
 
  [example3] #A comment after a namespace
   command4=test5 test6  # A comment after a command
@@ -25,3 +25,7 @@ command6=test7 \
          test8 \
          test9 \
          test10
+
+command7   
+command8# A comment
+command9   # Another comment

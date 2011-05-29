@@ -146,6 +146,24 @@ static void test_config_parser_run(void)
     TEST_ASSERT_EQUAL_STRING("test10", GET_NEXT_ARGUMENT());
     TEST_ASSERT_NULL(GET_NEXT_ARGUMENT());
 
+    /* The next command should be command7 */
+    TEST_ASSERT_EQUAL(PARSER_OK, PARSE_FILE());
+    TEST_ASSERT_EQUAL_STRING("example3", GET_NAMESPACE());
+    TEST_ASSERT_EQUAL_STRING("command7", GET_COMMAND());
+    TEST_ASSERT_EQUAL(0, GET_ARGUMENT_SIZE());
+
+    /* The next command should be command8 */
+    TEST_ASSERT_EQUAL(PARSER_OK, PARSE_FILE());
+    TEST_ASSERT_EQUAL_STRING("example3", GET_NAMESPACE());
+    TEST_ASSERT_EQUAL_STRING("command8", GET_COMMAND());
+    TEST_ASSERT_EQUAL(0, GET_ARGUMENT_SIZE());
+
+    /* The next command should be command9 */
+    TEST_ASSERT_EQUAL(PARSER_OK, PARSE_FILE());
+    TEST_ASSERT_EQUAL_STRING("example3", GET_NAMESPACE());
+    TEST_ASSERT_EQUAL_STRING("command9", GET_COMMAND());
+    TEST_ASSERT_EQUAL(0, GET_ARGUMENT_SIZE());
+
     TEST_ASSERT_FALSE(config_parser_is_eof(priv_test_config));
     TEST_ASSERT_EQUAL(PARSER_NO_DATA, PARSE_FILE());
     TEST_ASSERT_TRUE(config_parser_is_eof(priv_test_config));
