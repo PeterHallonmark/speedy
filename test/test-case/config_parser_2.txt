@@ -1,0 +1,27 @@
+# This is an example of a config file.
+
+[example0]
+
+[example1]
+
+command0
+command1 = test1
+command2 = test2 test3
+
+	[example2]		# A comment
+	command3	=	test4
+
+ [example3] #A comment after a namespace
+  command4=test5 test6  # A comment after a command
+   command5="A text message"
+
+# A random comment
+# A random comment2
+# A random comment3
+# Use the same namespace again
+[example3]
+
+command6=test7 \
+         test8 \
+         test9 \
+         test10

@@ -27,6 +27,7 @@
 #define PARSER_OK 0
 #define PARSER_NO_DATA -1
 #define PARSER_ERROR -2
+#define PARSER_MISSING_FILE -3
 
 typedef struct config_parser_t {
     char buffer[MAX_LENGTH];

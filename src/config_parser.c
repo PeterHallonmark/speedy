@@ -23,6 +23,7 @@
 #define MSG_COMMAND_TO_LONG     "Command to long."
 #define MSG_SPACE_NOT_SUPPORTED "Space is not supported in a command"
 #define MSG_ARGUMENT_TO_LONG    "Argument to long."
+#define MSG_EXPECTING_NEW_LINE  "Expecting a new line."
 
 typedef enum {
     NEW_LINE,
@@ -32,6 +33,7 @@ typedef enum {
     COMMAND,
     ADD_COMMAND,
     PRE_ARGUMENT,
+    ARGUMENT_NEW_LINE,
     ARGUMENT,
     ARGUMENT_TEXT,
     ADD_ARGUMENT,
@@ -57,6 +59,8 @@ config_parser_t *config_parser_open(const char* filename)
     } else {
         config->command[0] = '\0';
         config->argument[0] = '\0';
+        config->name_space[0] = '\0';
+        config->error_msg = NULL;
         config->buffer_pos = 0;
         config->bytes_read = 0;
         config->line = 0u;
@@ -97,6 +101,10 @@ int config_parser_read(config_parser_t *config)
     char *namespace_pos_ptr = NULL;
     bool argument_exist = false;
     int status = PARSER_NO_DATA;
+
+    if (config == NULL) {
+        return PARSER_MISSING_FILE;
+    }
 
     config->error_msg = NULL;
     config->mode = NEW_LINE;
@@ -223,6 +231,12 @@ int config_parser_read(config_parser_t *config)
                             config->buffer_pos++;
                             break;
 
+                        case '\\':
+                            config->mode = ARGUMENT_NEW_LINE;
+                            config->buffer_pos_ptr++;
+                            config->buffer_pos++;
+                            break;
+
                         case '"':
                             config->mode = ARGUMENT_TEXT;
                             config->buffer_pos_ptr++;
@@ -231,6 +245,22 @@ int config_parser_read(config_parser_t *config)
 
                         default:
                             config->mode = ARGUMENT;
+                            break;
+                    }
+                    break;
+
+                case ARGUMENT_NEW_LINE:
+                    switch(*config->buffer_pos_ptr) {
+                        case '\n':
+                            config->line++;
+                            config->buffer_pos_ptr++;
+                            config->buffer_pos++;
+                            config->mode = PRE_ARGUMENT;
+                            break;
+
+                        default:
+                            config->error_msg = MSG_EXPECTING_NEW_LINE;
+                            config->mode = PRE_ERROR;
                             break;
                     }
                     break;
@@ -466,7 +496,11 @@ const char* config_parser_get_command(config_parser_t *config)
 
 const char *config_parser_get_error_msg(config_parser_t *config)
 {
-    return config->error_msg;
+    if (config != NULL) {
+        return config->error_msg;
+    } else {
+        return NULL;
+    }
 }
 
 const char* config_parser_get_next_argument(config_parser_t *config)
@@ -487,7 +521,11 @@ const char* config_parser_get_next_argument(config_parser_t *config)
 
 unsigned int config_parser_get_argument_size(config_parser_t *config)
 {
-    return config->argument_size + 1;
+    if (config != NULL) {
+        return config->argument_size;
+    } else {
+        return 0;
+    }
 }
 
 char** config_parser_create_arguments(config_parser_t *config)
