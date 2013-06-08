@@ -119,7 +119,7 @@ int task_run_action(void *task)
             status = TASK_FAIL;
         }
     }
-    subject_notify((subject_t*) this_ptr, (void*) status);
+    subject_notify((subject_t*) this_ptr, (void*) &status);
 
     return status;
 }
