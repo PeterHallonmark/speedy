@@ -344,8 +344,82 @@ static void test_config_parser_normal_file_run(void)
     TEST_ASSERT_EQUAL(34, priv_counter);
 }
 
+
+/*****************************************************************************/
+/* Errornous file
 /*****************************************************************************/
 
+/* Only start and end of these callbacks should be call for an empty file. */
+void errornous_file_start_callback(void *handler)
+{
+    priv_start = true;
+}
+
+void errornous_file_end_callback(void *handler)
+{
+    priv_end = true;
+}
+
+void errornous_file_namespace_callback(void *handler, const char *name)
+{
+    fprintf(stderr, "Counter: %d\n", priv_counter);
+    TEST_FAIL();
+}
+
+void errornous_file_command_callback(void *handler, const char *command)
+{
+    fprintf(stderr, "Counter: %d\n", priv_counter);
+    TEST_FAIL();
+}
+
+void errornous_file_argument_callback(void *handler, const char *argument)
+{
+    fprintf(stderr, "Counter: %d\n", priv_counter);
+    TEST_FAIL();
+}
+
+void errornous_file_error_callback(void *handler, const char* filename,
+                                   int line, const char *error_msg)
+{
+    priv_counter++;
+}
+
+
+static void test_config_parser_errornous_file_init(void)
+{
+    priv_start = false;
+    priv_end = false;
+    priv_counter = 0;
+
+    priv_handler.func_start_config = &errornous_file_start_callback;
+    priv_handler.func_end_config = &errornous_file_end_callback;
+    priv_handler.func_namespace = &errornous_file_namespace_callback;
+    priv_handler.func_argument = &errornous_file_argument_callback;
+    priv_handler.func_command = &errornous_file_command_callback;
+    priv_handler.func_error = &errornous_file_error_callback;
+    priv_handler.handler = NULL;
+}
+
+static void test_config_parser_errornous_file_cleanup(void)
+{
+    /* Do nothing. */
+}
+
+static void test_config_parser_errornous_file_run(void)
+{
+    int result = config_parser_read_file(TEST_CASE_PATH "config_parser_3.txt",
+                                         &priv_handler);
+    TEST_ASSERT_EQUAL(PARSER_ERROR, result);
+
+    /* Check that the start and end of the config parser has been executed. */
+    TEST_ASSERT_EQUAL(true, priv_start);
+    TEST_ASSERT_EQUAL(true, priv_end);
+
+    /* Check that all the test cases has been executed. */
+    TEST_ASSERT_EQUAL(34, priv_counter);
+}
+
+/*****************************************************************************/
 
 void test_config_parser(void)
 {
@@ -366,12 +440,12 @@ void test_config_parser(void)
     TEST_CASE_RUN(test_config_parser_normal_file_init,
                   test_config_parser_normal_file_cleanup,
                   test_config_parser_normal_file_run);
-#if 0
+
     /* Test case that checks what happens with a errornous file. */
     TEST_CASE_RUN(test_config_parser_errornous_file_init,
                   test_config_parser_errornous_file_cleanup,
                   test_config_parser_errornous_file_run);
-#endif
+
     TEST_CASE_END();
 
 }

@@ -48,13 +48,13 @@ int config_parser_read_file(const char* filename, config_handler_t *handler)
     char* error_msg;
     char* buffer_ptr;
     char* char_ptr;
+    char* last_char_ptr;
 
     bool exit = false;
 
     int result = PARSER_OK;
     int line = 1;
     int size;
-    int i;
 
     if (file == NULL) {
         return PARSER_MISSING_FILE;
@@ -77,8 +77,11 @@ int config_parser_read_file(const char* filename, config_handler_t *handler)
 
         /* Start at the beginning of the parser buffer. */
         char_ptr = parser_buffer;
+        /* Calculate the last character. */
+        last_char_ptr = char_ptr + size;
 
-        for (i = 0; i < size; i++) {
+        while (char_ptr < last_char_ptr) {
+            fprintf(stderr, "STATE: %d %c\n", state, *char_ptr);
 
             switch(state) {
 
@@ -89,10 +92,12 @@ int config_parser_read_file(const char* filename, config_handler_t *handler)
                             buffer_ptr = command_buffer;
                             break;
 
-                        case '\n':
-                            line = line + 1;
+                        case '=':
+                            state = PARSER_STATE_ERROR;
+                            error_msg = "Missing command.";
                             break;
 
+                        case '\n':
                         case ' ':
                         case '\t':
                             /* Ignore whitespace. */
@@ -105,8 +110,7 @@ int config_parser_read_file(const char* filename, config_handler_t *handler)
                         default:
                             state = PARSER_STATE_COMMAND;
                             buffer_ptr = command_buffer;
-                            *buffer_ptr = *char_ptr;
-                            buffer_ptr++;
+                            char_ptr--;
                             break;
                     }
                     break;
@@ -118,12 +122,13 @@ int config_parser_read_file(const char* filename, config_handler_t *handler)
                             *buffer_ptr = '\0';
                             break;
 
+                        case '\n':
                         case ' ':
                         case '\t':
                         case '#':
                             state = PARSER_STATE_ERROR;
                             error_msg = "Error in namespace.";
-                            result = PARSER_ERROR;
+                            char_ptr--;
                             break;
 
                         default:
@@ -139,7 +144,6 @@ int config_parser_read_file(const char* filename, config_handler_t *handler)
                             state = PARSER_STATE_NEW_LINE;
                             handler->func_namespace(handler->handler,
                                                     command_buffer);
-                            line = line + 1;
                             break;
 
                         case ' ':
@@ -156,7 +160,6 @@ int config_parser_read_file(const char* filename, config_handler_t *handler)
                         default:
                             state = PARSER_STATE_ERROR;
                             error_msg = "Error in namespace.";
-                            result = PARSER_ERROR;
                             break;
                     }
                     break;
@@ -181,7 +184,6 @@ int config_parser_read_file(const char* filename, config_handler_t *handler)
                             *buffer_ptr = '\0';
                             handler->func_command(handler->handler,
                                                   command_buffer);
-                            line = line + 1;
                             break;
 
                         case '#':
@@ -209,7 +211,6 @@ int config_parser_read_file(const char* filename, config_handler_t *handler)
                             state = PARSER_STATE_NEW_LINE;
                             handler->func_command(handler->handler,
                                                   command_buffer);
-                            line = line + 1;
                             break;
 
                         case '#':
@@ -226,7 +227,6 @@ int config_parser_read_file(const char* filename, config_handler_t *handler)
                         default:
                             state = PARSER_STATE_ERROR;
                             error_msg = "Whitespace not supported in command.";
-                            result = PARSER_ERROR;
                             break;
                     }
                     break;
@@ -238,6 +238,12 @@ int config_parser_read_file(const char* filename, config_handler_t *handler)
                             /* Ignore white space. */
                             break;
 
+                        case '\n':
+                            state = PARSER_STATE_ERROR;
+                            error_msg = "Missing argument.";
+                            char_ptr--;
+                            break;
+
                         case '"':
                             state = PARSER_STATE_ARGUMENT_TEXT;
                             buffer_ptr = command_buffer;
@@ -246,8 +252,7 @@ int config_parser_read_file(const char* filename, config_handler_t *handler)
                         default:
                             state = PARSER_STATE_ARGUMENT;
                             buffer_ptr = command_buffer;
-                            *buffer_ptr = *char_ptr;
-                            buffer_ptr++;
+                            char_ptr--;
                             break;
                     }
                     break;
@@ -259,7 +264,6 @@ int config_parser_read_file(const char* filename, config_handler_t *handler)
                             *buffer_ptr = '\0';
                             handler->func_argument(handler->handler,
                                                    command_buffer);
-                            line = line + 1;
                             break;
 
                         case '\\':
@@ -315,7 +319,6 @@ int config_parser_read_file(const char* filename, config_handler_t *handler)
                     switch (*char_ptr) {
                         case '\n':
                             state = PARSER_STATE_NEW_LINE;
-                            line = line + 1;
                             break;
 
                         case ' ':
@@ -340,8 +343,7 @@ int config_parser_read_file(const char* filename, config_handler_t *handler)
                         default:
                             state = PARSER_STATE_ARGUMENT;
                             buffer_ptr = command_buffer;
-                            *buffer_ptr = *char_ptr;
-                            buffer_ptr++;
+                            char_ptr--;
                             break;
                     }
                     break;
@@ -355,7 +357,6 @@ int config_parser_read_file(const char* filename, config_handler_t *handler)
                                 handler->func_argument(handler->handler,
                                                        command_buffer);
                             }
-                            line = line + 1;
                             break;
 
                         case ' ':
@@ -375,24 +376,21 @@ int config_parser_read_file(const char* filename, config_handler_t *handler)
                     switch (*char_ptr) {
                         case '\n':
                             state = PARSER_STATE_NEW_LINE;
-                            *buffer_ptr = '\0';
                             handler->func_error(handler->handler, filename,
                                                 line, error_msg);
-                            line = line + 1;
                             break;
 
                         default:
-                            *buffer_ptr = *char_ptr;
-                            buffer_ptr++;
+                            /* Do nothing. */
                             break;
                     }
+                    result = PARSER_ERROR;
                     break;
 
                 case PARSER_STATE_COMMENT:
                     switch (*char_ptr) {
                         case '\n':
                             state = PARSER_STATE_NEW_LINE;
-                            line = line + 1;
                             break;
 
                         default:
@@ -409,6 +407,10 @@ int config_parser_read_file(const char* filename, config_handler_t *handler)
                                         line, "Unknown state.");
                     result = PARSER_ERROR;
                     break;
+            }
+
+            if (*char_ptr == '\n') {
+                line = line + 1;
             }
 
             /* Get the next character. */
