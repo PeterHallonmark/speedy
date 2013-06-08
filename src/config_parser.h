@@ -25,7 +25,6 @@
 #define MAX_COMMAND 64u
 
 #define PARSER_OK 0
-#define PARSER_NO_DATA -1
 #define PARSER_ERROR -2
 #define PARSER_MISSING_FILE -3
 
@@ -41,7 +40,7 @@ typedef struct config_handler_t {
                        const char *error_msg);
 } config_handler_t;
 
-void config_parser_read_file(const char* filename, config_handler_t *handler);
+int config_parser_read_file(const char* filename, config_handler_t *handler);
 
 
 #endif /* _SPEEDY_CONFIG_PARSER_H_ */

@@ -1,3 +1,10 @@
 # This is an errornous config file
 
 =
+[namespace0 namespace0]
+[namespace1 namespace1
+command0 command0
+command1 = test0 \ test1
+[namespace2] namespace2
+command2 = test2"
+

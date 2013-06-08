@@ -17,7 +17,7 @@ command2 = test2 test3
 
 # A random comment
 # A random comment2
-# A random comment3
+ # A random comment3
 # Use the same namespace again
 [example3]
 
@@ -30,3 +30,8 @@ command7
 command8# A comment
 command9   # Another comment
 
+command10 = "test 11" "test 12"
+command11 = test13\
+            test14\
+            "test 15"\
+            "test 16"

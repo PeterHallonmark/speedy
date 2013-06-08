@@ -37,7 +37,7 @@ typedef enum {
 } parser_state_t;
 
 
-void config_parser_read_file(const char* filename, config_handler_t *handler)
+int config_parser_read_file(const char* filename, config_handler_t *handler)
 {
     FILE* file = fopen(filename, "r");
     parser_state_t state = PARSER_STATE_NEW_LINE;
@@ -51,9 +51,14 @@ void config_parser_read_file(const char* filename, config_handler_t *handler)
 
     bool exit = false;
 
+    int result = PARSER_OK;
     int line = 1;
     int size;
     int i;
+
+    if (file == NULL) {
+        return PARSER_MISSING_FILE;
+    }
 
     handler->func_start_config(handler->handler);
 
@@ -118,6 +123,7 @@ void config_parser_read_file(const char* filename, config_handler_t *handler)
                         case '#':
                             state = PARSER_STATE_ERROR;
                             error_msg = "Error in namespace.";
+                            result = PARSER_ERROR;
                             break;
 
                         default:
@@ -150,6 +156,7 @@ void config_parser_read_file(const char* filename, config_handler_t *handler)
                         default:
                             state = PARSER_STATE_ERROR;
                             error_msg = "Error in namespace.";
+                            result = PARSER_ERROR;
                             break;
                     }
                     break;
@@ -169,6 +176,20 @@ void config_parser_read_file(const char* filename, config_handler_t *handler)
                                                   command_buffer);
                             break;
 
+                        case '\n':
+                            state = PARSER_STATE_NEW_LINE;
+                            *buffer_ptr = '\0';
+                            handler->func_command(handler->handler,
+                                                  command_buffer);
+                            line = line + 1;
+                            break;
+
+                        case '#':
+                            state = PARSER_STATE_COMMENT;
+                            handler->func_command(handler->handler,
+                                                  command_buffer);
+                            break;
+
                         default:
                             *buffer_ptr = *char_ptr;
                             buffer_ptr++;
@@ -180,7 +201,19 @@ void config_parser_read_file(const char* filename, config_handler_t *handler)
                     switch (*char_ptr) {
                         case '=':
                             state = PARSER_STATE_PRE_ARGUMENT;
-                            *buffer_ptr = '\0';
+                            handler->func_command(handler->handler,
+                                                  command_buffer);
+                            break;
+
+                        case '\n':
+                            state = PARSER_STATE_NEW_LINE;
+                            handler->func_command(handler->handler,
+                                                  command_buffer);
+                            line = line + 1;
+                            break;
+
+                        case '#':
+                            state = PARSER_STATE_COMMENT;
                             handler->func_command(handler->handler,
                                                   command_buffer);
                             break;
@@ -193,6 +226,7 @@ void config_parser_read_file(const char* filename, config_handler_t *handler)
                         default:
                             state = PARSER_STATE_ERROR;
                             error_msg = "Whitespace not supported in command.";
+                            result = PARSER_ERROR;
                             break;
                     }
                     break;
@@ -243,6 +277,7 @@ void config_parser_read_file(const char* filename, config_handler_t *handler)
                         case '"':
                             state = PARSER_STATE_ERROR;
                             error_msg = "Missing \" character.";
+                            result = PARSER_ERROR;
                             break;
 
                         case '#':
@@ -290,7 +325,8 @@ void config_parser_read_file(const char* filename, config_handler_t *handler)
 
                         case '\\':
                             state = PARSER_STATE_POST_ARGUMENT_NEW_LINE;
-                           break;
+                            buffer_ptr = command_buffer;
+                            break;
 
                         case '#':
                             state = PARSER_STATE_COMMENT;
@@ -330,6 +366,7 @@ void config_parser_read_file(const char* filename, config_handler_t *handler)
                         default:
                             state = PARSER_STATE_ERROR;
                             error_msg = "Missing new line character.";
+                            result = PARSER_ERROR;
                             break;
                     }
                     break;
@@ -356,7 +393,6 @@ void config_parser_read_file(const char* filename, config_handler_t *handler)
                         case '\n':
                             state = PARSER_STATE_NEW_LINE;
                             line = line + 1;
-                            *buffer_ptr = '\0';
                             break;
 
                         default:
@@ -371,6 +407,7 @@ void config_parser_read_file(const char* filename, config_handler_t *handler)
                     state = PARSER_STATE_NEW_LINE;
                     handler->func_error(handler->handler, filename,
                                         line, "Unknown state.");
+                    result = PARSER_ERROR;
                     break;
             }
 
@@ -382,4 +419,5 @@ void config_parser_read_file(const char* filename, config_handler_t *handler)
     handler->func_end_config(handler->handler);
 
     fclose(file);
+    return result;
 }
