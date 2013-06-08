@@ -30,7 +30,7 @@ struct hash_slot_t;
 #define HASH_LOOKUP_EMPTY -1
 
 typedef struct hash_lookup_t {
-    struct hash_slot_t * slots;
+    struct hash_slot_t * hash_slots;
     unsigned int slot_size;
 } hash_lookup_t;
 

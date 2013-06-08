@@ -77,8 +77,8 @@ hash_lookup_t * hash_lookup_create(unsigned int size)
 
     if (this_ptr != NULL) {
         /* Try to allocate the slots. */
-        this_ptr->slots = (hash_slot_t*) malloc(size * sizeof(hash_slot_t));
-        if (this_ptr->slots == NULL) {
+        this_ptr->hash_slots = (hash_slot_t*) malloc(size * sizeof(hash_slot_t));
+        if (this_ptr->hash_slots == NULL) {
             /* It wasn't possible so free the memory and return NULL. */
             free(this_ptr);
             return NULL;
@@ -87,7 +87,7 @@ hash_lookup_t * hash_lookup_create(unsigned int size)
 
         /* Set all the allocated slots to empty. */
         for (i = 0; i < this_ptr->slot_size; i++) {
-            this_ptr->slots[i].slot_type = SLOT_TYPE_EMPTY;
+            this_ptr->hash_slots[i].slot_type = SLOT_TYPE_EMPTY;
         }
     }
     return this_ptr;
@@ -122,18 +122,18 @@ int hash_lookup_insert(hash_lookup_t *this_ptr, unsigned int key, void * data)
             new_data->key = key;
             status = HASH_LOOKUP_SUCESS;
 
-            switch (this_ptr->slots[index].slot_type) {
+            switch (this_ptr->hash_slots[index].slot_type) {
                 case SLOT_TYPE_DATA:
                     /* This is the second item with the same lookup table index
                      * so create a queue and store both in it. */
-                    temp = this_ptr->slots[index].slot.data;
-                    this_ptr->slots[index].slot.queue = queue_create();
-                    this_ptr->slots[index].slot_type = SLOT_TYPE_QUEUE;
-                    queue_push(this_ptr->slots[index].slot.queue, temp);
+                    temp = this_ptr->hash_slots[index].slot.data;
+                    this_ptr->hash_slots[index].slot.queue = queue_create();
+                    this_ptr->hash_slots[index].slot_type = SLOT_TYPE_QUEUE;
+                    queue_push(this_ptr->hash_slots[index].slot.queue, temp);
                     /* Use the internal wrapper push function just to be able to
                      * check so that all keys are unique in the queue. */
                     status = hash_lookup_queue_push(
-                             this_ptr->slots[index].slot.queue, new_data);
+                             this_ptr->hash_slots[index].slot.queue, new_data);
                     break;
 
                 case SLOT_TYPE_QUEUE:
@@ -141,13 +141,13 @@ int hash_lookup_insert(hash_lookup_t *this_ptr, unsigned int key, void * data)
                      * same lookup table index so insert the new item into the
                      * queue and check that the key is unique. */
                     status = hash_lookup_queue_push(
-                             this_ptr->slots[index].slot.queue, new_data);
+                             this_ptr->hash_slots[index].slot.queue, new_data);
                     break;
 
                 case SLOT_TYPE_EMPTY:
                     /* The key creates a unique index for the lookup table. */
-                    this_ptr->slots[index].slot.data = new_data;
-                    this_ptr->slots[index].slot_type = SLOT_TYPE_DATA;
+                    this_ptr->hash_slots[index].slot.data = new_data;
+                    this_ptr->hash_slots[index].slot_type = SLOT_TYPE_DATA;
                     break;
 
                 default:
@@ -182,15 +182,15 @@ void * hash_lookup_remove(hash_lookup_t *this_ptr, unsigned int key)
     if (this_ptr != NULL) {
         unsigned int index = key % this_ptr->slot_size;
 
-        switch (this_ptr->slots[index].slot_type) {
+        switch (this_ptr->hash_slots[index].slot_type) {
             case SLOT_TYPE_DATA:
-                data = this_ptr->slots[index].slot.data->data;
-                free(this_ptr->slots[index].slot.data);
-                this_ptr->slots[index].slot_type = SLOT_TYPE_EMPTY;
+                data = this_ptr->hash_slots[index].slot.data->data;
+                free(this_ptr->hash_slots[index].slot.data);
+                this_ptr->hash_slots[index].slot_type = SLOT_TYPE_EMPTY;
                 break;
 
             case SLOT_TYPE_QUEUE:
-                data = hash_lookup_queue_remove(this_ptr->slots[index].slot.queue,
+                data = hash_lookup_queue_remove(this_ptr->hash_slots[index].slot.queue,
                                                 key);
                 break;
 
@@ -222,13 +222,13 @@ void * hash_lookup_find(hash_lookup_t *this_ptr, unsigned int key)
     if (this_ptr != NULL) {
         unsigned int index = key % this_ptr->slot_size;
 
-        switch (this_ptr->slots[index].slot_type) {
+        switch (this_ptr->hash_slots[index].slot_type) {
             case SLOT_TYPE_DATA:
-                data = this_ptr->slots[index].slot.data->data;
+                data = this_ptr->hash_slots[index].slot.data->data;
                 break;
 
             case SLOT_TYPE_QUEUE:
-                data = hash_lookup_queue_find(this_ptr->slots[index].slot.queue,
+                data = hash_lookup_queue_find(this_ptr->hash_slots[index].slot.queue,
                                               key);
                 break;
 
@@ -256,18 +256,18 @@ void hash_lookup_destroy(hash_lookup_t *this_ptr)
         /* Set all the allocated slots to empty. */
         for (i = 0; i < this_ptr->slot_size; i++) {
 
-            switch(this_ptr->slots[i].slot_type) {
+            switch(this_ptr->hash_slots[i].slot_type) {
                 case SLOT_TYPE_DATA:
-                    free(this_ptr->slots[i].slot.data);
+                    free(this_ptr->hash_slots[i].slot.data);
                     break;
 
                 case SLOT_TYPE_QUEUE:
-                    while ((temp = queue_pop(this_ptr->slots[i].slot.queue))
+                    while ((temp = queue_pop(this_ptr->hash_slots[i].slot.queue))
                             != NULL) {
 
                         free(temp);
                     }
-                    queue_destroy(this_ptr->slots[i].slot.queue);
+                    queue_destroy(this_ptr->hash_slots[i].slot.queue);
                     break;
 
                 case SLOT_TYPE_EMPTY:
@@ -276,7 +276,7 @@ void hash_lookup_destroy(hash_lookup_t *this_ptr)
                     break;
             }
         }
-        free(this_ptr->slots);
+        free(this_ptr->hash_slots);
         free(this_ptr);
     }
 }
