@@ -29,3 +29,4 @@ command6=test7 \
 command7   
 command8# A comment
 command9   # Another comment
+
