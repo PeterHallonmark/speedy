@@ -29,40 +29,19 @@
 #define PARSER_ERROR -2
 #define PARSER_MISSING_FILE -3
 
-typedef struct config_parser_t {
-    char buffer[MAX_LENGTH];
-    char command[MAX_COMMAND];
-    char name_space[MAX_COMMAND];
-    char argument[MAX_ARGUMENT];
-    char *error_msg;
-    char *buffer_pos_ptr;
-    FILE* file;
-    size_t buffer_pos;
-    size_t bytes_read;
-    unsigned int line;
-    unsigned int mode;
-    unsigned int argument_size;
-    char *next_argument_pos_ptr;
-    bool eof;
-} config_parser_t;
 
-config_parser_t *config_parser_open(const char* filename);
-void config_parser_close(config_parser_t *config);
+typedef struct config_handler_t {
+    void *handler;
+    void (*func_start_config)(void *handler);
+    void (*func_end_config)(void *handler);
+    void (*func_namespace)(void *handler, const char *name);
+    void (*func_command)(void *handler, const char *command);
+    void (*func_argument)(void *handler, const char *argument);
+    void (*func_error)(void *handler, const char* filename, int line,
+                       const char *error_msg);
+} config_handler_t;
 
-bool config_parser_is_eof(config_parser_t *config);
+void config_parser_read_file(const char* filename, config_handler_t *handler);
 
-int config_parser_read(config_parser_t *config);
-
-void config_parser_set_namespace(config_parser_t *config, const char *str);
-const char* config_parser_get_namespace(config_parser_t *config);
-
-const char* config_parser_get_command(config_parser_t *config);
-
-const char *config_parser_get_error_msg(config_parser_t *config);
-
-const char* config_parser_get_next_argument(config_parser_t *config);
-unsigned int config_parser_get_argument_size(config_parser_t *config);
-char** config_parser_create_arguments(config_parser_t *config);
-void config_parser_destroy_arguments(char* arguments[]);
 
 #endif /* _SPEEDY_CONFIG_PARSER_H_ */

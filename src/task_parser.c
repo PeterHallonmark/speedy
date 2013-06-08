@@ -58,6 +58,9 @@ typedef struct task_parser_simple_task_t {
 } task_parser_simple_task_t;
 
 
+#if 0
+
+
 /*!
  * A simple structure for tasks which parse a single file.
  */
@@ -246,13 +249,16 @@ static void task_parser_file_exec(void *arg)
         read_file->current_namespace_value = task_parser_get_namespace_value(
                                               read_file->current_namespace);
 
+        printf("%s ", read_file->current_namespace);
+        printf("%d\n", read_file->current_namespace_value);
+
         switch (read_file->current_namespace_value) {
             case NAMESPACE_OPTIONS:
                 task_parser_file_handle_options(read_file);
                 break;
 
             case NAMESPACE_CONFIG:
-                task_parser_file_handle_task(read_file);
+                //task_parser_file_handle_task(read_file);
                 break;
 
             default:
@@ -698,3 +704,5 @@ static void task_parser_dir_read_file(task_parser_dir_t *scan_dir,
                              read_file);
     }
 }
+
+#endif
